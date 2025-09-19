@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KadaSkill - Learn & Get Certified</title>
+    <link rel="stylesheet" href="css/learn.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preload" href="images/robot-hero.png" as="image">
+    <link rel="preload" href="images/logo.png" as="image">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <img src="images/logo.png" alt="KadaSkill" class="logo-img" onerror="this.style.display='none';">
+                <span>KadaSkill</span>
+            </div>
+            <nav class="nav">
+                <ul class="nav-links">
+                    <li><a href="#" class="nav-btn active">Home</a></li>
+                    <li><a href="#" class="nav-btn">Learn</a></li>
+                    <li><a href="#" class="nav-btn">Practice</a></li>
+                    <li><a href="#" class="nav-btn">Certification</a></li>
+                    <li><a href="#" class="nav-btn">About Us</a></li>
+                </ul>
+            </nav>
+            <div class="header-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                <div class="user-profile">
+                    <div class="user-avatar">E</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="content-wrapper">
+                <!-- Left Content -->
+                <div class="left-content">
+                    <!-- Welcome Section -->
+                    <section class="welcome">
+                        <div class="welcome-header">
+                            <div class="welcome-robot">
+                                <img src="images/robot-hero.png" alt="Welcome Robot" class="welcome-robot-img" onerror="this.innerHTML='<i class=\" fas fa-robot\ "></i>';">
+                            </div>
+                            <div class="welcome-text">
+                                <h1>Welcome Back, <span class="highlight">Eijay!</span></h1>
+                                <p>Weekly goal progress tracker:</p>
+                                <div class="progress-tracker">
+                                    <div class="day-circle pending">S</div>
+                                    <div class="day-circle completed">M</div>
+                                    <div class="day-circle completed">T</div>
+                                    <div class="day-circle completed">W</div>
+                                    <div class="day-circle current">T</div>
+                                    <div class="day-circle pending">F</div>
+                                    <div class="day-circle pending">S</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Learn Section -->
+                    <section class="learn-section">
+                        <div class="section-header">
+                            <h2>Learn <i class="fas fa-chevron-right"></i></h2>
+                        </div>
+
+                        <div class="course-grid">
+                            <div class="course-card">
+                                <div class="course-content">
+                                    <div class="course-label">Course</div>
+                                    <h3>Python Foundation of AI</h3>
+                                    <div class="course-buttons">
+                                        <button class="btn btn-practice"><i class="fas fa-dumbbell"></i> Practice</button>
+                                        <button class="btn btn-continue">Continue</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="track-card">
+                                <div class="track-label">Enrolled Track</div>
+                                <h4>Google Cloud Professional Machine Learning Engineer</h4>
+                                <a href="#" class="track-link">See Track <i class="fas fa-chevron-right"></i></a>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Review Section -->
+                    <section class="review-section">
+                        <div class="section-header">
+                            <h3>Review</h3>
+                            <a href="#" class="view-all-link">View All Practices</a>
+                        </div>
+
+                        <div class="practice-grid">
+                            <div class="practice-card">
+                                <div class="practice-label">PRACTICE</div>
+                                <h4>NumPy Warm-up</h4>
+                                <div class="practice-xp">
+                                    <i class="fas fa-star"></i>
+                                    <span>250 XP</span>
+                                </div>
+                                <i class="fas fa-chevron-right practice-arrow"></i>
+                            </div>
+
+                            <div class="practice-card">
+                                <div class="practice-label">PRACTICE</div>
+                                <h4>Pandas Review</h4>
+                                <div class="practice-xp">
+                                    <i class="fas fa-star"></i>
+                                    <span>250 XP</span>
+                                </div>
+                                <i class="fas fa-chevron-right practice-arrow"></i>
+                            </div>
+
+                            <div class="practice-card">
+                                <div class="practice-label">PRACTICE</div>
+                                <h4>Python Basics</h4>
+                                <div class="practice-xp">
+                                    <i class="fas fa-star"></i>
+                                    <span>250 XP</span>
+                                </div>
+                                <i class="fas fa-chevron-right practice-arrow"></i>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Certifications Section -->
+                    <section class="certifications-section">
+                        <div class="section-header">
+                            <h2>Certifications <i class="fas fa-chevron-right"></i></h2>
+                        </div>
+
+                        <div class="cert-grid">
+                            <div class="cert-card aws-cert">
+                                <div class="cert-image">
+                                    <!-- Placeholder for AWS certification image -->
+                                    <div class="cert-placeholder">
+                                        <i class="fab fa-aws"></i>
+                                        <span>AWS Certified</span>
+                                    </div>
+                                </div>
+                                <div class="cert-content">
+                                    <h4>AWS Certified Solutions Architect – Associate</h4>
+                                    <p>Validates your ability to design and deploy scalable, highly available systems on AWS, covering core services like EC2, S3, VPC, and architecture best practices, and cost optimization.</p>
+                                    <button class="btn btn-get-started">Get Started</button>
+                                </div>
+                            </div>
+
+                            <div class="cert-card cissp-cert">
+                                <div class="cert-image">
+                                    <!-- Placeholder for CISSP certification image -->
+                                    <div class="cert-placeholder cissp-placeholder">
+                                        <i class="fas fa-shield-alt"></i>
+                                        <span>CISSP Certified</span>
+                                    </div>
+                                </div>
+                                <div class="cert-content">
+                                    <h4>Certified Information Systems Security Professional (CISSP)</h4>
+                                    <p>Recognized globally, this ISC² certification demonstrates mastery of security and risk management, asset security, communications and network security, and more.</p>
+                                    <button class="btn btn-get-started">Get Started</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Level Up Section -->
+                    <section class="level-up-section">
+                        <h1>Level Up Your Skills Today!</h1>
+                        <p>Explore new certifications and unlock more badges.</p>
+                        <div class="level-up-buttons">
+                            <button class="btn btn-level-up">Start Learning</button>
+                            <button class="btn btn-level-up">Get Certified</button>
+                            <button class="btn btn-level-up">Start Practicing</button>
+                        </div>
+                    </section>
+
+                    <!-- Badges Section -->
+                    <section class="badges-section">
+                        <h3>Badges</h3>
+                        <div class="badges-grid">
+                            <div class="badge-item">
+                                <div class="badge-placeholder badge-1">
+                                    <i class="fas fa-trophy"></i>
+                                </div>
+                            </div>
+                            <div class="badge-item">
+                                <div class="badge-placeholder badge-2">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                            <div class="badge-item">
+                                <div class="badge-placeholder badge-3">
+                                    <i class="fas fa-medal"></i>
+                                </div>
+                            </div>
+                            <div class="badge-item">
+                                <div class="badge-placeholder badge-4">
+                                    <i class="fas fa-crown"></i>
+                                </div>
+                            </div>
+                            <div class="badge-item">
+                                <div class="badge-placeholder badge-5">
+                                    <i class="fas fa-gem"></i>
+                                </div>
+                            </div>
+                            <div class="badge-item">
+                                <div class="badge-placeholder badge-6">
+                                    <i class="fas fa-award"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Right Sidebar -->
+                <aside class="right-sidebar">
+                    <!-- Profile Card -->
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div class="profile-avatar">E</div>
+                            <div class="profile-info">
+                                <h4>@eijay</h4>
+                                <p>Level 143</p>
+                            </div>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-icon"><i class="fas fa-star"></i></div>
+                                <div class="stat-number">0</div>
+                                <div class="stat-label">Total XP</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon"><i class="fas fa-medal"></i></div>
+                                <div class="stat-number">32</div>
+                                <div class="stat-label">Badges</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon mythical"><i class="fas fa-crown"></i></div>
+                                <div class="stat-number">4</div>
+                                <div class="stat-label">Day Streak</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+                                <div class="stat-number">143</div>
+                                <div class="stat-label">Mythical Rank</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-view-profile">View Profile</button>
+                    </div>
+
+                    <!-- Calendar -->
+                    <div class="calendar-card">
+                        <div class="calendar-header">
+                            <button class="calendar-nav"><i class="fas fa-chevron-left"></i></button>
+                            <h4>June 2025</h4>
+                            <button class="calendar-nav"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div class="calendar-grid">
+                            <div class="calendar-day header">S</div>
+                            <div class="calendar-day header">M</div>
+                            <div class="calendar-day header">T</div>
+                            <div class="calendar-day header">W</div>
+                            <div class="calendar-day header">T</div>
+                            <div class="calendar-day header">F</div>
+                            <div class="calendar-day header">S</div>
+
+                            <div class="calendar-day">1</div>
+                            <div class="calendar-day">2</div>
+                            <div class="calendar-day">3</div>
+                            <div class="calendar-day">4</div>
+                            <div class="calendar-day">5</div>
+                            <div class="calendar-day">6</div>
+                            <div class="calendar-day">7</div>
+                            <div class="calendar-day">8</div>
+                            <div class="calendar-day">9</div>
+                            <div class="calendar-day">10</div>
+                            <div class="calendar-day">11</div>
+                            <div class="calendar-day">12</div>
+                            <div class="calendar-day">13</div>
+                            <div class="calendar-day">14</div>
+                            <div class="calendar-day">15</div>
+                            <div class="calendar-day current">16</div>
+                            <div class="calendar-day">17</div>
+                            <div class="calendar-day">18</div>
+                            <div class="calendar-day">19</div>
+                            <div class="calendar-day">20</div>
+                            <div class="calendar-day">21</div>
+                            <div class="calendar-day">22</div>
+                            <div class="calendar-day">23</div>
+                            <div class="calendar-day">24</div>
+                            <div class="calendar-day">25</div>
+                            <div class="calendar-day">26</div>
+                            <div class="calendar-day">27</div>
+                            <div class="calendar-day">28</div>
+                            <div class="calendar-day">29</div>
+                            <div class="calendar-day">30</div>
+                        </div>
+                    </div>
+
+                    <!-- Leaderboard -->
+                    <div class="leaderboard-card">
+                        <h4><i class="fas fa-trophy"></i> Leaderboard</h4>
+                        <div class="leaderboard-list">
+                            <div class="leaderboard-item">
+                                <div class="leaderboard-user">
+                                    <div class="leaderboard-avatar">R</div>
+                                    <span>@roan</span>
+                                </div>
+                                <div class="leaderboard-xp">20000</div>
+                            </div>
+                            <div class="leaderboard-item">
+                                <div class="leaderboard-user">
+                                    <div class="leaderboard-avatar">D</div>
+                                    <span>@daniela</span>
+                                </div>
+                                <div class="leaderboard-xp">19897</div>
+                            </div>
+                            <div class="leaderboard-item">
+                                <div class="leaderboard-user">
+                                    <div class="leaderboard-avatar">D</div>
+                                    <span>@debby</span>
+                                </div>
+                                <div class="leaderboard-xp">19478</div>
+                            </div>
+                            <div class="leaderboard-item">
+                                <div class="leaderboard-user">
+                                    <div class="leaderboard-avatar">S</div>
+                                    <span>@sirpaul</span>
+                                </div>
+                                <div class="leaderboard-xp">19320</div>
+                            </div>
+                            <div class="leaderboard-item current-user">
+                                <div class="leaderboard-user">
+                                    <div class="leaderboard-avatar">E</div>
+                                    <span>@eijay</span>
+                                </div>
+                                <div class="leaderboard-xp">19319</div>
+                            </div>
+                            <div class="leaderboard-item">
+                                <div class="leaderboard-user">
+                                    <div class="leaderboard-avatar">F</div>
+                                    <span>@fecr</span>
+                                </div>
+                                <div class="leaderboard-xp">19310</div>
+                            </div>
+                            <div class="leaderboard-item">
+                                <div class="leaderboard-user">
+                                    <div class="leaderboard-avatar">R</div>
+                                    <span>@roljohn</span>
+                                </div>
+                                <div class="leaderboard-xp">19305</div>
+                            </div>
+                            <div class="leaderboard-item">
+                                <div class="leaderboard-user">
+                                    <div class="leaderboard-avatar">D</div>
+                                    <span>@daniel</span>
+                                </div>
+                                <div class="leaderboard-xp">19295</div>
+                            </div>
+                            <div class="leaderboard-item">
+                                <div class="leaderboard-user">
+                                    <div class="leaderboard-avatar">S</div>
+                                    <span>@sirjosh</span>
+                                </div>
+                                <div class="leaderboard-xp">19279</div>
+                            </div>
+                            <div class="leaderboard-item">
+                                <div class="leaderboard-user">
+                                    <div class="leaderboard-avatar">S</div>
+                                    <span>@sireqs</span>
+                                </div>
+                                <div class="leaderboard-xp">19260</div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section brand">
+                    <div class="footer-logo">
+                        <img src="images/logo.png" alt="KadaSkill" onerror="this.style.display='none';">
+                        <span>KadaSkill</span>
+                    </div>
+                    <p>By upskilling together, we grow forever, unlocking limitless opportunities as a community.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <div class="footer-contact">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>kadaskill@gmail.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fab fa-facebook"></i>
+                            <span>kadaskill</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fab fa-instagram"></i>
+                            <span>@kadaskill</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fab fa-linkedin"></i>
+                            <span>KadaSkill</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>General</h4>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Learn</a></li>
+                        <li><a href="#">Practice</a></li>
+                        <li><a href="#">Certification</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>About Us</h4>
+                    <ul>
+                        <li><a href="#">Mission & Vision</a></li>
+                        <li><a href="#">Meet the Team</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Copyright © 2025 by KadaSkill. All rights reserved</p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
