@@ -23,31 +23,116 @@ body {
 /* Header */
 
 .header {
-    position: absolute;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
     top: 0;
-    left: 0;
     width: 100%;
     z-index: 100;
     padding: 1rem 0;
 }
 
+.header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .logo {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a202c;
 }
 
 .logo-img {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-radius: 8px;
     object-fit: contain;
-    /* Prevent stretching */
 }
 
 .logo span {
     font-size: 1.5rem;
     font-weight: 700;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    align-items: center;
+    margin: 0;
+}
+
+.nav-btn {
+    text-decoration: none;
+    color: #64748b;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 0.5rem 0;
+    transition: color 0.2s;
+    border-bottom: 2px solid transparent;
+}
+
+.nav-btn:hover,
+.nav-btn.active {
+    color: #3b82f6;
+    border-bottom-color: #3b82f6;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-box input {
+    padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    width: 280px;
+    background: #f8fafc;
+}
+
+.search-box i {
+    position: absolute;
+    left: 0.75rem;
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    background: #3b82f6;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
 }
 
 
@@ -703,17 +788,6 @@ body {
     width: 100%;
 }
 
-.team-row:first-child {
-    /* First row with 3 members */
-}
-
-.team-row:nth-child(2) {
-    /* Second row with 3 members */
-}
-
-.team-row:last-child {
-    /* Last row with 2 members - centered */
-}
 
 .team-member {
     background: #0f7b7e;

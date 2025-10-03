@@ -62,11 +62,11 @@ function loadNavigation() {
             </div>
             <nav class="nav">
                 <ul class="nav-links">
-                    <li><a href="../index.html" class="nav-btn">Home</a></li>
+                    <li><a href="home.html" class="nav-btn">Home</a></li>
                     <li><a href="learn.html" class="nav-btn">Learn</a></li>
-                    <li><a href="../practice.html" class="nav-btn">Practice</a></li>
+                    <li><a href="practice.html" class="nav-btn">Practice</a></li>
                     <li><a href="certification.html" class="nav-btn">Certification</a></li>
-                    <li><a href="../about.html" class="nav-btn">About Us</a></li>
+                    <li><a href="about.html" class="nav-btn">About Us</a></li>
                 </ul>
             </nav>
             <div class="header-right">
@@ -125,10 +125,10 @@ function loadFooter() {
                 <div class="footer-section">
                     <h4>General</h4>
                     <ul>
-                        <li><a href="../index.html">Home</a></li>
-                        <li><a href="learn.html">Learn</a></li>
-                        <li><a href="../practice.html">Practice</a></li>
-                        <li><a href="certification.html">Certification</a></li>
+                        <li><a href="/home.html">Home</a></li>
+                        <li><a href="/learn.html">Learn</a></li>
+                        <li><a href="/practice.html">Practice</a></li>
+                        <li><a href="/certification.html">Certification</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
@@ -151,16 +151,19 @@ function loadFooter() {
 }
 
 function setActiveNavigation() {
-    const currentPage = window.location.pathname.split('/').pop();
+    // Normalize current page: if we're at root ('/') treat it as home
+    const pathname = window.location.pathname;
+    const currentPage = (pathname === '/' || pathname === '') ? 'home.html' : pathname.split('/').pop();
     const navLinks = document.querySelectorAll('.nav-btn');
     
     navLinks.forEach(link => {
         link.classList.remove('active');
         const href = link.getAttribute('href');
         
-        if (href.includes(currentPage) || 
+        if (href.includes(currentPage) ||
             (currentPage === 'certification.html' && href.includes('certification')) ||
-            (currentPage === 'learn.html' && href.includes('learn'))) {
+            (currentPage === 'learn.html' && href.includes('learn')) ||
+            (currentPage === 'home.html' && href.includes('home'))) {
             link.classList.add('active');
         }
     });

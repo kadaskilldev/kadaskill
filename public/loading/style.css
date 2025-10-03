@@ -1,0 +1,233 @@
+.loading-screen {
+  background-color: #ffffff;
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  position: relative;
+}
+
+.loading-screen .loading {
+  display: flex;
+  z-index: 1;
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loading-screen .authentication-page {
+  position: relative;
+  align-self: stretch;
+  width: 100%;
+  height: 100vh;
+  background-color: #f8f7fc;
+}
+
+.loading-screen .icon {
+  position: absolute;
+  top: 140px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(45vw, 480px);
+  height: auto;
+  animation: float 4s ease-in-out infinite;
+}
+
+.loading-screen .text-wrapper {
+  position: absolute;
+  top: 666px;
+  left: 50%;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--title-2-font-family);
+  font-weight: var(--title-2-font-weight);
+  color: #000000;
+  font-size: var(--title-2-font-size);
+  letter-spacing: var(--title-2-letter-spacing);
+  line-height: var(--title-2-line-height);
+  font-style: var(--title-2-font-style);
+  margin: 0;
+  transform: translateX(-50%);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.loading-screen .text-wrapper::after {
+  content: "...";
+  display: inline-block;
+  width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  animation: ellipsis 1.4s steps(4, end) infinite;
+}
+
+.loading-screen .navigation-bar-get {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 63px;
+  z-index: 2;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.loading-screen .group {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 70px;
+  background-color: #ffffff;
+  box-shadow: 0px 0px 8px #a5a3aa40;
+}
+
+.loading-screen .div {
+  position: absolute;
+  top: 12px;
+  left: 72px;
+  width: 185px;
+  height: 40px;
+}
+
+.loading-screen .logo-mark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 51px;
+  height: 40px;
+}
+
+.loading-screen .logo-mark .vector {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+}
+
+.loading-screen .logo-mark .img,
+.loading-screen .logo-mark .vector-2 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
+}
+
+.loading-screen .logo-mark .img {
+  width: 30px;
+  height: 30px;
+  z-index: 1;
+}
+
+.loading-screen .logo-mark .vector-2 {
+  width: 33px;
+  height: 32px;
+  z-index: 2;
+}
+
+.loading-screen .kada-skill {
+  position: absolute;
+  top: 4px;
+  left: 63px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Amazon Ember", "Inter", Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  color: transparent;
+  font-size: 26.5px;
+  letter-spacing: 0.13px;
+  line-height: normal;
+  margin: 0;
+}
+
+.loading-screen .kada-skill .span {
+  color: #ff9900;
+  letter-spacing: 0.04px;
+}
+
+.loading-screen .kada-skill .text-wrapper-2 {
+  color: #232f3e;
+  letter-spacing: 0.04px;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, -18px);
+  }
+  100% {
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes ellipsis {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 3ch;
+  }
+}
+
+@media (max-width: 768px) {
+  .loading-screen {
+    min-width: 100%;
+    min-height: 100vh;
+  }
+
+  .loading-screen .loading {
+    width: 100%;
+    height: 100vh;
+  }
+
+  .loading-screen .authentication-page {
+    height: 100vh;
+  }
+
+  .loading-screen .icon {
+    top: 120px;
+    width: 70vw;
+  }
+
+  .loading-screen .text-wrapper {
+    top: auto;
+    bottom: 10vh;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .loading-screen .navigation-bar-get {
+    width: 100%;
+  }
+
+  .loading-screen .group {
+    width: 100%;
+  }
+
+  .loading-screen .div {
+    left: 24px;
+  }
+}
