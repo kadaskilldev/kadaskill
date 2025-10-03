@@ -1,34 +1,8 @@
-# =========================
-# KadaSkill Git Ignore File
-# =========================
-
-# Node dependencies
+.git-helpers/
+# Build artifacts
 node_modules/
-npm-debug.log
-yarn-error.log
-pnpm-debug.log
+dist/
 
-# Environment files
-.env
-.env.local
-.env.*.local
-
-# Logs
-logs
-*.log
-logs/*.log
-
-# OS-specific
+# OS files
 .DS_Store
 Thumbs.db
-
-# Build output
-dist/
-build/
-
-# IDE/editor configs
-.vscode/
-.idea/
-*.swp
-*.swo
-*.bak
