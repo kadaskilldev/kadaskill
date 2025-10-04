@@ -1,31 +1,51 @@
 .hero-section {
   position: relative;
-  width: 1440px;
-  height: 784px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 16px;
+  min-height: 784px;
+  box-sizing: border-box;
 }
 
 .hero-section .group {
   position: absolute;
-  width: 1076px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 1076px;
   height: 619px;
   top: 140px;
-  left: 183px;
 }
 
 .hero-section .profile-section {
   position: absolute;
-  left: calc(50.00% + 250px);
-  bottom: 342px;
+  left: 50%;
+  transform: translateX(250px);
+  bottom: 435px;
   width: 288px;
   height: 277px;
 }
 
 .hero-section .profile-view {
   position: absolute;
-  left: calc(50.00% - 154px);
+  left: 50%;
+  transform: translateX(-154px);
   bottom: 10px;
   width: 308px;
   height: 297px;
+  z-index: 0;
+}
+
+.hero-section .profile-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background: #FFFFFF;
+  box-shadow: 0 0 10px rgba(165, 163, 170, 0.25);
+  border-radius: 15px;
+  overflow: hidden;
 }
 
 .hero-section .vector {
@@ -148,25 +168,34 @@
   width: 63px;
   height: 35px;
   top: 86px;
-  left: 195px;
+  left: 175px;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
+  gap: 8px;
+}
+
+.hero-section .rank-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: block;
+  transform: translateX(-4px);
 }
 
 .hero-section .group-4 {
   width: 67px;
   height: 35px;
-  margin-left: 4px;
+  margin-left: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-end;
   gap: 2px;
 }
 
 .hero-section .text-wrapper-5 {
-  margin-left: -4px;
+  margin-left: 0;
   height: 19px;
   width: 63px;
   font-family: var(--regular-1-font-family);
@@ -180,7 +209,7 @@
 }
 
 .hero-section .text-wrapper-6 {
-  margin-left: -35px;
+  margin-left: 0;
   height: 14px;
   width: 28px;
   font-family: var(--regular-2-font-family);
@@ -258,6 +287,7 @@
   height: 82.49%;
   top: 8.57%;
   left: 0;
+  transform: translateX(-4px);
 }
 
 .hero-section .group-8 {
@@ -268,13 +298,13 @@
   height: 35px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-end;
   gap: 2px;
 }
 
 .hero-section .text-wrapper-9 {
-  margin-left: -54px;
+  margin-left: 0;
   height: 19px;
   width: 10px;
   font-family: var(--regular-1-font-family);
@@ -288,12 +318,12 @@
 }
 
 .hero-section .text-wrapper-10 {
-  margin-left: -2px;
+  margin-left: 0;
   height: 14px;
   width: 58px;
   font-family: var(--regular-2-font-family);
   font-weight: var(--regular-2-font-weight);
-  color: #000000;
+  color: var(--variable-collection-text);
   font-size: var(--regular-2-font-size);
   letter-spacing: var(--regular-2-letter-spacing);
   line-height: var(--regular-2-line-height);
@@ -312,15 +342,20 @@
 
 .hero-section .profile-section-2 {
   position: absolute;
-  left: calc(50.00% + 250px);
+  left: 50%;
+  transform: translateX(250px) translateY(-40px);
   bottom: 1px;
   width: 292px;
   height: 322px;
 }
+.hero-section .profile-section-2 .profile-content {
+  transform: translateY(-48px);
+}
 
 .hero-section .profile-view-2 {
   position: absolute;
-  left: calc(50.00% - 156px);
+  left: 50%;
+  transform: translateX(-156px) translateY(-40px);
   bottom: 10px;
   width: 308px;
   height: 342px;
@@ -628,7 +663,8 @@
 
 .hero-section .course-section {
   position: absolute;
-  left: calc(50.00% - 538px);
+  left: 50%;
+  transform: translateX(-538px);
   bottom: 202px;
   width: 422px;
   height: 224px;
@@ -636,7 +672,8 @@
 
 .hero-section .profile-view-3 {
   position: absolute;
-  left: calc(50.00% - 211px);
+  left: 50%;
+  transform: translateX(-211px);
   bottom: 1px;
   width: 418px;
   height: 224px;
@@ -814,7 +851,8 @@
 
 .hero-section .certification {
   position: absolute;
-  left: calc(50.00% - 100px);
+  left: 50%;
+  transform: translateX(-100px);
   bottom: 202px;
   width: 313px;
   height: 224px;
@@ -822,7 +860,8 @@
 
 .hero-section .profile-view-4 {
   position: absolute;
-  left: calc(50.00% - 156px);
+  left: 50%;
+  transform: translateX(-156px);
   bottom: 0;
   width: 309px;
   height: 224px;
@@ -1047,7 +1086,8 @@
 
 .hero-section .group-24 {
   position: absolute;
-  left: calc(50.00% - 344px);
+  left: 50%;
+  transform: translateX(-344px);
   bottom: 17px;
   width: 219px;
   height: 117px;
@@ -1109,7 +1149,8 @@
 
 .hero-section .group-25 {
   position: absolute;
-  left: calc(50.00% - 108px);
+  left: 50%;
+  transform: translateX(-108px);
   bottom: 17px;
   width: 219px;
   height: 117px;
@@ -1127,7 +1168,8 @@
 
 .hero-section .group-26 {
   position: absolute;
-  left: calc(50.00% + 128px);
+  left: 50%;
+  transform: translateX(128px);
   bottom: 16px;
   width: 219px;
   height: 117px;
@@ -1203,15 +1245,17 @@
 
 .hero-section .greetings {
   position: absolute;
-  left: calc(50.00% - 538px);
-  bottom: 527px;
+  left: 50%;
+  transform: translateX(-538px);
+  bottom: 620px;
   width: 589px;
   height: 134px;
 }
 
 .hero-section .welcome-back-eijay {
   position: absolute;
-  left: calc(50.00% - 160px);
+  left: 50%;
+  transform: translateX(-160px);
   bottom: 67px;
   font-family: var(--title-1-font-family);
   font-weight: var(--title-1-font-weight);
@@ -1407,18 +1451,19 @@
   font-style: var(--regular-1-font-style);
 }
 
-.hero-section .button-vie-profile {
+.profile-content .button-vie-profile {
   position: absolute;
-  top: 351px;
-  left: 998px;
-  width: 228px;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
   height: 41px;
   display: flex;
 }
 
 .hero-section .group-31 {
   flex: 1;
-  width: 230px;
+  width: 300px;
   position: relative;
 }
 
@@ -1430,12 +1475,35 @@
   left: 0;
 }
 
+/* Button background wrapper (replaces the old rectangle span) */
+.hero-section .group-32 {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: hidden; /* ensure SVG scales to fit the button without overflowing */
+}
+
+.hero-section .button-bg {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: 100%;
+  width: auto;
+  transform: translateX(-50%);
+  object-fit: contain; /* scale SVG to fit height while preserving aspect ratio */
+  object-position: center;
+  display: block;
+  max-width: none;
+  max-height: 100%;
+}
+
+/* Center the label inside the SVG background */
 .hero-section .text-wrapper-44 {
   position: absolute;
-  width: 40.00%;
-  height: 46.34%;
-  top: 21.95%;
-  left: 28.70%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   font-family: var(--regular-1-font-family);
   font-weight: var(--regular-1-font-weight);
   color: var(--variable-collection-secondary-color);
@@ -1444,8 +1512,86 @@
   line-height: var(--regular-1-line-height);
   white-space: nowrap;
   font-style: var(--regular-1-font-style);
+  pointer-events: none;
 }
 /* Inject original CSS code here */
+
+/* Responsive adjustments: center and stack components on narrower viewports */
+@media (max-width: 1024px) {
+  .hero-section {
+    padding: 0 24px;
+    min-height: 700px;
+  }
+
+  .hero-section .group {
+    position: relative;
+    left: 0;
+    transform: none;
+    top: 24px;
+    height: auto;
+    padding-bottom: 24px;
+  }
+
+  /* Stack main cards and center them */
+  .hero-section .profile-section,
+  .hero-section .profile-section-2,
+  .hero-section .course-section,
+  .hero-section .certification,
+  .hero-section .group-20 {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(90%, 420px);
+    bottom: auto;
+    margin: 16px auto 0;
+  }
+
+  /* Make image overlays scale and remain visually similar */
+  .hero-section .profile-view,
+  .hero-section .profile-view-2,
+  .hero-section .profile-view-3,
+  .hero-section .profile-view-4 {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: auto;
+  }
+
+  /* Ensure the profile card has space for the centered button */
+  .hero-section .profile-section .profile-content {
+    padding-bottom: 72px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section { padding: 0 12px; min-height: 640px; }
+
+  .hero-section .profile-section,
+  .hero-section .profile-section-2,
+  .hero-section .course-section,
+  .hero-section .certification,
+  .hero-section .group-20 {
+    width: 100%;
+    margin: 12px auto;
+  }
+
+  .profile-content .button-vie-profile {
+    width: 190px;
+    height: 36px;
+    bottom: 12px;
+  }
+
+  /* Reduce large translate offsets that may push elements outside viewport */
+  .hero-section .welcome-back-eijay,
+  .hero-section .greetings {
+    transform: none;
+    left: 50%;
+    translate: none;
+    width: 100%;
+    text-align: center;
+  }
+}
 
 /* Additional styles for semantic HTML improvements */
 
