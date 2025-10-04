@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Initialize page-specific functionality
         initializeCertificationPage();
+        initializeCalendar();
 
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -426,6 +427,223 @@ function updateCertificationCount() {
     if (countElement) {
         countElement.textContent = visibleCards.length;
     }
+}
+
+/* Calendar: dynamic month/year rendering, preserves existing row classes/structure when possible */
+function initializeCalendar() {
+    const monthEl = document.querySelector('.text-wrapper-11');
+    const yearEl = document.querySelector('.text-wrapper-22');
+    let gridEl = document.querySelector('.group-9[role="grid"]');
+    let nextBtn = document.querySelector('.vector-2[aria-label="Next month"]');
+    let prevBtn = document.querySelector('.vector-3[aria-label="Previous month"]');
+    if (!monthEl || !yearEl || !gridEl) return;
+
+    gridEl.classList.add('dynamic-calendar');
+
+    const today = new Date();
+    let state = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    function daysInMonth(y, m) { return new Date(y, m + 1, 0).getDate(); }
+    function weekdayLetter(i) { return ['S','M','T','W','T','F','S'][i]; }
+
+    function render(date) {
+        const y = date.getFullYear(), m = date.getMonth();
+        monthEl.textContent = new Intl.DateTimeFormat('en', { month: 'long' }).format(date);
+        yearEl.textContent = String(y);
+        gridEl.setAttribute('aria-label', `${monthEl.textContent} ${y} Calendar`);
+
+        const days = daysInMonth(y, m);
+        const firstDayOfWeek = new Date(y, m, 1).getDay();
+        const numWeeks = Math.max(5, Math.ceil((firstDayOfWeek + days) / 7));
+        const totalCells = numWeeks * 7;
+        const weeksMatrix = Array.from({ length: numWeeks }, () => Array(7).fill(null));
+
+        for (let cellIndex = 0; cellIndex < totalCells; cellIndex++) {
+            const weekIndex = Math.floor(cellIndex / 7);
+            const weekdayIndex = cellIndex % 7;
+            const dayNumber = cellIndex - firstDayOfWeek + 1;
+
+            if (dayNumber > 0 && dayNumber <= days) {
+                weeksMatrix[weekIndex][weekdayIndex] = dayNumber;
+            }
+        }
+
+    gridEl.dataset.weeks = String(numWeeks);
+    gridEl.style.setProperty('--calendar-gap', numWeeks === 6 ? '12px' : '16px');
+    gridEl.style.setProperty('--calendar-header-gap', numWeeks === 6 ? '8px' : '10px');
+        const profileContent = gridEl.closest('.profile-content');
+        if (profileContent) {
+            profileContent.dataset.calendarWeeks = String(numWeeks);
+        }
+
+        // Build new DOM
+        const frag = document.createDocumentFragment();
+        for (let w = 0; w < 7; w++) {
+            const row = document.createElement('div');
+            row.classList.add('calendar-column');
+            row.setAttribute('role','row');
+
+            const header = document.createElement('span');
+            header.classList.add('calendar-header');
+            header.setAttribute('role','columnheader');
+            header.textContent = weekdayLetter(w);
+            row.appendChild(header);
+
+            for (let week = 0; week < numWeeks; week++) {
+                const dayNum = weeksMatrix[week][w];
+                const cell = document.createElement('span');
+                cell.classList.add('calendar-cell');
+                cell.setAttribute('role','gridcell');
+
+                if (dayNum !== null && dayNum !== undefined) {
+                    cell.textContent = String(dayNum);
+                    cell.removeAttribute('aria-hidden');
+                    cell.classList.remove('empty');
+
+                    if (y === today.getFullYear() && m === today.getMonth() && dayNum === today.getDate()) {
+                        cell.classList.add('is-today');
+                        cell.setAttribute('aria-current', 'date');
+                    } else {
+                        cell.classList.remove('is-today');
+                        cell.removeAttribute('aria-current');
+                    }
+                } else {
+                    cell.textContent = '';
+                    cell.classList.add('empty');
+                    cell.setAttribute('aria-hidden', 'true');
+                    cell.classList.remove('is-today');
+                    cell.removeAttribute('aria-current');
+                }
+
+                row.appendChild(cell);
+            }
+            frag.appendChild(row);
+        }
+
+        // Replace grid content
+        gridEl.innerHTML = '';
+        gridEl.appendChild(frag);
+    }
+
+    function change(offset) {
+        state.setMonth(state.getMonth() + offset);
+        // Normalize date if month overflowed/underflowed
+        state = new Date(state.getFullYear(), state.getMonth(), 1);
+        render(state);
+    }
+
+    const handleNextClick = (event) => {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        change(1);
+    };
+
+    const handlePrevClick = (event) => {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        change(-1);
+    };
+
+    function bindNavButtons() {
+        const candidateNext = document.querySelector('.vector-2[aria-label="Next month"]');
+        if (candidateNext !== nextBtn) {
+            if (nextBtn) {
+                nextBtn.removeEventListener('click', handleNextClick);
+                delete nextBtn.dataset.calendarBound;
+            }
+            nextBtn = candidateNext;
+        }
+        if (nextBtn && !nextBtn.dataset.calendarBound) {
+            nextBtn.addEventListener('click', handleNextClick);
+            nextBtn.dataset.calendarBound = 'true';
+        }
+        // visual click feedback: toggle .is-active briefly
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                nextBtn.classList.add('is-active');
+                setTimeout(() => nextBtn.classList.remove('is-active'), 300);
+            });
+        }
+
+        const candidatePrev = document.querySelector('.vector-3[aria-label="Previous month"]');
+        if (candidatePrev !== prevBtn) {
+            if (prevBtn) {
+                prevBtn.removeEventListener('click', handlePrevClick);
+                delete prevBtn.dataset.calendarBound;
+            }
+            prevBtn = candidatePrev;
+        }
+        if (prevBtn && !prevBtn.dataset.calendarBound) {
+            prevBtn.addEventListener('click', handlePrevClick);
+            prevBtn.dataset.calendarBound = 'true';
+        }
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                prevBtn.classList.add('is-active');
+                setTimeout(() => prevBtn.classList.remove('is-active'), 300);
+            });
+        }
+    }
+
+    render(state);
+    bindNavButtons();
+
+    // Keyboard navigation when calendar has focus
+    if (!gridEl.hasAttribute('tabindex')) gridEl.setAttribute('tabindex','0');
+    gridEl.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') { change(1); e.preventDefault(); }
+        if (e.key === 'ArrowLeft')  { change(-1); e.preventDefault(); }
+    });
+
+    // Expose simple API for tests/debugging
+    gridEl._calendarState = () => ({ year: state.getFullYear(), month: state.getMonth() });
+
+    // Debug: confirm initialization and UI hooks
+    try {
+        console.debug('initializeCalendar: mounted', { gridEl, nextBtn, prevBtn, state: gridEl._calendarState() });
+    } catch (err) {
+        console.debug('initializeCalendar: debug log failed', err);
+    }
+
+    // Watch for DOM replacements that might remove/replace the grid and re-bind/render
+    const calendarObserver = new MutationObserver((mutations) => {
+        let navChanged = false;
+        for (const m of mutations) {
+            // If the grid element was removed or a new one was added, re-query and re-render
+            const removed = Array.from(m.removedNodes || []).some(n => n === gridEl || (n.querySelector && n.querySelector('.group-9[role="grid"]')));
+            const added = Array.from(m.addedNodes || []).some(n => n.querySelector && n.querySelector('.group-9[role="grid"]'));
+            if (removed || added) {
+                const newGrid = document.querySelector('.group-9[role="grid"]');
+                if (newGrid && newGrid !== gridEl) {
+                    console.debug('initializeCalendar: grid replaced — updating reference and re-render');
+                    gridEl = newGrid;
+                    // Ensure tabindex and keyboard listener remain set
+                    if (!gridEl.hasAttribute('tabindex')) gridEl.setAttribute('tabindex','0');
+                    // re-render current state into the new grid
+                    render(state);
+                    bindNavButtons();
+                }
+            }
+
+            const navSelectors = ['.vector-2[aria-label="Next month"]', '.vector-3[aria-label="Previous month"]'];
+            if (!navChanged) {
+                navChanged = navSelectors.some(selector =>
+                    Array.from(m.addedNodes || []).some(n => n.matches?.(selector) || n.querySelector?.(selector)) ||
+                    Array.from(m.removedNodes || []).some(n => n.matches?.(selector) || n.querySelector?.(selector))
+                );
+            }
+        }
+        if (navChanged) {
+            bindNavButtons();
+        }
+    });
+
+    // Observe at body level for subtree changes
+    calendarObserver.observe(document.body, { childList: true, subtree: true });
 }
 
 // Backend-ready functions for future API integration

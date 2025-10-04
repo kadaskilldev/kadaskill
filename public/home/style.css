@@ -595,7 +595,8 @@
 .hero-section .text-wrapper-22 {
   position: absolute;
   top: 27px;
-  left: 99px;
+  right: 102px;
+  left: auto;
   font-family: var(--title-3-font-family);
   font-weight: var(--title-3-font-weight);
   color: #000000;
@@ -604,6 +605,72 @@
   line-height: var(--title-3-line-height);
   white-space: nowrap;
   font-style: var(--title-3-font-style);
+  text-align: right;
+}
+
+.hero-section .group-9.dynamic-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  column-gap: 6px;
+  row-gap: 0;
+}
+
+.hero-section .group-9.dynamic-calendar {
+  --calendar-gap: 16px;
+  --calendar-header-gap: 10px;
+}
+
+.hero-section .group-9.dynamic-calendar[data-weeks="6"] {
+  --calendar-gap: 12px;
+  --calendar-header-gap: 8px;
+}
+
+.hero-section .dynamic-calendar .calendar-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-section .dynamic-calendar .calendar-header {
+  font-family: var(--regular-1-font-family);
+  font-weight: var(--regular-1-font-weight);
+  font-size: var(--regular-1-font-size);
+  letter-spacing: var(--regular-1-letter-spacing);
+  line-height: var(--regular-1-line-height);
+  color: #000000;
+  margin-bottom: var(--calendar-header-gap, 12px);
+}
+
+.hero-section .dynamic-calendar .calendar-cell {
+  font-family: var(--regular-1-font-family);
+  font-weight: var(--regular-1-font-weight);
+  font-size: var(--regular-1-font-size);
+  letter-spacing: var(--regular-1-letter-spacing);
+  line-height: var(--regular-1-line-height);
+  color: #000000;
+  text-align: center;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--calendar-gap, 22px);
+  border-radius: 50%;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.hero-section .dynamic-calendar .calendar-cell:first-of-type {
+  margin-top: 0;
+}
+
+.hero-section .dynamic-calendar .calendar-cell.empty {
+  visibility: hidden;
+}
+
+.hero-section .dynamic-calendar .calendar-cell.is-today {
+  background: #ff9900;
+  color: #f8f7fc;
+  box-shadow: 0px 4px 4px rgba(165, 163, 170, 0.25);
 }
 
 .hero-section .vector-2 {
@@ -1642,6 +1709,15 @@
   display: block;
   width: 100%;
   height: 100%;
+  /* render SVG icons as solid black by default */
+  filter: brightness(0) saturate(100%);
+}
+
+/* when clicked, temporarily tint the icon to the brand yellow */
+.hero-section .vector-2.is-active img,
+.hero-section .vector-3.is-active img {
+  /* approximate #ff9900 using CSS filters */
+  filter: invert(50%) sepia(96%) saturate(400%) hue-rotate(2deg) brightness(100%) contrast(100%);
 }
 
 [role="gridcell"][aria-current="date"] {
