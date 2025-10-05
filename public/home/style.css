@@ -348,8 +348,61 @@
   width: 292px;
   height: 322px;
 }
+.hero-section .profile-section-2[data-calendar-weeks="6"] {
+  height: 352px;
+  transform: translateX(250px) translateY(-20px);
+}
 .hero-section .profile-section-2 .profile-content {
   transform: translateY(-48px);
+}
+.hero-section .profile-section-2[data-calendar-weeks="6"] .profile-content {
+  padding-bottom: 48px;
+}
+
+.hero-section .profile-section-2 .profile-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px 0;
+  z-index: 1;
+}
+
+.hero-section .profile-section-2 .profile-header h3,
+.hero-section .profile-section-2 .profile-header .profile-year-nav {
+  position: static;
+  margin: 0;
+}
+
+.hero-section .profile-section-2 .profile-header .profile-year-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hero-section .profile-section-2 .profile-header .profile-nav {
+  display: flex;
+  gap: 16px;
+}
+
+.hero-section .profile-section-2 .vector-2,
+.hero-section .profile-section-2 .vector-3 {
+  position: static;
+  width: 9px;
+  height: 16px;
+}
+
+.hero-section .profile-section-2 .dynamic-calendar {
+  margin: 16px auto 0;
+  transform: none;
+}
+
+.hero-section .profile-section-2[data-calendar-weeks="6"] .profile-footer-spacer {
+  min-height: 120px;
+}
+
+.hero-section .profile-section-2[data-calendar-weeks="6"] .profile-content {
+  padding-bottom: 48px;
 }
 
 .hero-section .profile-view-2 {
@@ -389,10 +442,15 @@
 .hero-section .group-9 {
   position: absolute;
   width: 229px;
-  height: 229px;
+  height: auto;
   top: 72px;
   left: 29px;
   display: flex;
+}
+
+.hero-section .group-9.dynamic-calendar[data-weeks="6"] {
+  height: auto;
+  padding-bottom: 20px;
 }
 
 .hero-section .group-10 {
@@ -593,10 +651,6 @@
 }
 
 .hero-section .text-wrapper-22 {
-  position: absolute;
-  top: 27px;
-  right: 102px;
-  left: auto;
   font-family: var(--title-3-font-family);
   font-weight: var(--title-3-font-weight);
   color: #000000;
@@ -1867,4 +1921,8 @@ img[alt=""],
 img[role="presentation"],
 [aria-hidden="true"] {
   user-select: none;
+}
+
+.hero-section .profile-section-2[data-calendar-weeks="6"] {
+  height: 352px;
 }

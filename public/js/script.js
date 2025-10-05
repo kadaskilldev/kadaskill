@@ -474,6 +474,10 @@ function initializeCalendar() {
         const profileContent = gridEl.closest('.profile-content');
         if (profileContent) {
             profileContent.dataset.calendarWeeks = String(numWeeks);
+            const profileSection = profileContent.closest('.profile-section-2');
+            if (profileSection) {
+                profileSection.dataset.calendarWeeks = String(numWeeks);
+            }
         }
 
         // Build new DOM
