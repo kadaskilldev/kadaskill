@@ -54,12 +54,15 @@ function initializeUserMenu(scope = document) {
     const avatarToggle = scope.querySelector('.user-profile__toggle');
     const avatarBadge = scope.querySelector('.user-avatar');
     const menu = scope.querySelector('.user-menu');
+    const toggleIcon = avatarToggle?.querySelector('.user-profile__icon');
     if (!avatarToggle || !menu) return;
 
     const closeMenu = () => {
         avatarToggle.setAttribute('aria-expanded', 'false');
         menu.hidden = true;
         menu.classList.remove('is-open');
+        avatarToggle.classList.remove('is-open');
+        toggleIcon?.classList.remove('is-rotated');
         document.removeEventListener('click', onOutsideClick);
         document.removeEventListener('keydown', onEscape, true);
     };
@@ -68,6 +71,8 @@ function initializeUserMenu(scope = document) {
         avatarToggle.setAttribute('aria-expanded', 'true');
         menu.hidden = false;
         requestAnimationFrame(() => menu.classList.add('is-open'));
+        avatarToggle.classList.add('is-open');
+        toggleIcon?.classList.add('is-rotated');
         setTimeout(() => menu.querySelector('a')?.focus(), 0);
         document.addEventListener('click', onOutsideClick);
         document.addEventListener('keydown', onEscape, true);
@@ -120,9 +125,11 @@ function initializeUserMenu(scope = document) {
 function loadNavigation() {
     const navigationElement = document.getElementById('navigation');
     if (!navigationElement) return;
+
     const pathname = window.location.pathname;
     const currentPage = (pathname === '/' || pathname === '') ? 'home.html' : pathname.split('/').pop();
     const isCertificationPage = currentPage === 'certification.html';
+
     const userProfileMarkup = isCertificationPage
         ? `
                 <div class="user-profile">
@@ -136,13 +143,13 @@ function loadNavigation() {
                         <img src="images/profile/Vector.svg" alt="" class="user-profile__icon">
                     </button>
                     <div class="user-menu" role="menu" hidden>
-                        <a href="#" class="user-menu__item" role="menuitem">
+                        <a href="profile.html" class="user-menu__item" role="menuitem">
                             <span class="user-menu__icon-wrap">
                                 <img src="images/profile/icon-profile.svg" alt="" class="user-menu__icon" />
                             </span>
                             <span class="user-menu__label">Profile</span>
                         </a>
-                        <a href="#" class="user-menu__item" role="menuitem">
+                        <a href="profile.html" class="user-menu__item" role="menuitem">
                             <span class="user-menu__icon-wrap">
                                 <img src="images/profile/icon-settings.svg" alt="" class="user-menu__icon" />
                             </span>
@@ -157,7 +164,7 @@ function loadNavigation() {
                     </div>
                 </div>
         `;
-    
+
     const nav = `
     <header class="header">
         <div class="container">
@@ -184,7 +191,7 @@ function loadNavigation() {
         </div>
     </header>
     `;
-    
+
     navigationElement.innerHTML = nav;
 
     const headerElement = navigationElement.querySelector('.header');
@@ -284,6 +291,11 @@ function setActiveNavigation() {
         link.classList.remove('active');
         const href = link.getAttribute('href');
         
+        if (currentPage === 'profile.html') {
+            // Do not highlight any nav link when on profile page
+            return;
+        }
+
         if (href.includes(currentPage) ||
             (currentPage === 'certification.html' && href.includes('certification')) ||
             (currentPage === 'learn.html' && href.includes('learn')) ||

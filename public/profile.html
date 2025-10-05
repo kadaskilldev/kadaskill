@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>KadaSkill - Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/profile.css" />
+  </head>
+  <body>
+    <div id="navigation"></div>
+    <main class="profile-page" role="main">
+      <section class="profile-hero" aria-labelledby="profile-heading">
+        <div class="profile-hero__cover">
+          <img src="images/profile/profile-cover.png" alt="Profile cover art" class="profile-hero__cover-image" />
+        </div>
+        <div class="profile-hero__content">
+          <div class="profile-hero__avatar">
+            <img src="images/profile/profile-avatar.png" alt="Eijay Palpal-latoc" class="profile-hero__avatar-image" />
+          </div>
+          <div class="profile-hero__details">
+            <h1 id="profile-heading" class="profile-hero__name">Eijay Palpal-latoc</h1>
+            <p class="profile-hero__handle">@eijay</p>
+            <div class="profile-hero__stats" aria-label="Profile stats">
+              <span class="profile-hero__stat">40k followers</span>
+              <span class="profile-hero__divider" aria-hidden="true">•</span>
+              <span class="profile-hero__stat">4.5k following</span>
+            </div>
+          </div>
+          <a class="profile-hero__cta" href="#" role="button">Edit Profile</a>
+        </div>
+      </section>
+
+      <section class="profile-bio-pinned" aria-label="Bio and pinned certifications">
+        <div class="container profile-bio-pinned__grid">
+          <article class="profile-bio-card" aria-label="Bio">
+            <h2 class="profile-bio-card__title">Bio</h2>
+            <div class="profile-bio-card__body">
+              <div class="profile-bio-card__badge">
+                <img src="images/profile/Untitled design (18) 1.png" alt="Mythical level badge" class="profile-bio-card__badge-image" />
+                <div class="profile-bio-card__badge-text">
+                  <span class="profile-bio-card__badge-label">Mythical</span>
+                  <span class="profile-bio-card__badge-level">level 256</span>
+                </div>
+              </div>
+              <p class="profile-bio-card__copy">
+                Passionate about continuous learning and skill development, I thrive at the intersection of design,
+                technology, and personal growth. Focused on creating meaningful digital experiences that empower users
+                to learn, practice, and succeed.
+              </p>
+            </div>
+          </article>
+
+          <section class="profile-pinned" aria-label="Pinned certifications">
+            <header class="profile-pinned__header">
+              <h2 class="profile-pinned__title">Pinned</h2>
+            </header>
+            <div class="profile-pinned__cards">
+              <article class="profile-pinned-card" aria-label="AWS Certified Solutions Architect – Associate">
+                <div class="profile-pinned-card__media">
+                  <img src="images/profile/pinned-aws.png" alt="AWS Certified Solutions Architect – Associate" class="profile-pinned-card__image" />
+                  <span class="profile-pinned-card__tag">Certification</span>
+                </div>
+                <div class="profile-pinned-card__content">
+                  <h3 class="profile-pinned-card__title">AWS Certified Solutions Architect – Associate</h3>
+                  <a class="profile-pinned-card__cta" href="#" role="button">View Certification</a>
+                </div>
+              </article>
+
+              <article class="profile-pinned-card" aria-label="Certified Information Systems Security Professional (CISSP)">
+                <div class="profile-pinned-card__media">
+                  <img src="images/profile/pinned-cissp.png" alt="Certified Information Systems Security Professional" class="profile-pinned-card__image" />
+                  <span class="profile-pinned-card__tag">Certification</span>
+                </div>
+                <div class="profile-pinned-card__content">
+                  <h3 class="profile-pinned-card__title">Certified Information Systems Security Professional (CISSP)</h3>
+                  <a class="profile-pinned-card__cta" href="#" role="button">View Certification</a>
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="profile-skills-status" aria-label="Skills and status overview">
+        <div class="container profile-skills-status__grid">
+          <div class="profile-skills-column">
+            <article class="profile-skills-card" aria-label="Skills">
+              <h2 class="profile-skills-card__title">Skills</h2>
+              <div class="profile-skills-card__list" role="list">
+                <span class="profile-skills-card__chip" role="listitem">Data Preparation</span>
+                <span class="profile-skills-card__chip" role="listitem">Ethics</span>
+                <span class="profile-skills-card__chip" role="listitem">Infrastructure as Code</span>
+                <span class="profile-skills-card__chip" role="listitem">Machine Learning Algorithms</span>
+                <span class="profile-skills-card__chip" role="listitem">Cloud Computing</span>
+                <span class="profile-skills-card__chip" role="listitem">Github</span>
+                <span class="profile-skills-card__chip" role="listitem">Cost Management</span>
+                <span class="profile-skills-card__chip" role="listitem">Git</span>
+                <span class="profile-skills-card__chip" role="listitem">Problem Solving</span>
+                <span class="profile-skills-card__chip" role="listitem">MLOps</span>
+              </div>
+            </article>
+            <figure class="profile-skills-illustration" aria-hidden="true">
+              <img src="images/profile/icon.png" alt="" class="profile-skills-illustration__image" />
+            </figure>
+          </div>
+
+          <div class="profile-status-column">
+            <section class="profile-status" aria-label="Status">
+              <header class="profile-status__header">
+                <h2 class="profile-status__title">Status</h2>
+              </header>
+              <div class="profile-status__cards">
+                <article class="profile-status-card" aria-label="Exercises completed">
+                  <span class="profile-status-card__label">Exercises</span>
+                  <span class="profile-status-card__value">124</span>
+                </article>
+                <article class="profile-status-card" aria-label="Total experience points">
+                  <span class="profile-status-card__label">Total XP</span>
+                  <span class="profile-status-card__value">193191</span>
+                </article>
+                <article class="profile-status-card" aria-label="Course badges earned">
+                  <span class="profile-status-card__label">Course Badges</span>
+                  <span class="profile-status-card__value">18</span>
+                </article>
+                <article class="profile-status-card" aria-label="Daily streak">
+                  <span class="profile-status-card__label">Daily Streak</span>
+                  <span class="profile-status-card__value">96</span>
+                </article>
+              </div>
+            </section>
+
+            <section class="profile-courses" aria-label="Courses">
+            <div class="profile-courses__header">
+              <div class="profile-courses__tabs" role="tablist" aria-label="Course categories">
+                <button class="profile-courses__tab is-active" type="button" role="tab" aria-selected="true">Course</button>
+                <button class="profile-courses__tab" type="button" role="tab" aria-selected="false">Certification</button>
+              </div>
+              <img src="images/profile/next main.svg" alt="Next" class="profile-courses__chevron" />
+            </div>
+              <div class="profile-courses__grid">
+                <article class="profile-course-card" aria-label="Intermediate Python course">
+                  <div class="profile-course-card__background"></div>
+                  <div class="profile-course-card__content">
+                    <span class="profile-course-card__eyebrow">Course</span>
+                    <h3 class="profile-course-card__title">Intermediate Python</h3>
+                    <a href="#" class="profile-course-card__cta" role="button">Continue</a>
+                  </div>
+                </article>
+
+                <article class="profile-course-card" aria-label="Time Management course">
+                  <div class="profile-course-card__background"></div>
+                  <div class="profile-course-card__content">
+                    <span class="profile-course-card__eyebrow">Course</span>
+                    <h3 class="profile-course-card__title">Time Management</h3>
+                    <a href="#" class="profile-course-card__cta" role="button">Continue</a>
+                  </div>
+                </article>
+
+                <article class="profile-course-card" aria-label="Wireframing course">
+                  <div class="profile-course-card__background"></div>
+                  <div class="profile-course-card__content">
+                    <span class="profile-course-card__eyebrow">Course</span>
+                    <h3 class="profile-course-card__title">Wireframing</h3>
+                    <a href="#" class="profile-course-card__cta" role="button">Continue</a>
+                  </div>
+                </article>
+
+                <article class="profile-course-card" aria-label="Project Scheduling course">
+                  <div class="profile-course-card__background"></div>
+                  <div class="profile-course-card__content">
+                    <span class="profile-course-card__eyebrow">Course</span>
+                    <h3 class="profile-course-card__title">Project Scheduling</h3>
+                    <a href="#" class="profile-course-card__cta" role="button">Continue</a>
+                  </div>
+                </article>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      
+    </main>
+    <div id="footer"></div>
+    <script src="js/script.js"></script>
+  </body>
+</html>
+

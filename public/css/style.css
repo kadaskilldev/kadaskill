@@ -165,6 +165,15 @@ body.has-fixed-header {
     transition: background 0.2s ease;
 }
 
+.user-profile__toggle .user-profile__icon {
+    transition: transform 0.2s ease;
+}
+
+.user-profile__toggle.is-open .user-profile__icon,
+.user-profile__icon.is-rotated {
+    transform: rotate(-180deg);
+}
+
 .user-profile__toggle:hover,
 .user-profile__toggle:focus-visible {
     background: rgba(59, 130, 246, 0.1);
