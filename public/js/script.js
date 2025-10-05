@@ -50,6 +50,73 @@ function loadSharedComponents() {
     loadFooter();
 }
 
+function initializeUserMenu(scope = document) {
+    const avatarToggle = scope.querySelector('.user-profile__toggle');
+    const avatarBadge = scope.querySelector('.user-avatar');
+    const menu = scope.querySelector('.user-menu');
+    if (!avatarToggle || !menu) return;
+
+    const closeMenu = () => {
+        avatarToggle.setAttribute('aria-expanded', 'false');
+        menu.hidden = true;
+        menu.classList.remove('is-open');
+        document.removeEventListener('click', onOutsideClick);
+        document.removeEventListener('keydown', onEscape, true);
+    };
+
+    const openMenu = () => {
+        avatarToggle.setAttribute('aria-expanded', 'true');
+        menu.hidden = false;
+        requestAnimationFrame(() => menu.classList.add('is-open'));
+        setTimeout(() => menu.querySelector('a')?.focus(), 0);
+        document.addEventListener('click', onOutsideClick);
+        document.addEventListener('keydown', onEscape, true);
+    };
+
+    const onOutsideClick = (event) => {
+        const isAvatar = avatarBadge?.contains(event.target);
+        const isToggle = avatarToggle.contains(event.target);
+        if (!menu.contains(event.target) && !isToggle && !isAvatar) {
+            closeMenu();
+        }
+    };
+
+    const onEscape = (event) => {
+        if (event.key === 'Escape') {
+            closeMenu();
+            avatarToggle.focus();
+        }
+    };
+
+    const handleToggleClick = (event) => {
+        event.stopPropagation();
+        const isExpanded = avatarToggle.getAttribute('aria-expanded') === 'true';
+        if (isExpanded) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    };
+
+    avatarToggle.addEventListener('click', handleToggleClick);
+    avatarBadge?.addEventListener('click', handleToggleClick);
+
+    menu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('keydown', (event) => {
+            if (event.key === 'Tab' && !event.shiftKey && event.target === menu.lastElementChild) {
+                closeMenu();
+            }
+        });
+    });
+    menu.querySelectorAll('.user-menu__item').forEach(item => {
+        item.addEventListener('mouseenter', () => {
+            menu.querySelectorAll('.user-menu__item').forEach(el => el.classList.remove('is-active'));
+            item.classList.add('is-active');
+        });
+        item.addEventListener('mouseleave', () => item.classList.remove('is-active'));
+    });
+}
+
 function loadNavigation() {
     const navigationElement = document.getElementById('navigation');
     if (!navigationElement) return;
@@ -76,7 +143,30 @@ function loadNavigation() {
                     <input type="text" placeholder="Search...">
                 </div>
                 <div class="user-profile">
-                    <div class="user-avatar">E</div>
+                    <div class="user-avatar" aria-hidden="true">E</div>
+                    <button class="user-profile__toggle" aria-label="Open profile menu" aria-haspopup="true" aria-expanded="false">
+                        <img src="images/profile/Vector.svg" alt="" class="user-profile__icon">
+                    </button>
+                    <div class="user-menu" role="menu" hidden>
+                        <a href="#" class="user-menu__item" role="menuitem">
+                            <span class="user-menu__icon-wrap">
+                                <img src="images/profile/icon-profile.svg" alt="" class="user-menu__icon" />
+                            </span>
+                            <span class="user-menu__label">Profile</span>
+                        </a>
+                        <a href="#" class="user-menu__item" role="menuitem">
+                            <span class="user-menu__icon-wrap">
+                                <img src="images/profile/icon-settings.svg" alt="" class="user-menu__icon" />
+                            </span>
+                            <span class="user-menu__label">Settings</span>
+                        </a>
+                        <a href="#" class="user-menu__item user-menu__item--danger" role="menuitem">
+                            <span class="user-menu__icon-wrap">
+                                <img src="images/profile/icon-signout.svg" alt="" class="user-menu__icon" />
+                            </span>
+                            <span class="user-menu__label">Sign out</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -84,6 +174,7 @@ function loadNavigation() {
     `;
     
     navigationElement.innerHTML = nav;
+    initializeUserMenu(navigationElement);
     setActiveNavigation();
 }
 
