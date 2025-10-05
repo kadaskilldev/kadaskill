@@ -357,6 +357,10 @@ body {
     z-index: 0;
 }
 
+.cta-button:hover::before {
+    background: linear-gradient(180deg, #ffe8b0 0%, #ffbf4d 100%);
+}
+
 .cta-button span {
     position: relative;
     z-index: 1;
