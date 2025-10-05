@@ -246,13 +246,14 @@ body {
     width: 100%;
     background-color: #efeff5;
     overflow: hidden;
+    margin-bottom: -1px;
 }
 
 .cta-container {
     position: relative;
     width: min(1440px, 100%);
     margin: 0 auto;
-    padding: 120px 16px 160px;
+    padding: 120px 16px 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1340,6 +1341,7 @@ body {
     background: #2c3e50;
     color: white;
     padding: 3rem 0 1rem;
+    margin-top: 0;
 }
 
 .footer-content {
