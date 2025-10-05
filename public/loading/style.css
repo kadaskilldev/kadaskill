@@ -25,7 +25,8 @@
   background-color: #f8f7fc;
 }
 
-.loading-screen .icon {
+.loading-screen .icon-wrap {
+  /* preserve the icon's absolute placement and floating motion on the wrapper */
   position: absolute;
   top: 140px;
   left: 50%;
@@ -33,6 +34,16 @@
   width: min(45vw, 480px);
   height: auto;
   animation: float 4s ease-in-out infinite;
+}
+
+.loading-screen .icon {
+  /* the image itself handles scale-based animations (breathing and the final pop/zoom)
+     so we avoid multiple animations clobbering the transform on a single element. */
+  display: block;
+  width: 100%;
+  height: auto;
+  transform-origin: center;
+  animation: breathe 5s ease-in-out 1 forwards, popZoom 500ms ease-in-out 1 5s forwards;
 }
 
 .loading-screen .text-wrapper {
@@ -173,6 +184,36 @@
   }
 }
 
+@keyframes breathe {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.035);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Final 'pop' then zoom-out transition just before navigating to index.html */
+@keyframes popZoom {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  35% {
+    /* tiny pop */
+    transform: scale(1.07);
+    opacity: 1;
+  }
+  100% {
+    /* then quickly zoom away and fade */
+    transform: scale(0.02);
+    opacity: 0;
+  }
+}
+
 @keyframes pulse {
   0%,
   100% {
@@ -207,7 +248,7 @@
     height: 100vh;
   }
 
-  .loading-screen .icon {
+  .loading-screen .icon-wrap {
     top: 120px;
     width: 70vw;
   }

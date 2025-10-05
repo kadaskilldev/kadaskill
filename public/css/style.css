@@ -13,6 +13,10 @@ body {
     overflow-x: hidden;
 }
 
+:root {
+    --header-height: 88px;
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -25,11 +29,19 @@ body {
 .header {
     background: #ffffff;
     border-bottom: 1px solid #e2e8f0;
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     width: 100%;
-    z-index: 100;
+    z-index: 1000;
     padding: 1rem 0;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+body.has-fixed-header {
+    padding-top: var(--header-height, 88px);
 }
 
 .header .container {
@@ -263,6 +275,10 @@ body {
 .cta-accent {
     position: absolute;
     pointer-events: none;
+    z-index: 0;
+    transform-origin: center center;
+    will-change: transform;
+    animation: cta-accent-swirl 8s linear infinite;
 }
 
 .cta-bg-left,
@@ -298,8 +314,8 @@ body {
 
 .cta-content {
     position: relative;
-    z-index: 1;
-    margin-top: 120px;
+    z-index: 2; /* bumped so robot sits below content but above background accents */
+    margin-top: 0;
     text-align: center;
     max-width: 820px;
 }
@@ -365,6 +381,126 @@ body {
 .cta-button span {
     position: relative;
     z-index: 1;
+}
+
+.cta-robot {
+    /* Larger base size so the icon reads better */
+    --cta-robot-size: clamp(80px, 11vw, 160px);
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: var(--cta-robot-size);
+    height: auto;
+    pointer-events: none;
+    transform-origin: center;
+    backface-visibility: visible; /* keep visible during flips */
+    will-change: left, top, transform;
+    /* subtle drop shadow so robot reads above the background shapes */
+    filter: drop-shadow(0 8px 18px rgba(15, 23, 42, 0.18));
+    /* Keep the overall duration similar to earlier but smooth out transitions */
+    animation: cta-robot-loop 8s cubic-bezier(.22,.9,.37,.99) infinite;
+}
+
+@keyframes cta-robot-loop {
+    /* 0%: start top-left, initial size */
+    0% {
+        top: 20px;
+        left: 20px;
+        transform: translateZ(0) scale(1) scaleX(1) rotate(0deg);
+    }
+
+    /* 18%: slowly grow while remaining top-left (gentle ease-in for size) */
+    18% {
+        top: 20px;
+        left: 20px;
+        transform: translateZ(0) scale(1.25) scaleX(1) rotate(0deg);
+    }
+
+    /* 33%: slant to bottom-right and shrink + flip (scaleX -1) - shrink happens gradually between 18% and 33% */
+    33% {
+        top: calc(100% - var(--cta-robot-size) - 20px);
+        left: calc(100% - var(--cta-robot-size) - 20px);
+        transform: translateZ(0) scale(0.75) scaleX(-1) rotate(8deg);
+    }
+
+    /* 50%: hold a little at bottom-right to avoid abrupt jump */
+    50% {
+        top: calc(100% - var(--cta-robot-size) - 20px);
+        left: calc(100% - var(--cta-robot-size) - 20px);
+        transform: translateZ(0) scale(0.8) scaleX(-1) rotate(8deg);
+    }
+
+    /* 66%: move horizontally to bottom-left and grow again (same size as top-left at 18%) */
+    66% {
+        top: calc(100% - var(--cta-robot-size) - 20px);
+        left: 20px;
+        transform: translateZ(0) scale(1.25) scaleX(1) rotate(-6deg);
+    }
+
+    /* 85%: start moving up back toward top-left while slightly reducing size before final settle */
+    85% {
+        top: 20px;
+        left: 20px;
+        transform: translateZ(0) scale(1.05) scaleX(1) rotate(0deg);
+    }
+
+    /* 100%: closed loop back to top-left exact start state */
+    100% {
+        top: 20px;
+        left: 20px;
+        transform: translateZ(0) scale(1) scaleX(1) rotate(0deg);
+    }
+}
+
+/* Swirl animation for CTA background/accent elements synchronized with robot loop */
+@keyframes cta-accent-swirl {
+    /* 0 - 18%: idle (no swirl) */
+    0% {
+        transform: rotate(0deg) translate(0,0);
+    }
+    18% {
+        transform: rotate(0deg) translate(0,0);
+    }
+
+    /* 18 - 33%: swirl while robot slants to bottom-right */
+    33% {
+        transform: rotate(360deg) translate(8px, 8px);
+    }
+
+    /* 33 - 50%: hold the swirl state (no further rotation) */
+    50% {
+        transform: rotate(360deg) translate(8px, 8px);
+    }
+
+    /* 50 - 66%: swirl again while robot moves to bottom-left */
+    66% {
+        transform: rotate(720deg) translate(-8px, 8px);
+    }
+
+    /* 66 - 85%: hold that state */
+    85% {
+        transform: rotate(720deg) translate(-8px, 8px);
+    }
+
+    /* 85 - 100%: final swirl while moving up, return towards starting transform */
+    100% {
+        transform: rotate(1080deg) translate(0, 0);
+    }
+}
+
+/* Make subtle differences so the left/right accents feel organic (optional) */
+.cta-bg-left { animation-delay: 0s; }
+.cta-bg-right { animation-delay: 0.05s; }
+.cta-accent-left { animation-delay: 0.1s; }
+.cta-accent-right { animation-delay: 0.15s; }
+
+/* Respect user reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .cta-bg,
+    .cta-accent {
+        animation: none;
+        transition: none;
+    }
 }
 
 @media (max-width: 900px) {
@@ -1430,6 +1566,34 @@ body {
     font-size: 0.9rem;
 }
 
+
+/* Collapse vertical gaps between main/hero, CTA and footer without moving CTA internals */
+/* Keep .cta-container internal padding intact so CTA content position doesn't change */
+.main-content {
+    /* Remove only the bottom padding that creates gap before CTA */
+    padding-bottom: 0;
+}
+
+/* Ensure CTA block doesn't introduce extra external spacing */
+.cta-section {
+    margin-top: 0;    /* don't pull CTA down */
+    margin-bottom: 0; /* remove any external gap at bottom */
+}
+
+/* When CTA immediately follows main-content, remove any leftover top gap */
+.main-content + .cta-section {
+    margin-top: 0;
+}
+
+/* Bring footer up so it sits flush to the preceding section (CTA) */
+.footer {
+    margin-top: 0;
+}
+
+/* Ensure no default element spacing remains between the blocks */
+.cta-section + .footer {
+    margin-top: 0;
+}
 
 /* Responsive Design */
 

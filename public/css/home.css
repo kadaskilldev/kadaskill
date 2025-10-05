@@ -13,6 +13,10 @@ body {
     line-height: 1.5;
 }
 
+body.has-fixed-header {
+    padding-top: var(--header-height, 88px);
+}
+
 .container {
     max-width: 1440px;
     margin: 0 auto;
@@ -24,9 +28,12 @@ body {
 .header {
     background: white;
     border-bottom: 1px solid #e2e8f0;
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 100;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    width: 100%;
     padding: 1rem 0;
 }
 
@@ -602,12 +609,10 @@ body {
 }
 
 /* Footer */
-
 .footer {
     background: #1a202c;
     color: white;
     padding: 3rem 0 2rem;
-    margin-top: 4rem;
 }
 
 .footer-content {

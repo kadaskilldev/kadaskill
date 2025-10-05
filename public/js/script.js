@@ -120,28 +120,16 @@ function initializeUserMenu(scope = document) {
 function loadNavigation() {
     const navigationElement = document.getElementById('navigation');
     if (!navigationElement) return;
-    
-    const nav = `
-    <header class="header">
-        <div class="container">
-            <div class="logo">
-                <img src="images/logo.png" alt="KadaSkill" class="logo-img" onerror="this.style.display='none';">
-                <span>KadaSkill</span>
-            </div>
-            <nav class="nav">
-                <ul class="nav-links">
-                    <li><a href="home.html" class="nav-btn">Home</a></li>
-                    <li><a href="learn.html" class="nav-btn">Learn</a></li>
-                    <li><a href="practice.html" class="nav-btn">Practice</a></li>
-                    <li><a href="certification.html" class="nav-btn">Certification</a></li>
-                    <li><a href="about.html" class="nav-btn">About Us</a></li>
-                </ul>
-            </nav>
-            <div class="header-right">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search...">
+    const pathname = window.location.pathname;
+    const currentPage = (pathname === '/' || pathname === '') ? 'home.html' : pathname.split('/').pop();
+    const isCertificationPage = currentPage === 'certification.html';
+    const userProfileMarkup = isCertificationPage
+        ? `
+                <div class="user-profile">
+                    <div class="user-avatar" aria-hidden="true">E</div>
                 </div>
+        `
+        : `
                 <div class="user-profile">
                     <div class="user-avatar" aria-hidden="true">E</div>
                     <button class="user-profile__toggle" aria-label="Open profile menu" aria-haspopup="true" aria-expanded="false">
@@ -168,13 +156,57 @@ function loadNavigation() {
                         </a>
                     </div>
                 </div>
+        `;
+    
+    const nav = `
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <img src="images/logo.png" alt="KadaSkill" class="logo-img" onerror="this.style.display='none';">
+                <span>KadaSkill</span>
+            </div>
+            <nav class="nav">
+                <ul class="nav-links">
+                    <li><a href="home.html" class="nav-btn">Home</a></li>
+                    <li><a href="learn.html" class="nav-btn">Learn</a></li>
+                    <li><a href="practice.html" class="nav-btn">Practice</a></li>
+                    <li><a href="certification.html" class="nav-btn">Certification</a></li>
+                    <li><a href="about.html" class="nav-btn">About Us</a></li>
+                </ul>
+            </nav>
+            <div class="header-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                ${userProfileMarkup}
             </div>
         </div>
     </header>
     `;
     
     navigationElement.innerHTML = nav;
-    initializeUserMenu(navigationElement);
+
+    const headerElement = navigationElement.querySelector('.header');
+    if (headerElement) {
+        const updateHeaderOffset = () => {
+            const headerHeight = headerElement.getBoundingClientRect().height;
+            document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
+        };
+
+        const applyHeaderOffset = () => {
+            document.body.classList.add('has-fixed-header');
+            updateHeaderOffset();
+        };
+
+        applyHeaderOffset();
+        window.addEventListener('resize', updateHeaderOffset, { passive: true });
+        window.addEventListener('load', updateHeaderOffset, { once: true });
+    }
+
+    if (!isCertificationPage) {
+        initializeUserMenu(navigationElement);
+    }
     setActiveNavigation();
 }
 

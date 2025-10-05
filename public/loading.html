@@ -13,12 +13,14 @@
     <main class="loading-screen" role="main">
       <section class="loading">
         <div class="authentication-page">
-          <img
-            class="icon"
-            src="images/loading/icon.png"
-            alt="KadaSkill loading robot mascot"
-            onerror="this.style.display='none';"
-          />
+          <div class="icon-wrap">
+            <img
+              class="icon"
+              src="images/loading/icon.png"
+              alt="KadaSkill loading robot mascot"
+              onerror="this.style.display='none';"
+            />
+          </div>
           <p class="text-wrapper" role="status" aria-live="polite">LOADING...</p>
         </div>
       </section>
@@ -44,9 +46,11 @@
     </main>
     <script>
       window.addEventListener('load', () => {
+        // breathing lasts 5000ms, popZoom lasts 500ms and starts at 5000ms
+        // give a small buffer so the exit animation is visible before navigation
         setTimeout(() => {
           window.location.href = 'index.html';
-        }, 5000);
+        }, 5600);
       });
     </script>
   </body>
