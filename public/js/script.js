@@ -1,3 +1,26 @@
+const SUPABASE_URL = 'https://kbpbubsnadnhebgdggdy.supabase.co'; 
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImticGJ1YnNuYWRuaGViZ2RnZ2R5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMjA4MTksImV4cCI6MjA3MzU5NjgxOX0.4O8ZLeZ2iR786MZ8JS_55nzhn-5WxqabMtDQuAoZkAA';
+
+// Initialize Supabase client
+let supabaseClient;
+
+// Check if the Supabase client library has been loaded (usually as window.supabase)
+if (window.supabase && window.supabase.createClient) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} else {
+    console.error("Supabase client library not found on the window object. Did you include the CDN link in index.html?");
+    // Mock for environments without the library loaded, to prevent immediate fatal errors in auth functions
+    supabaseClient = {
+        auth: { 
+            signUp: async () => ({ data: { user: { id: 'mock-id' } }, error: { message: 'Supabase Mock' } }),
+            signInWithPassword: async () => ({ data: { user: { id: 'mock-id' } }, error: { message: 'Supabase Mock' } }),
+            signInWithOAuth: async () => ({ error: { message: 'Supabase Mock: Library not loaded.' } }),
+        }
+    };
+}
+
+const supabase = supabaseClient; // for compatibility with the rest of the code logic
+
 document.addEventListener('DOMContentLoaded', function() {
     // Load shared components first
     loadSharedComponents();
@@ -189,10 +212,14 @@ function initializeFormHandling() {
     });
 }
 
-function handleFormSubmit(e) {
+//Supabase integrated form submission
+async function handleFormSubmit(e) {
     e.preventDefault();
-    const email = e.target.querySelector('#email').value;
-    const password = e.target.querySelector('#password').value;
+    const loginForm = e.target;
+    const email = loginForm.querySelector('#email').value;
+    const password = loginForm.querySelector('#password').value;
+    // Get state from the data-mode attribute set by initializeLoginToggle
+    const isLogin = loginForm.getAttribute('data-mode') === 'login';
 
     // Basic validation
     if (!email || !password) {
@@ -210,30 +237,86 @@ function handleFormSubmit(e) {
         return;
     }
 
-    // Simulate API call
-    showNotification('Creating your account...', 'info');
+    showNotification(isLogin ? 'Logging in...' : 'Creating your account...', 'info');
 
-    setTimeout(() => {
-        showNotification('Welcome to KadaSkill! Please check your email to verify your account.', 'success');
-        e.target.reset();
-    }, 2000);
+    let response;
+    
+    if (isLogin) {
+        // Supabase Login
+        response = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+    } else {
+        // Supabase Sign Up
+        response = await supabase.auth.signUp({
+            email,
+            password,
+            // Example for metadata: options: { data: { full_name: 'Eijay' } }
+        });
+    }
+
+    const { data, error } = response;
+
+    if (error) {
+        console.error('Auth Error:', error);
+        showNotification(`Authentication failed: ${error.message}`, 'error');
+        return;
+    }
+
+    if (!data.user && !isLogin) {
+        // Successful sign-up but user needs to confirm email (if Email Confirmation is ON)
+        showNotification('Welcome to KadaSkill! Please check your email to verify your account and complete your sign-up.', 'success');
+        loginForm.reset();
+        return;
+    }
+    
+    if (data.user) {
+        // Successful login OR Sign-up (if email confirmation is OFF)
+        showNotification('Authentication successful! Redirecting to dashboard...', 'success');
+        // Redirect to home page
+        setTimeout(() => {
+            window.location.href = 'home.html'; 
+        }, 1500);
+    } else {
+        showNotification('An unexpected authentication response was received.', 'error');
+    }
 }
 
-function handleSocialLogin(e) {
+
+// Supabase integrated social login
+async function handleSocialLogin(e) {
     const button = e.target.closest('.social-btn');
     let platform = '';
+    let provider = '';
 
-    if (button.classList.contains('microsoft')) platform = 'Microsoft';
-    else if (button.classList.contains('google')) platform = 'Google';
-    else if (button.classList.contains('linkedin')) platform = 'LinkedIn';
-    else if (button.classList.contains('facebook')) platform = 'Facebook';
+    if (button.classList.contains('microsoft')) { platform = 'Microsoft'; provider = 'microsoft'; } 
+    else if (button.classList.contains('google')) { platform = 'Google'; provider = 'google'; }
+    else if (button.classList.contains('linkedin')) { platform = 'LinkedIn'; provider = 'linkedin'; }
+    else if (button.classList.contains('facebook')) { platform = 'Facebook'; provider = 'facebook'; }
 
+    // Only allow enabled providers (Google and LinkedIn)
+    if (!provider || (provider !== 'google' && provider !== 'linkedin')) {
+        showNotification(`${platform} login is not currently supported or enabled.`, 'info');
+        return;
+    }
+    
     showNotification(`Redirecting to ${platform} login...`, 'info');
 
-    // In a real app, this would redirect to OAuth provider
-    setTimeout(() => {
-        showNotification(`${platform} login integration would be implemented here`, 'info');
-    }, 1500);
+    // Supabase OAuth Sign In
+    const { error } = await supabase.auth.signInWithOAuth({
+        provider: provider,
+        options: {
+            // Redirect to the dashboard after successful login
+            redirectTo: window.location.origin + '/home.html', 
+        },
+    });
+
+    if (error) {
+        console.error('OAuth Error:', error);
+        showNotification(`OAuth failed: ${error.message}`, 'error');
+    }
+    // A successful OAuth call causes a page redirect, so no success notification here.
 }
 
 // Password toggle functionality
@@ -253,32 +336,49 @@ function initializePasswordToggle() {
     }
 }
 
-// Login/Register toggle
+// Login/Register toggle to manage form state with 'data-mode'
 function initializeLoginToggle() {
     const loginToggle = document.querySelector('.login-toggle');
     const formSubmit = document.querySelector('.form-submit');
+    const loginForm = document.querySelector('.login-form');
 
-    if (loginToggle && formSubmit) {
-        let isLogin = false;
+    if (!loginForm) return;
 
-        loginToggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            isLogin = !isLogin;
+    // Initialize state on the form element if not present
+    if (!loginForm.hasAttribute('data-mode')) {
+        loginForm.setAttribute('data-mode', 'signup');
+    }
 
-            if (isLogin) {
-                formSubmit.textContent = 'Log In';
-                this.parentElement.innerHTML = 'Don\'t have an account? <a href="#" class="login-toggle">Sign up</a>';
-            } else {
-                formSubmit.textContent = 'Sign Up for Free';
-                this.parentElement.innerHTML = 'Already have an account? <a href="#" class="login-toggle">Log in</a>';
-            }
+    // function that handles the toggle logic
+    const toggleHandler = function(e) {
+        e.preventDefault();
+        
+        let currentMode = loginForm.getAttribute('data-mode');
+        let newMode = currentMode === 'signup' ? 'login' : 'signup';
 
-            // Re-attach event listener to new element
-            const newToggle = document.querySelector('.login-toggle');
-            if (newToggle) {
-                newToggle.addEventListener('click', arguments.callee);
-            }
-        });
+        loginForm.setAttribute('data-mode', newMode);
+
+        if (newMode === 'login') {
+            formSubmit.textContent = 'Log In';
+            // Preserve the inline style from the original HTML
+            this.parentElement.innerHTML = 'Don\'t have an account? <a href="#" class="login-toggle" style="color: #FFD700;">Sign up</a>';
+        } else {
+            formSubmit.textContent = 'Sign Up for Free';
+            //  Preserve the inline style from the original HTML
+            this.parentElement.innerHTML = 'Already have an account? <a href="#" class="login-toggle" style="color: #FFD700;">Log in</a>';
+        }
+
+        // Re-attach the same listener function to the new anchor tag
+        const newToggle = document.querySelector('.login-link .login-toggle');
+        if (newToggle) {
+            // Re-attach the handler to the newly created element
+            newToggle.addEventListener('click', toggleHandler); 
+        }
+    };
+    
+    if (loginToggle) {
+        // Add the listener to the initial element
+        loginToggle.addEventListener('click', toggleHandler);
     }
 }
 
