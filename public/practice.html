@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice - KadaSkill</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        /* Navigation */
+        
+        .header {
+            background: #fff;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .logo .kada {
+            color: #ff9500;
+        }
+        
+        .logo .skill {
+            color: #333;
+        }
+        
+        .logo-img {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .nav {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .nav-btn {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 10px 24px;
+            border-radius: 25px;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        
+        .nav-btn:hover {
+            background-color: #2d3748;
+            color: #ff9500;
+        }
+        
+        .nav-btn.active {
+            background-color: #2d3748;
+            color: #ff9500;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f1f3f4;
+            padding: 8px 12px;
+            border-radius: 24px;
+            gap: 8px;
+            min-width: 200px;
+        }
+        
+        .search-box i {
+            color: #5f6368;
+            font-size: 14px;
+        }
+        
+        .search-box input {
+            border: none;
+            background: none;
+            outline: none;
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .search-box input::placeholder {
+            color: #9aa0a6;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #ea4335;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        /* Main Content */
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 80px auto 0;
+            padding: 60px 20px;
+        }
+        /* Header Section */
+        
+        .practice-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .header-icon {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+        }
+        
+        .practice-header h1 {
+            font-size: 48px;
+            color: #1a3541;
+            margin-bottom: 10px;
+        }
+        
+        .practice-header p {
+            font-size: 18px;
+            color: #666;
+        }
+        /* Practice Cards Grid */
+        
+        .practice-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .practice-card {
+            background-image: url('images/card.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 16px;
+            padding: 30px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .practice-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(26, 53, 65, 0.7) 0%, rgba(45, 79, 94, 0.7) 100%);
+            z-index: 0;
+        }
+        
+        .practice-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+        
+        .practice-category {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #ff9500;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 2;
+        }
+        
+        .practice-card-content {
+            margin-top: 50px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .practice-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+        
+        .practice-description {
+            font-size: 14px;
+            line-height: 1.6;
+            opacity: 0.9;
+            margin-bottom: 25px;
+            flex: 1;
+        }
+        
+        .practice-btn {
+            background-color: #ff9500;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(255, 149, 0, 0.3);
+            align-self: flex-start;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .practice-btn:hover {
+            background-color: #e68500;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(255, 149, 0, 0.4);
+        }
+        /* Remove different card colors since we're using the background image */
+        /* Footer */
+        
+        footer {
+            background-color: #1a3541;
+            color: white;
+            padding: 50px 50px 30px;
+            margin-top: 60px;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 50px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .footer-logo-icon {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .footer-tagline {
+            font-size: 14px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        
+        .footer-section h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        
+        .footer-links a:hover {
+            opacity: 1;
+        }
+        
+        .footer-contact {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 14px;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 13px;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 1024px) {
+            .practice-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .practice-grid {
+                grid-template-columns: 1fr;
+            }
+            .main-container {
+                padding: 40px 20px;
+            }
+            .nav-container {
+                padding: 0 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <img src="images/logo.png" alt="KadaSkill" class="logo-img" onerror="this.style.display='none';">
+                <span><span class="kada">Kada</span><span class="skill">Skill</span></span>
+            </div>
+            <nav class="nav">
+                <ul class="nav-links">
+                    <li><a href="learn.html" class="nav-btn">Home</a></li>
+                    <li><a href="learning.html" class="nav-btn">Learn</a></li>
+                    <li><a href="practice.html" class="nav-btn active">Practice</a></li>
+                    <li><a href="#" class="nav-btn">Certification</a></li>
+                    <li><a href="#" class="nav-btn">About Us</a></li>
+                </ul>
+            </nav>
+            <div class="header-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                <div class="user-profile">
+                    <div class="user-avatar">E</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="practice-header">
+            <img src="images/practice-icon.png" alt="Practice Icon" class="header-icon" onerror="this.style.display='none'">
+            <h1>Let's Practice!</h1>
+            <p>Let's test your learnings here.</p>
+        </div>
+
+        <!-- Practice Cards Grid -->
+        <div class="practice-grid">
+            <!-- Card 1 -->
+            <div class="practice-card">
+                <span class="practice-category">Cybersecurity</span>
+                <div class="practice-card-content">
+                    <h3 class="practice-title">MFA Scenario Quickfire</h3>
+                    <p class="practice-description">Review which would describe good scenarios for MFA (Multi-Factor Authentication).</p>
+                    <button class="practice-btn">Let's Start</button>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="practice-card">
+                <span class="practice-category">Cybersecurity</span>
+                <div class="practice-card-content">
+                    <h3 class="practice-title">Secrets in Code Hunt</h3>
+                    <p class="practice-description">Scan accidentally-committed API keys, passwords & secrets in real GitHub commits.</p>
+                    <button class="practice-btn">Let's Start</button>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="practice-card">
+                <span class="practice-category">Cybersecurity</span>
+                <div class="practice-card-content">
+                    <h3 class="practice-title">Smishing & Vishing Signals</h3>
+                    <p class="practice-description">Pick the red flags or tip-offs in fake phone call scenarios & text messages.</p>
+                    <button class="practice-btn">Let's Start</button>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="practice-card">
+                <span class="practice-category">Artificial Intelligence</span>
+                <div class="practice-card-content">
+                    <h3 class="practice-title">NumPy Warm-up</h3>
+                    <p class="practice-description">Get familiar with NumPy arrays, operations, and basic manipulations.</p>
+                    <button class="practice-btn">Let's Start</button>
+                </div>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="practice-card">
+                <span class="practice-category">Artificial Intelligence</span>
+                <div class="practice-card-content">
+                    <h3 class="practice-title">Fix the Bug (Python Basics)</h3>
+                    <p class="practice-description">This function isn't doing what it should. Can you fix it?</p>
+                    <button class="practice-btn">Let's Start</button>
+                </div>
+            </div>
+
+            <!-- Card 6 -->
+            <div class="practice-card">
+                <span class="practice-category">Artificial Intelligence</span>
+                <div class="practice-card-content">
+                    <h3 class="practice-title">Pandas Review</h3>
+                    <p class="practice-description">What does this code return?</p>
+                    <button class="practice-btn">Let's Start</button>
+                </div>
+            </div>
+
+            <!-- Card 7 -->
+            <div class="practice-card">
+                <span class="practice-category">Artificial Intelligence</span>
+                <div class="practice-card-content">
+                    <h3 class="practice-title">Diskartech Client Scenarios: Model Matchup</h3>
+                    <p class="practice-description">Diskartech.ai sends ML/AI client use cases. Choose the ML model type to use for each use case.</p>
+                    <button class="practice-btn">Let's Start</button>
+                </div>
+            </div>
+
+            <!-- Card 8 -->
+            <div class="practice-card">
+                <span class="practice-category">Cybersecurity</span>
+                <div class="practice-card-content">
+                    <h3 class="practice-title">KadaSkill Risk Register: Top Threats</h3>
+                    <p class="practice-description">By identifying each risk you face, we can plan for them. Register the top three threats.</p>
+                    <button class="practice-btn">Let's Start</button>
+                </div>
+            </div>
+
+            <!-- Card 9 -->
+            <div class="practice-card">
+                <span class="practice-category">Cybersecurity</span>
+                <div class="practice-card-content">
+                    <h3 class="practice-title">Securing KadaSkill: Shared Responsibility</h3>
+                    <p class="practice-description">Your company, KadaSkill, hosts all its Product services in the cloud. It's your responsibility to help mitigate any risk.</p>
+                    <button class="practice-btn">Let's Start</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div>
+                <div class="footer-logo">
+                    <img src="images/logo.png" alt="KadaSkill Logo" class="footer-logo-icon" onerror="this.style.display='none';">
+                    <span><span class="kada">Kada</span><span class="skill">Skill</span></span>
+                </div>
+                <p class="footer-tagline">By upskilling together, we grow forever, unlocking limitless opportunities as a community.</p>
+            </div>
+
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <div class="footer-contact">
+                    <span>📧 kadaskill@gmail.com</span>
+                    <span>🌐 KadaSkill</span>
+                    <span>📷 @kadaskill</span>
+                    <span>🔗 KadaSkill</span>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>General</h3>
+                <ul class="footer-links">
+                    <li><a href="learn.html">Home</a></li>
+                    <li><a href="learning.html">Learn</a></li>
+                    <li><a href="practice.html">Practice</a></li>
+                    <li><a href="#">Certification</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Mission & Vision</a></li>
+                    <li><a href="#">Meet the Team</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            Copyright © 2025 by KadaSkill. All rights reserved
+        </div>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,877 @@
+/* Reset and Base Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f8fafc;
+    color: #1a202c;
+    line-height: 1.5;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+
+/* Navigation */
+
+nav {
+    background-color: white;
+    padding: 0 50px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    height: 70px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.logo-icon {
+    width: 35px;
+    height: 35px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    list-style: none;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    font-size: 15px;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: #00a86b;
+}
+
+.search-profile {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.search-bar {
+    padding: 8px 20px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    width: 250px;
+    font-size: 14px;
+}
+
+.profile-pic {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    object-fit: cover;
+}
+
+
+/* Welcome Section */
+
+.welcome-section {
+    padding: 1rem 0 1rem 0;
+}
+
+.profile-greeting {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.profile-avatar-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.greeting-text {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.highlight {
+    color: #f97316;
+}
+
+
+/* Continue Section */
+
+.continue-section {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    /* Remove border-bottom from here */
+}
+
+.section-title {
+    font-size: 1.25rem;
+    /* Smaller font size */
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1rem;
+}
+
+.continue-card {
+    background: linear-gradient(135deg, #0f766e 0%, #059669 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.continue-card::after {
+    content: '';
+    position: absolute;
+    right: -50px;
+    top: -50px;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+.continue-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    z-index: 1;
+}
+
+.course-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.course-title {
+    font-size: 1.25rem;
+    /* Smaller font size */
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.course-time {
+    font-size: 0.875rem;
+    /* Smaller font size */
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.continue-btn {
+    background: #f97316;
+    color: #042047ff;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.continue-btn:hover {
+    background: #ea580c;
+    transform: translateY(-2px);
+}
+
+
+/* Certify Section */
+
+.certify-section {
+    margin-bottom: 0;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    /* Reduce bottom padding */
+    border-bottom: 1px solid #e5e7eb;
+    /* Light gray divider */
+}
+
+.certify-section .section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    /* Reduced from 1rem */
+}
+
+.section-description {
+    color: #0a0a0aff;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    /* Reduced from 3rem */
+    max-width: none;
+}
+
+
+/* Filter Section */
+
+.filter-section {
+    margin-bottom: 2rem;
+    padding-top: 0.75rem;
+    /* Reduce top padding to bring tabs closer to border */
+}
+
+.filter-tabs {
+    display: flex;
+    gap: 1rem;
+    /* Increased gap */
+    margin-bottom: 1.5rem;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.filter-tab {
+    background: #f97316;
+    border: none;
+    padding: 0.75rem 2rem;
+    /* Increased horizontal padding */
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #042047ff;
+    font-size: 0.875rem;
+    outline: none;
+    box-shadow: none;
+    flex: 1;
+    /* Make buttons equal width and fill container */
+    text-align: center;
+    /* Center text in wider buttons */
+}
+
+.filter-tab:hover {
+    background: #ea580c;
+    transform: translateY(-1px);
+    /* Same hover effect as continue button */
+}
+
+.filter-tab.active {
+    background: #f97316;
+    color: black;
+}
+
+.search-and-count {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    /* Reduced from 2rem */
+}
+
+.certification-count {
+    color: #1f2937;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.grid-search {
+    position: relative;
+}
+
+.grid-search-input {
+    padding: 0.75rem 1rem 0.75rem 2.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 25px;
+    width: 300px;
+    font-size: 0.9rem;
+    background: white;
+}
+
+.grid-search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+}
+
+
+/* Certifications Grid - Fixed 3 Columns */
+
+.certifications-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.certification-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e5e7eb;
+}
+
+.certification-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.card-image {
+    height: 200px;
+    position: relative;
+}
+
+
+/* Certificate Graphics - Unified System */
+
+.cert-graphic {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    font-weight: 600;
+    position: relative;
+}
+
+
+/* Card Types - Only background colors differ */
+
+.cert-graphic.python-graphic {
+    background: linear-gradient(135deg, #306998 0%, #ffd43b 100%);
+}
+
+.cert-graphic.security-graphic {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+}
+
+.cert-graphic.cloud-graphic {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+}
+
+.cert-graphic.cyber-analyst-graphic {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+}
+
+.cert-graphic.aws-graphic {
+    background: white;
+    color: #1f2937;
+    padding: 1.5rem;
+}
+
+.cert-graphic.ai-graphic {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #0ea5e9;
+}
+
+.cert-graphic.devops-graphic {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.cert-graphic.data-graphic {
+    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+}
+
+.cert-graphic.ethical-graphic {
+    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+}
+
+
+/* Unified Text Elements - Use these classes in HTML */
+
+.cert-logo {
+    font-size: 4rem;
+    margin-bottom: 0.5rem;
+}
+
+.cert-title-large {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.cert-title-medium {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.cert-subtitle {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.cert-text {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.cert-badge {
+    background: #fbbf24;
+    color: #1f2937;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-top: 1rem;
+}
+
+.cert-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.cert-circular-logo {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    border: 3px solid currentColor;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* AWS Specific Elements */
+
+.aws-header {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+}
+
+.aws-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.aws-badges {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.aws-badge {
+    background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+    color: white;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+
+/* AI Card */
+
+.ai-graphic {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #0ea5e9;
+}
+
+.ai-logo {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    border: 3px solid #0ea5e9;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ai-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+
+/* Other graphics */
+
+.devops-graphic {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.devops-title {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.devops-subtitle {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+
+/* Card Content */
+
+.card-content {
+    padding: 2rem;
+}
+
+.card-title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #111827;
+    line-height: 1.3;
+}
+
+.card-description {
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+}
+
+.card-button {
+    background: #f97316;
+    color: white;
+    border: none;
+    padding: 0.875rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.card-button:hover {
+    background: #ea580c;
+    transform: translateY(-1px);
+}
+
+.card-button.resume {
+    background: #0ea5e9;
+}
+
+.card-button.resume:hover {
+    background: #0284c7;
+}
+
+
+/* Responsive Design */
+
+@media (max-width: 1200px) {
+    .certifications-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .certifications-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    .filter-tabs {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .search-and-count {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+}
+
+@media (max-width: 600px) {
+    .certifications-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    .profile-greeting {
+        flex-direction: column;
+        text-align: center;
+    }
+    .greeting-text {
+        font-size: 2rem;
+    }
+    .continue-card {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+    }
+}
+
+
+/* Animation Classes */
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.devops-subtitle {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.data-graphic {
+    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.data-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.data-subtitle {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.ethical-graphic {
+    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.ethical-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.ethical-subtitle {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* Responsive Design */
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+    .hero-description {
+        font-size: 1rem;
+        padding: 0 1rem;
+    }
+    .certifications-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    .filter-tabs {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    .filter-tab {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+    .nav {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    .nav-menu {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        margin-top: 1rem;
+        gap: 1rem;
+    }
+    .search-input {
+        width: 200px;
+    }
+    .card-content {
+        padding: 1.5rem;
+    }
+    .card-header {
+        padding: 1.5rem;
+    }
+    .card-footer {
+        padding: 0 1.5rem 1.5rem;
+    }
+}
+
+
+/* Footer */
+
+footer {
+    background-color: #1a3541;
+    color: white;
+    padding: 50px 50px 30px;
+    margin-top: 60px;
+}
+
+.footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 50px;
+    margin-bottom: 30px;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.footer-logo-icon {
+    width: 40px;
+    height: 40px;
+}
+
+.footer-tagline {
+    font-size: 14px;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+.footer-section h3 {
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+.footer-links a:hover {
+    opacity: 1;
+}
+
+.footer-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+@media (max-width: 1024px) {
+    .practice-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .footer-content {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .practice-grid {
+        grid-template-columns: 1fr;
+    }
+    .main-container {
+        padding: 40px 20px;
+    }
+    .nav-container {
+        padding: 0 20px;
+    }
+}

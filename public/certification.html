@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certify Your Skills - KadaSkill</title>
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/certification.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <img src="images/logo.png" alt="KadaSkill Logo" class="logo-icon">
+                <span><span style="color: #FFA500;">Kada</span><span style="color: #333;">Skill</span></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="learn.html">Home</a></li>
+                <li><a href="learning.html">Learn</a></li>
+                <li><a href="practice.html">Practice</a></li>
+                <li><a href="#">Certification</a></li>
+                <li><a href="#">About Us</a></li>
+            </ul>
+            <div class="search-profile">
+                <input type="text" class="search-bar" placeholder="Search...">
+                <img src="images/team/eijay.png" alt="Profile" class="profile-pic">
+            </div>
+        </div>
+    </nav>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Welcome Section -->
+            <section class="welcome-section">
+                <div class="profile-greeting">
+                    <div class="profile-avatar-large">
+                        <img src="images/user-avatar.jpg" alt="Eijay" class="avatar-img">
+                    </div>
+                    <h1 class="greeting-text">Hello there, <span class="highlight">Eijay!</span></h1>
+                </div>
+
+                <!-- Pick up where you left off -->
+                <div class="continue-section">
+                    <h2 class="section-title">Pick up where you left off</h2>
+                    <div class="continue-card">
+                        <div class="continue-content">
+                            <div class="course-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div class="course-info">
+                                <h3 class="course-title">Data Analyst Track</h3>
+                                <p class="course-time"><i class="fas fa-clock"></i> 50 minutes to learn</p>
+                            </div>
+                        </div>
+                        <button class="continue-btn">Continue</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Certify Your Skills Section -->
+            <section class="certify-section">
+                <h2 class="section-title">Certify Your Skills</h2>
+                <p class="section-description">
+                    Complete any KadaSkill course and unlock official certificates in Cloud, AI, and Cybersecurity. Download and share your micro-credentials to showcase your expertise and stand out in today's fast-paced tech landscape.
+                </p>
+            </section>
+
+            <!-- Filter Section -->
+            <section class="filter-section">
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="all">My Certification</button>
+                    <button class="filter-tab" data-filter="ai">Artificial Intelligence</button>
+                    <button class="filter-tab" data-filter="cybersecurity">Cybersecurity</button>
+                    <button class="filter-tab" data-filter="cloud">Cloud Computing</button>
+                </div>
+
+                <div class="search-and-count">
+                    <div class="certification-count">
+                        <span id="cert-count">9</span> Certifications
+                    </div>
+                    <div class="grid-search">
+                        <input type="text" placeholder="Search" class="grid-search-input">
+                        <i class="fas fa-search grid-search-icon"></i>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Certifications Grid - 3 Columns -->
+            <section class="certifications-grid-section">
+                <div class="certifications-grid" id="certifications-grid">
+                    <!-- Data Scientist -->
+                    <div class="certification-card" data-category="ai">
+                        <div class="card-image">
+                            <div class="cert-graphic python-graphic">
+                                <div class="cert-logo">
+                                    <i class="fab fa-python"></i>
+                                </div>
+                                <div class="cert-title-medium">python</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Data Scientist</h3>
+                            <p class="card-description">Extracts insights from data using AI and ML techniques to guide business decisions.</p>
+                            <button class="card-button">Get Started</button>
+                        </div>
+                    </div>
+
+                    <!-- Security Analyst (SOC) -->
+                    <div class="certification-card" data-category="cybersecurity">
+                        <div class="card-image">
+                            <div class="cert-graphic security-graphic">
+                                <div class="cert-title-large">Cybersecurity</div>
+                                <div class="cert-subtitle">Certification</div>
+                                <div class="cert-badge">FREE QUESTIONS</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Security Analyst (SOC)</h3>
+                            <p class="card-description">Monitors and analyzes real-time threats in a Security Operations Center (SOC) environment.</p>
+                            <button class="card-button resume">Resume</button>
+                        </div>
+                    </div>
+
+                    <!-- Cloud Security Engineer -->
+                    <div class="certification-card" data-category="cloud">
+                        <div class="card-image">
+                            <div class="cert-graphic cloud-graphic">
+                                <div class="cert-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="cert-title-medium">Cloud Security</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Cloud Security Engineer</h3>
+                            <p class="card-description">Implements and manages cloud security architecture and compliance across cloud platforms.</p>
+                            <button class="card-button">Get Started</button>
+                        </div>
+                    </div>
+
+                    <!-- Cybersecurity Analyst -->
+                    <div class="certification-card" data-category="cybersecurity">
+                        <div class="card-image">
+                            <div class="cert-graphic cyber-analyst-graphic">
+                                <div class="cyber-title">EUROPEAN</div>
+                                <div class="cyber-main">CYBERSECURITY</div>
+                                <div class="cyber-sub">CERTIFICATION</div>
+                                <div class="cyber-conference">CONFERENCE</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Cybersecurity Analyst</h3>
+                            <p class="card-description">A cybersecurity analyst protects digital assets by monitoring threats, securing networks, and ensuring data integrity within an organization.</p>
+                            <button class="card-button">Get Started</button>
+                        </div>
+                    </div>
+
+                    <!-- Cloud Solutions Architect -->
+                    <div class="certification-card" data-category="cloud">
+                        <div class="card-image">
+                            <div class="cert-graphic aws-graphic">
+                                <div class="aws-header">aws partnercast</div>
+                                <div class="aws-title">Available AWS Certifications</div>
+                                <div class="aws-badges">
+                                    <div class="aws-badge">Cloud Practitioner</div>
+                                    <div class="aws-badge">Solutions Architect</div>
+                                    <div class="aws-badge">Developer</div>
+                                    <div class="aws-badge">Solutions Architect</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Cloud Solutions Architect</h3>
+                            <p class="card-description">Designs and deploys cloud infrastructure that is secure, scalable, and aligned with business needs, ensuring optimal performance and cost-efficiency.</p>
+                            <button class="card-button resume">Resume</button>
+                        </div>
+                    </div>
+
+                    <!-- AI/ML Engineer -->
+                    <div class="certification-card" data-category="ai">
+                        <div class="card-image">
+                            <div class="cert-graphic ai-graphic">
+                                <div class="ai-logo">AI</div>
+                                <div class="ai-title">Artificial Intelligence</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">AI/ML Engineer</h3>
+                            <p class="card-description">Develops intelligent systems by training ML and deep learning models to automate tasks, predict outcomes, and enhance user experiences.</p>
+                            <button class="card-button">Get Started</button>
+                        </div>
+                    </div>
+
+                    <!-- Additional certifications to show scrolling -->
+                    <div class="certification-card" data-category="cloud">
+                        <div class="card-image">
+                            <div class="cert-graphic devops-graphic">
+                                <div class="devops-title">DevOps</div>
+                                <div class="devops-subtitle">Engineer</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Cloud DevOps Engineer</h3>
+                            <p class="card-description">Master CI/CD pipelines, containerization, and automated deployment strategies.</p>
+                            <button class="card-button">Get Started</button>
+                        </div>
+                    </div>
+
+                    <div class="certification-card" data-category="ai">
+                        <div class="card-image">
+                            <div class="cert-graphic data-graphic">
+                                <div class="data-title">Data Analyst</div>
+                                <div class="data-subtitle">Certification</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Data Analyst</h3>
+                            <p class="card-description">Analyze data trends, create visualizations, and derive insights using Python and statistical methods.</p>
+                            <button class="card-button">Get Started</button>
+                        </div>
+                    </div>
+
+                    <div class="certification-card" data-category="cybersecurity">
+                        <div class="card-image">
+                            <div class="cert-graphic ethical-graphic">
+                                <div class="ethical-title">Ethical Hacker</div>
+                                <div class="ethical-subtitle">Certified</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Ethical Hacker</h3>
+                            <p class="card-description">Learn penetration testing, vulnerability assessment, and ethical hacking methodologies.</p>
+                            <button class="card-button">Get Started</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div>
+                <div class="footer-logo">
+                    <img src="images/logo.png" alt="KadaSkill Logo" class="footer-logo-icon" onerror="this.style.display='none';">
+                    <span><span class="kada">Kada</span><span class="skill">Skill</span></span>
+                </div>
+                <p class="footer-tagline">By upskilling together, we grow forever, unlocking limitless opportunities as a community.</p>
+            </div>
+
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <div class="footer-contact">
+                    <span>📧 kadaskill@gmail.com</span>
+                    <span>🌐 KadaSkill</span>
+                    <span>📷 @kadaskill</span>
+                    <span>🔗 KadaSkill</span>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>General</h3>
+                <ul class="footer-links">
+                    <li><a href="learn.html">Home</a></li>
+                    <li><a href="learning.html">Learn</a></li>
+                    <li><a href="practice.html">Practice</a></li>
+                    <li><a href="#">Certification</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Mission & Vision</a></li>
+                    <li><a href="#">Meet the Team</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            Copyright © 2025 by KadaSkill. All rights reserved
+        </div>
+    </footer>
+</body>
+
+<script src="js/script.js"></script>
+</body>
+
+</html>

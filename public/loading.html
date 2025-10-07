@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title>KadaSkill - Loading</title>
+    <meta name="description" content="KadaSkill application loading screen" />
+    <link rel="stylesheet" href="loading/globals.css" />
+    <link rel="stylesheet" href="loading/styleguide.css" />
+    <link rel="stylesheet" href="loading/style.css" />
+</head>
+
+<body>
+    <main class="loading-screen" role="main">
+        <section class="loading">
+            <div class="authentication-page">
+                <img class="icon" src="images/loading/icon.png" alt="KadaSkill loading robot mascot" onerror="this.style.display='none';" />
+                <p class="text-wrapper" role="status" aria-live="polite">LOADING...</p>
+            </div>
+        </section>
+        <header class="navigation-bar-get" aria-label="KadaSkill navigation">
+            <div class="group"></div>
+            <div class="div">
+                <div class="logo-mark" aria-hidden="true">
+                    <svg class="vector" width="51" height="40" viewBox="0 0 51 40">
+              <image href="images/loading/Vector-2.svg" width="51" height="40" />
+            </svg>
+                    <svg class="img" width="30" height="30" viewBox="0 0 44 44">
+              <image href="images/loading/Vector.svg" width="44" height="44" />
+            </svg>
+                    <svg class="vector-2" width="33" height="32" viewBox="0 0 33 32">
+              <image href="images/loading/Vector-1.svg" width="33" height="32" />
+            </svg>
+                </div>
+                <p class="kada-skill" aria-label="KadaSkill">
+                    <span class="span">Kada</span><span class="text-wrapper-2">Skill</span>
+                </p>
+            </div>
+        </header>
+    </main>
+    <script>
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 5000);
+        });
+    </script>
+</body>
+
+</html>
