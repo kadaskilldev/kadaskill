@@ -56,7 +56,7 @@ body {
 }
 
 .highlight {
-    color: #f97316;
+    color: #f59e0b;
 }
 
 /* Continue Section */
@@ -129,7 +129,7 @@ body {
 }
 
 .continue-btn {
-    background: #f97316;
+    background: #f59e0b;
     color: #042047ff;
     border: none;
     padding: 1rem 2rem;
@@ -183,7 +183,7 @@ body {
 }
 
 .filter-tab {
-    background: #f97316;
+    background: #f59e0b;
     border: none;
     padding: 0.75rem 2rem; /* Increased horizontal padding */
     border-radius: 12px;
@@ -204,7 +204,7 @@ body {
 }
 
 .filter-tab.active {
-    background: #f97316;
+    background: #f59e0b;
     color: black;
 }
 
@@ -353,7 +353,7 @@ body {
 }
 
 .cert-badge {
-    background: #fbbf24;
+    background: #f59e0b;
     color: #1f2937;
     padding: 0.5rem 1rem;
     border-radius: 20px;
@@ -469,7 +469,7 @@ body {
 }
 
 .card-button {
-    background: #f97316;
+    background: #f59e0b;
     color: white;
     border: none;
     padding: 0.875rem 2rem;
