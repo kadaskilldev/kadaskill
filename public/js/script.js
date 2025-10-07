@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize page-specific functionality
         initializeCertificationPage();
         initializeCalendar();
+        initializeLearnPage();
+        initializePracticePage();
 
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -128,9 +130,10 @@ function loadNavigation() {
 
     const pathname = window.location.pathname;
     const currentPage = (pathname === '/' || pathname === '') ? 'home.html' : pathname.split('/').pop();
-    const isCertificationPage = currentPage === 'certification.html';
+    const pagesWithoutProfileMenu = ['certification.html', 'learn.html', 'practice.html'];
+    const isProfileMenuDisabled = pagesWithoutProfileMenu.includes(currentPage);
 
-    const userProfileMarkup = isCertificationPage
+    const userProfileMarkup = isProfileMenuDisabled
         ? `
                 <div class="user-profile">
                     <div class="user-avatar" aria-hidden="true">E</div>
@@ -211,7 +214,7 @@ function loadNavigation() {
         window.addEventListener('load', updateHeaderOffset, { once: true });
     }
 
-    if (!isCertificationPage) {
+    if (!isProfileMenuDisabled) {
         initializeUserMenu(navigationElement);
     }
     setActiveNavigation();
@@ -299,7 +302,8 @@ function setActiveNavigation() {
         if (href.includes(currentPage) ||
             (currentPage === 'certification.html' && href.includes('certification')) ||
             (currentPage === 'learn.html' && href.includes('learn')) ||
-            (currentPage === 'home.html' && href.includes('home'))) {
+            (currentPage === 'home.html' && href.includes('home')) ||
+            (currentPage === 'practice.html' && href.includes('practice'))) {
             link.classList.add('active');
         }
     });
@@ -929,4 +933,165 @@ function getNotificationColor(type) {
         info: '#17a2b8'
     };
     return colors[type] || colors.info;
+}
+
+// Learn Page Functionality
+function initializeLearnPage() {
+    // Only run if we're on the learn page
+    if (!document.querySelector('.learn-main-content')) return;
+    
+    initializeCourseFiltering();
+    initializeCourseSearch();
+    initializeCourseCards();
+    initializeContinueButton();
+    updateCourseCount();
+}
+
+function initializeCourseFiltering() {
+    const filterTabs = document.querySelectorAll('.filter-tab-btn');
+    const courseCards = document.querySelectorAll('.course-card');
+
+    filterTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const filter = this.getAttribute('data-category');
+            
+            // Update active tab
+            filterTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filter courses
+            filterCourses(filter, courseCards);
+            updateCourseCount();
+        });
+    });
+}
+
+function filterCourses(filter, cards) {
+    cards.forEach(card => {
+        const category = card.getAttribute('data-category');
+        const shouldShow = filter === 'all' || category === filter;
+        
+        if (shouldShow) {
+            card.style.display = 'block';
+            setTimeout(() => card.classList.add('fade-in'), 10);
+        } else {
+            card.classList.remove('fade-in');
+            setTimeout(() => card.style.display = 'none', 300);
+        }
+    });
+}
+
+function initializeCourseSearch() {
+    const searchInput = document.querySelector('#course-search');
+    const courseCards = document.querySelectorAll('.course-card');
+
+    if (searchInput && courseCards.length > 0) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            courseCards.forEach(card => {
+                const title = card.querySelector('.course-card-title').textContent.toLowerCase();
+                const description = card.querySelector('.course-card-description').textContent.toLowerCase();
+                const shouldShow = title.includes(searchTerm) || description.includes(searchTerm);
+                
+                if (shouldShow) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            updateCourseCount();
+        });
+    }
+}
+
+function initializeCourseCards() {
+    const courseCards = document.querySelectorAll('.course-card');
+    
+    courseCards.forEach(card => {
+        const button = card.querySelector('.course-card-btn');
+        
+        if (button) {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const title = card.querySelector('.course-card-title').textContent;
+                const buttonText = this.textContent.trim();
+                
+                if (buttonText === 'Resume') {
+                    showNotification(`Resuming "${title}"...`, 'info');
+                    setTimeout(() => {
+                        showNotification(`Continuing from where you left off in ${title}`, 'success');
+                    }, 1500);
+                } else {
+                    showNotification(`Starting "${title}"...`, 'info');
+                    setTimeout(() => {
+                        showNotification(`Welcome to ${title}! Let's begin your learning journey.`, 'success');
+                    }, 1500);
+                }
+            });
+        }
+    });
+}
+
+function initializeContinueButton() {
+    const continueBtn = document.querySelector('.continue-btn-primary');
+    
+    if (continueBtn) {
+        continueBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const courseName = document.querySelector('.course-name')?.textContent || 'your course';
+            showNotification(`Continuing ${courseName}...`, 'info');
+            setTimeout(() => {
+                showNotification(`Resuming from Lesson 3: AI Fundamentals`, 'success');
+            }, 1500);
+        });
+    }
+}
+
+function updateCourseCount() {
+    const visibleCards = document.querySelectorAll('.course-card:not([style*="display: none"])');
+    const countElement = document.getElementById('course-count');
+    
+    if (countElement) {
+        countElement.textContent = visibleCards.length;
+    }
+}
+
+// Practice Page Functionality
+function initializePracticePage() {
+    // Only run if we're on the practice page
+    if (!document.querySelector('.practice-main-content')) return;
+    
+    initializePracticeCards();
+}
+
+function initializePracticeCards() {
+    const practiceCards = document.querySelectorAll('.practice-card');
+    
+    practiceCards.forEach(card => {
+        const button = card.querySelector('.practice-btn');
+        
+        if (button) {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const title = card.querySelector('.practice-card-title').textContent;
+                const badge = card.querySelector('.practice-badge').textContent;
+                
+                showNotification(`Starting "${title}"...`, 'info');
+                setTimeout(() => {
+                    showNotification(`Welcome to ${title}! Category: ${badge}`, 'success');
+                }, 1500);
+            });
+        }
+        
+        // Add hover animation effect
+        card.addEventListener('mouseenter', function() {
+            this.style.borderColor = '#fbbf24';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.borderColor = '#f59e0b';
+        });
+    });
 }

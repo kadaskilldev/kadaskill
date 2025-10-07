@@ -4,49 +4,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KadaSkill - Learn & Get Certified</title>
+    <title>Learn - KadaSkill</title>
     <link rel="stylesheet" href="css/home.css">
-    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/learn.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preload" href="images/robot-hero.png" as="image">
-    <link rel="preload" href="images/logo.png" as="image">
 </head>
 
 <body>
-    <!-- Navigation -->
-    <header class="header">
-        <div class="container">
-            <div class="logo">
-                <img src="images/logo.png" alt="KadaSkill" class="logo-img" onerror="this.style.display='none';">
-                <span>KadaSkill</span>
-            </div>
-            <nav class="nav">
-                <ul class="nav-links">
-                    <li><a href="home.html" class="nav-btn">Home</a></li>
-                    <li><a href="learn.html" class="nav-btn active">Learn</a></li>
-                    <li><a href="practice.html" class="nav-btn">Practice</a></li>
-                    <li><a href="certification.html" class="nav-btn">Certification</a></li>
-                    <li><a href="about.html" class="nav-btn">About Us</a></li>
-                </ul>
-            </nav>
-            <div class="header-right">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search...">
-                </div>
-                <div class="user-profile">
-                    <div class="user-avatar">E</div>
-                </div>
-            </div>
-        </div>
-    </header>
+    <!-- Navigation Placeholder -->
+    <div id="navigation"></div>
 
-    <!-- Main Content moved to home.html -->
-    <main class="main-content">
-        <div class="container">
+    <!-- Main Content -->
+    <main class="learn-main-content">
+        <div class="learn-container">
+            <!-- Hero Section with Profile -->
+            <section class="learn-hero-section">
+                <div class="profile-greeting">
+                    <div class="profile-avatar-large">
+                        <img src="images/user-avatar.jpg" alt="Eijay" class="avatar-img" onerror="this.style.display='none';">
+                    </div>
+                    <h1 class="greeting-text">Hello there, <span class="highlight-name">Eijay!</span></h1>
+                </div>
+
+                <div class="streak-badge">
+                    <div class="streak-icon">🔥</div>
+                    <div class="streak-info">
+                        <span class="streak-number">105</span>
+                        <span class="streak-label">Daily Streak</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pick up where you left off -->
+            <section class="continue-learning-section">
+                <h2 class="section-title-main">Pick up where you left off</h2>
+                <div class="continue-course-card">
+                    <div class="continue-course-content">
+                        <div class="course-icon-box">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="course-details">
+                            <h3 class="course-name">Python Foundation for AI</h3>
+                            <p class="course-time-left"><i class="fas fa-clock"></i> 50 minutes left to learn</p>
+                        </div>
+                    </div>
+                    <button class="continue-btn-primary">Continue</button>
+                </div>
+            </section>
+
+            <!-- My Courses Section -->
+            <section class="my-courses-section">
+                <div class="section-header">
+                    <h2 class="section-title-main">My Courses</h2>
+                    <p class="section-description">
+                        Welcome to My Courses—your hub for professional, hands-on learning. Each course is designed to build real-world skills you can apply immediately with confidence and curiosity.
+                    </p>
+                </div>
+
+                <!-- Course Filter Tabs -->
+                <div class="course-filter-tabs">
+                    <button class="filter-tab-btn active" data-category="all">My Courses</button>
+                    <button class="filter-tab-btn" data-category="ai">Artificial Intelligence</button>
+                    <button class="filter-tab-btn" data-category="cybersecurity">Cybersecurity</button>
+                    <button class="filter-tab-btn" data-category="cloud">Cloud Computing</button>
+                </div>
+
+                <!-- Course Count and Search -->
+                <div class="courses-controls">
+                    <div class="course-count">
+                        <span class="count-number" id="course-count">12</span> Courses
+                    </div>
+                    <div class="course-search-box">
+                        <input type="text" placeholder="Search" class="course-search-input" id="course-search">
+                        <i class="fas fa-search course-search-icon"></i>
+                    </div>
+                </div>
+
+                <!-- Courses Grid -->
+                <div class="courses-grid" id="courses-grid">
+                    <!-- Course Card 1: Python Foundation for AI -->
+                    <div class="course-card" data-category="ai">
+                        <div class="course-card-image">
+                            <img src="images/courses/python-ai.jpg" alt="Python Foundation for AI" onerror="this.style.display='none';">
+                            <div class="course-badge beginner">Beginner</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Python Foundation for AI</h3>
+                            <p class="course-card-description">The quickest way to write clear, data-focused Python that works well for machine learning tasks.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 4 hours</span>
+                                <button class="course-card-btn resume">Resume</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 2: AWS Cloud Practitioner Essentials -->
+                    <div class="course-card" data-category="cloud">
+                        <div class="course-card-image">
+                            <img src="images/courses/aws-cloud.jpg" alt="AWS Cloud Practitioner" onerror="this.style.display='none';">
+                            <div class="course-badge intermediate">Intermediate</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">AWS Cloud Practitioner Essentials</h3>
+                            <p class="course-card-description">Build your AWS Cloud knowledge with this course that covers core AWS services, security, architecture, pricing, and support.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 4 hours 5 minutes</span>
+                                <button class="course-card-btn">Resume</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 3: Secure Network Foundations -->
+                    <div class="course-card" data-category="cybersecurity">
+                        <div class="course-card-image">
+                            <img src="images/courses/network-security.jpg" alt="Secure Network Foundations" onerror="this.style.display='none';">
+                            <div class="course-badge intermediate">Intermediate</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Secure Network Foundations</h3>
+                            <p class="course-card-description">Learn how firewalls, VPNs, and IDS/IPS help keep corporate traffic—and your career—on a secure track.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 4 hours 5 minutes</span>
+                                <button class="course-card-btn">Resume</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 4: Introduction to Cloud Computing -->
+                    <div class="course-card" data-category="cloud">
+                        <div class="course-card-image">
+                            <img src="images/courses/intro-cloud.jpg" alt="Introduction to Cloud Computing" onerror="this.style.display='none';">
+                            <div class="course-badge beginner">Beginner</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Introduction to Cloud Computing</h3>
+                            <p class="course-card-description">Learn the fundamental concepts of cloud computing, including service models (IaaS, PaaS, SaaS) and deployment models.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 4 hours 5 minutes</span>
+                                <button class="course-card-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 5: Deep Learning with PyTorch -->
+                    <div class="course-card" data-category="ai">
+                        <div class="course-card-image">
+                            <img src="images/courses/pytorch.jpg" alt="Deep Learning with PyTorch" onerror="this.style.display='none';">
+                            <div class="course-badge intermediate">Intermediate</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Deep Learning with PyTorch</h3>
+                            <p class="course-card-description">Train neural nets in CNNs & RNNs. Build, train, and deploy deep neural nets with PyTorch.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 4 hours 5 minutes</span>
+                                <button class="course-card-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 6: Google Cloud Digital Leader -->
+                    <div class="course-card" data-category="cloud">
+                        <div class="course-card-image">
+                            <img src="images/courses/google-cloud.jpg" alt="Google Cloud Digital Leader" onerror="this.style.display='none';">
+                            <div class="course-badge expert">Expert</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Google Cloud Digital Leader</h3>
+                            <p class="course-card-description">Gain foundational knowledge of Google Cloud core products & services and learn how they enable business transformation.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 4 hours 5 minutes</span>
+                                <button class="course-card-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 7: Machine Learning Fundamentals -->
+                    <div class="course-card" data-category="ai">
+                        <div class="course-card-image">
+                            <img src="images/courses/ml-fundamentals.jpg" alt="Machine Learning Fundamentals" onerror="this.style.display='none';">
+                            <div class="course-badge beginner">Beginner</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Machine Learning Fundamentals</h3>
+                            <p class="course-card-description">Discover the core concepts of machine learning, including supervised and unsupervised learning algorithms.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 5 hours</span>
+                                <button class="course-card-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 8: Ethical Hacking Essentials -->
+                    <div class="course-card" data-category="cybersecurity">
+                        <div class="course-card-image">
+                            <img src="images/courses/ethical-hacking.jpg" alt="Ethical Hacking Essentials" onerror="this.style.display='none';">
+                            <div class="course-badge intermediate">Intermediate</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Ethical Hacking Essentials</h3>
+                            <p class="course-card-description">Learn penetration testing techniques and vulnerability assessment to secure systems against cyber threats.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 6 hours</span>
+                                <button class="course-card-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 9: Azure Cloud Administrator -->
+                    <div class="course-card" data-category="cloud">
+                        <div class="course-card-image">
+                            <img src="images/courses/azure-admin.jpg" alt="Azure Cloud Administrator" onerror="this.style.display='none';">
+                            <div class="course-badge intermediate">Intermediate</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Azure Cloud Administrator</h3>
+                            <p class="course-card-description">Master Microsoft Azure administration, including virtual machines, storage, networking, and security.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 5 hours 30 minutes</span>
+                                <button class="course-card-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 10: Natural Language Processing -->
+                    <div class="course-card" data-category="ai">
+                        <div class="course-card-image">
+                            <img src="images/courses/nlp.jpg" alt="Natural Language Processing" onerror="this.style.display='none';">
+                            <div class="course-badge expert">Expert</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Natural Language Processing</h3>
+                            <p class="course-card-description">Dive into NLP techniques for text analysis, sentiment analysis, and building chatbots with transformers.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 7 hours</span>
+                                <button class="course-card-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 11: Incident Response & Forensics -->
+                    <div class="course-card" data-category="cybersecurity">
+                        <div class="course-card-image">
+                            <img src="images/courses/incident-response.jpg" alt="Incident Response & Forensics" onerror="this.style.display='none';">
+                            <div class="course-badge expert">Expert</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Incident Response & Forensics</h3>
+                            <p class="course-card-description">Learn to detect, investigate, and respond to security incidents with advanced forensic techniques.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 6 hours 30 minutes</span>
+                                <button class="course-card-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 12: Kubernetes & Container Orchestration -->
+                    <div class="course-card" data-category="cloud">
+                        <div class="course-card-image">
+                            <img src="images/courses/kubernetes.jpg" alt="Kubernetes & Container Orchestration" onerror="this.style.display='none';">
+                            <div class="course-badge expert">Expert</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Kubernetes & Container Orchestration</h3>
+                            <p class="course-card-description">Master container orchestration with Kubernetes, including deployment, scaling, and management of containerized applications.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 8 hours</span>
+                                <button class="course-card-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     </main>
 
