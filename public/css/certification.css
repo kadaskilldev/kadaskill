@@ -7,8 +7,8 @@
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #f8fafc;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
     color: #1a202c;
     line-height: 1.5;
 }
@@ -46,6 +46,7 @@ nav {
     gap: 10px;
     font-size: 24px;
     font-weight: bold;
+    color: #1a3541;
 }
 
 .logo-icon {
@@ -112,7 +113,7 @@ nav {
     height: 80px;
     border-radius: 50%;
     overflow: hidden;
-    background: #ef4444;
+    background: linear-gradient(135deg, #1a3541, #2d4f5e);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -128,12 +129,12 @@ nav {
 .greeting-text {
     font-size: 2.5rem;
     font-weight: 600;
-    color: #1f2937;
+    color: #1a3541;
     margin: 0;
 }
 
 .highlight {
-    color: #f97316;
+    color: #ff9500;
 }
 
 
@@ -142,19 +143,17 @@ nav {
 .continue-section {
     margin-bottom: 1rem;
     padding-bottom: 1rem;
-    /* Remove border-bottom from here */
 }
 
 .section-title {
     font-size: 1.25rem;
-    /* Smaller font size */
     font-weight: 600;
-    color: #1f2937;
+    color: #1a3541;
     margin-bottom: 1rem;
 }
 
 .continue-card {
-    background: linear-gradient(135deg, #0f766e 0%, #059669 100%);
+    background: linear-gradient(135deg, #1a3541 0%, #2d4f5e 100%);
     border-radius: 16px;
     padding: 2rem;
     display: flex;
@@ -163,6 +162,7 @@ nav {
     color: white;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .continue-card::after {
@@ -196,14 +196,12 @@ nav {
 
 .course-title {
     font-size: 1.25rem;
-    /* Smaller font size */
     font-weight: 600;
     margin-bottom: 0.5rem;
 }
 
 .course-time {
     font-size: 0.875rem;
-    /* Smaller font size */
     opacity: 0.9;
     display: flex;
     align-items: center;
@@ -211,8 +209,8 @@ nav {
 }
 
 .continue-btn {
-    background: #f97316;
-    color: #042047ff;
+    background: #ff9500;
+    color: white;
     border: none;
     padding: 1rem 2rem;
     border-radius: 12px;
@@ -221,11 +219,13 @@ nav {
     font-size: 1rem;
     transition: all 0.3s ease;
     z-index: 1;
+    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.3);
 }
 
 .continue-btn:hover {
-    background: #ea580c;
+    background: #e68500;
     transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 149, 0, 0.4);
 }
 
 
@@ -235,24 +235,21 @@ nav {
     margin-bottom: 0;
     padding-top: 1rem;
     padding-bottom: 1rem;
-    /* Reduce bottom padding */
     border-bottom: 1px solid #e5e7eb;
-    /* Light gray divider */
 }
 
 .certify-section .section-title {
     font-size: 2rem;
     font-weight: 700;
+    color: #1a3541;
     margin-bottom: 0.75rem;
-    /* Reduced from 1rem */
 }
 
 .section-description {
-    color: #0a0a0aff;
+    color: #555;
     font-size: 1rem;
     line-height: 1.6;
     margin-bottom: 1rem;
-    /* Reduced from 3rem */
     max-width: none;
 }
 
@@ -262,46 +259,42 @@ nav {
 .filter-section {
     margin-bottom: 2rem;
     padding-top: 0.75rem;
-    /* Reduce top padding to bring tabs closer to border */
 }
 
 .filter-tabs {
     display: flex;
     gap: 1rem;
-    /* Increased gap */
     margin-bottom: 1.5rem;
     justify-content: space-between;
     width: 100%;
 }
 
 .filter-tab {
-    background: #f97316;
+    background: #ff9500;
     border: none;
     padding: 0.75rem 2rem;
-    /* Increased horizontal padding */
     border-radius: 12px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    color: #042047ff;
+    color: white;
     font-size: 0.875rem;
     outline: none;
-    box-shadow: none;
+    box-shadow: 0 4px 10px rgba(255, 149, 0, 0.3);
     flex: 1;
-    /* Make buttons equal width and fill container */
     text-align: center;
-    /* Center text in wider buttons */
 }
 
 .filter-tab:hover {
-    background: #ea580c;
-    transform: translateY(-1px);
-    /* Same hover effect as continue button */
+    background: #e68500;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(255, 149, 0, 0.4);
 }
 
 .filter-tab.active {
-    background: #f97316;
-    color: black;
+    background: #1a3541;
+    color: white;
+    box-shadow: 0 4px 12px rgba(26, 53, 65, 0.3);
 }
 
 .search-and-count {
@@ -309,11 +302,10 @@ nav {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
-    /* Reduced from 2rem */
 }
 
 .certification-count {
-    color: #1f2937;
+    color: #1a3541;
     font-weight: 600;
     font-size: 1.1rem;
 }
@@ -324,7 +316,7 @@ nav {
 
 .grid-search-input {
     padding: 0.75rem 1rem 0.75rem 2.75rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid #ddd;
     border-radius: 25px;
     width: 300px;
     font-size: 0.9rem;
@@ -353,14 +345,14 @@ nav {
     background: white;
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     border: 1px solid #e5e7eb;
 }
 
 .certification-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
 .card-image {
@@ -385,49 +377,49 @@ nav {
 }
 
 
-/* Card Types - Only background colors differ */
+/* Card Types - Updated to match profile theme */
 
 .cert-graphic.python-graphic {
-    background: linear-gradient(135deg, #306998 0%, #ffd43b 100%);
+    background: linear-gradient(135deg, #1a3541 0%, #2d4f5e 100%);
 }
 
 .cert-graphic.security-graphic {
-    background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+    background: linear-gradient(135deg, #1a3541 0%, #2d4f5e 100%);
 }
 
 .cert-graphic.cloud-graphic {
-    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    background: linear-gradient(135deg, #1a3541 0%, #2d4f5e 100%);
 }
 
 .cert-graphic.cyber-analyst-graphic {
-    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    background: linear-gradient(135deg, #1a3541 0%, #2d4f5e 100%);
 }
 
 .cert-graphic.aws-graphic {
-    background: white;
-    color: #1f2937;
+    background: linear-gradient(135deg, #1a3541 0%, #2d4f5e 100%);
+    color: white;
     padding: 1.5rem;
 }
 
 .cert-graphic.ai-graphic {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    color: #0ea5e9;
+    background: linear-gradient(135deg, #1a3541 0%, #2d4f5e 100%);
+    color: white;
 }
 
 .cert-graphic.devops-graphic {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    background: linear-gradient(135deg, #1a3541 0%, #2d4f5e 100%);
 }
 
 .cert-graphic.data-graphic {
-    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+    background: linear-gradient(135deg, #1a3541 0%, #2d4f5e 100%);
 }
 
 .cert-graphic.ethical-graphic {
-    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+    background: linear-gradient(135deg, #1a3541 0%, #2d4f5e 100%);
 }
 
 
-/* Unified Text Elements - Use these classes in HTML */
+/* Unified Text Elements */
 
 .cert-logo {
     font-size: 4rem;
@@ -458,8 +450,8 @@ nav {
 }
 
 .cert-badge {
-    background: #fbbf24;
-    color: #1f2937;
+    background: #ff9500;
+    color: white;
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.75rem;
@@ -490,7 +482,7 @@ nav {
 
 .aws-header {
     font-size: 0.9rem;
-    color: #6b7280;
+    color: rgba(255, 255, 255, 0.8);
     margin-bottom: 1rem;
 }
 
@@ -507,7 +499,7 @@ nav {
 }
 
 .aws-badge {
-    background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+    background: rgba(255, 149, 0, 0.9);
     color: white;
     padding: 0.75rem;
     border-radius: 8px;
@@ -520,15 +512,15 @@ nav {
 /* AI Card */
 
 .ai-graphic {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    color: #0ea5e9;
+    background: linear-gradient(135deg, #1a3541 0%, #2d4f5e 100%);
+    color: white;
 }
 
 .ai-logo {
     font-size: 3rem;
     font-weight: 800;
     margin-bottom: 0.5rem;
-    border: 3px solid #0ea5e9;
+    border: 3px solid #ff9500;
     width: 80px;
     height: 80px;
     border-radius: 50%;
@@ -545,10 +537,6 @@ nav {
 
 /* Other graphics */
 
-.devops-graphic {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%);
-}
-
 .devops-title {
     font-size: 2rem;
     font-weight: 700;
@@ -556,6 +544,26 @@ nav {
 
 .devops-subtitle {
     font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.data-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.data-subtitle {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.ethical-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.ethical-subtitle {
+    font-size: 1rem;
     font-weight: 500;
 }
 
@@ -570,19 +578,19 @@ nav {
     font-size: 1.375rem;
     font-weight: 700;
     margin-bottom: 1rem;
-    color: #111827;
+    color: #1a3541;
     line-height: 1.3;
 }
 
 .card-description {
-    color: #6b7280;
+    color: #666;
     line-height: 1.6;
     margin-bottom: 2rem;
     font-size: 0.95rem;
 }
 
 .card-button {
-    background: #f97316;
+    background: #ff9500;
     color: white;
     border: none;
     padding: 0.875rem 2rem;
@@ -592,19 +600,21 @@ nav {
     cursor: pointer;
     transition: all 0.3s ease;
     width: 100%;
+    box-shadow: 0 4px 10px rgba(255, 149, 0, 0.3);
 }
 
 .card-button:hover {
-    background: #ea580c;
-    transform: translateY(-1px);
+    background: #e68500;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(255, 149, 0, 0.4);
 }
 
 .card-button.resume {
-    background: #0ea5e9;
+    background: #1a3541;
 }
 
 .card-button.resume:hover {
-    background: #0284c7;
+    background: #2d4f5e;
 }
 
 
@@ -667,113 +677,6 @@ nav {
     to {
         opacity: 1;
         transform: translateY(0);
-    }
-}
-
-.devops-subtitle {
-    font-size: 1.2rem;
-    font-weight: 500;
-}
-
-.data-graphic {
-    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.data-title {
-    font-size: 1.8rem;
-    font-weight: 700;
-}
-
-.data-subtitle {
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-.ethical-graphic {
-    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.ethical-title {
-    font-size: 1.6rem;
-    font-weight: 700;
-}
-
-.ethical-subtitle {
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-.fade-in {
-    animation: fadeIn 0.5s ease-in;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-
-/* Responsive Design */
-
-@media (max-width: 768px) {
-    .hero-title {
-        font-size: 2rem;
-    }
-    .hero-description {
-        font-size: 1rem;
-        padding: 0 1rem;
-    }
-    .certifications-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-    .filter-tabs {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 0.5rem;
-    }
-    .filter-tab {
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
-    }
-    .nav {
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-    .nav-menu {
-        order: 3;
-        width: 100%;
-        justify-content: center;
-        margin-top: 1rem;
-        gap: 1rem;
-    }
-    .search-input {
-        width: 200px;
-    }
-    .card-content {
-        padding: 1.5rem;
-    }
-    .card-header {
-        padding: 1.5rem;
-    }
-    .card-footer {
-        padding: 0 1.5rem 1.5rem;
     }
 }
 
@@ -856,18 +759,12 @@ footer {
 }
 
 @media (max-width: 1024px) {
-    .practice-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
     .footer-content {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 768px) {
-    .practice-grid {
-        grid-template-columns: 1fr;
-    }
     .main-container {
         padding: 40px 20px;
     }

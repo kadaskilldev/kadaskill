@@ -290,6 +290,13 @@
             height: 150px;
             background-color: #e0e0e0;
             position: relative;
+            overflow: hidden;
+        }
+        
+        .course-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .course-content {
@@ -495,11 +502,11 @@
             <span><span class="kada">Kada</span><span class="skill">Skill</span></span>
         </div>
         <ul class="nav-links">
-            <li><a href="learn.html">Home</a></li>
-            <li><a href="#" class="active">Learn</a></li>
-            <li><a href="practice.html">Practice</a></li>
-            <li><a href="#">Certification</a></li>
-            <li><a href="#">About Us</a></li>
+            <li><a href="learn.html" class="nav-btn">Home</a></li>
+            <li><a href="learning.html" class="nav-btn active">Learn</a></li>
+            <li><a href="practice.html" class="nav-btn">Practice</a></li>
+            <li><a href="certification.html" class="nav-btn">Certification</a></li>
+            <li><a href="index.html" class="nav-btn">About Us</a></li>
         </ul>
         <div class="nav-right">
             <input type="text" class="search-box" placeholder="Search...">
@@ -558,7 +565,7 @@
             <!-- Course 1 -->
             <div class="course-card">
                 <div class="course-image">
-                    <!-- Image placeholder -->
+                    <img src="https://skillcamp.in/wp-content/uploads/2022/10/PY-AI.jpg" alt="Python Foundation for AI">
                 </div>
                 <div class="course-content">
                     <div class="course-level">📚 Beginner</div>
@@ -574,7 +581,7 @@
             <!-- Course 2 -->
             <div class="course-card">
                 <div class="course-image">
-                    <!-- Image placeholder -->
+                    <img src="https://careertraining.georgiasouthern.edu/common/images/2/22994/Certified-AWS-Cloud-Practitioner-935x572.jpg" alt="AWS Cloud Practitioner Essentials">
                 </div>
                 <div class="course-content">
                     <div class="course-level">📚 Intermediate</div>
@@ -590,7 +597,7 @@
             <!-- Course 3 -->
             <div class="course-card">
                 <div class="course-image">
-                    <!-- Image placeholder -->
+                    <img src="https://cyberskul.com/wp-content/uploads/2024/12/network-security-1.png" alt="Secure Network Foundations">
                 </div>
                 <div class="course-content">
                     <div class="course-level">📚 Intermediate</div>
@@ -606,7 +613,7 @@
             <!-- Course 4 -->
             <div class="course-card">
                 <div class="course-image">
-                    <!-- Image placeholder -->
+                    <img src="https://bbb-main.blr1.digitaloceanspaces.com/uploads/course/introduction-to-cloud-computing-1720530774768.jpeg" alt="Introduction to Cloud Computing">
                 </div>
                 <div class="course-content">
                     <div class="course-level">📚 Beginner</div>
@@ -622,7 +629,7 @@
             <!-- Course 5 -->
             <div class="course-card">
                 <div class="course-image">
-                    <!-- Image placeholder -->
+                    <img src="https://images.ctfassets.net/aq13lwl6616q/7M8HdDnKXSf3UmI2rdqY8W/1e6be544c1d14250495ca12ce7006cde/PyTorch_Thumbnail_3_-_Academy.png" alt="Deep Learning with PyTorch">
                 </div>
                 <div class="course-content">
                     <div class="course-level">📚 Intermediate</div>
@@ -638,7 +645,7 @@
             <!-- Course 6 -->
             <div class="course-card">
                 <div class="course-image">
-                    <!-- Image placeholder -->
+                    <img src="https://miro.medium.com/v2/resize:fit:1100/format:webp/1*IfJ3vfV4m5whzPDhN2jtXA.jpeg" alt="Google Cloud Digital Leader">
                 </div>
                 <div class="course-content">
                     <div class="course-level">📚 Expert</div>
