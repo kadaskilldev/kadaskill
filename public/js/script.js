@@ -830,4 +830,16 @@ function updateUserUI(user, profile) {
             profilePageAvatar.src = 'images/team/eijay.png'; // Fallback to default
         }
     }
+
+    // --- UPDATE SIDEBAR AVATAR (for learn.html) ---
+    const sidebarAvatar = document.querySelector('[data-placeholder="sidebar-avatar"]');
+    if (sidebarAvatar) {
+        if (avatarUrl) {
+            // If an image URL exists, replace the div with a styled <img> tag
+            sidebarAvatar.outerHTML = `<img src="${avatarUrl}" alt="User Avatar" class="profile-avatar" data-placeholder="sidebar-avatar" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">`;
+        } else {
+            // Otherwise, just show the initial
+            sidebarAvatar.textContent = userInitial;
+        }
+    }
 }
