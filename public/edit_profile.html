@@ -632,14 +632,22 @@
                 <!-- Profile Photo Section -->
                 <div class="form-section">
                     <div class="profile-photo-section">
-                        <img src="images/team/eijay.png" alt="Profile Photo" class="current-photo">
+                        <!-- 1. Add an ID to the image to update its src later -->
+                        <img src="images/team/eijay.png" alt="Profile Photo" class="current-photo" id="profileImagePreview">
                         <div class="photo-actions">
                             <h3>Profile Photo</h3>
                             <p>Update your profile photo. JPG, PNG or GIF. Max size of 5MB.</p>
                             <div class="photo-buttons">
-                                <button type="button" class="btn-upload">Upload New Photo</button>
+                                <!-- 2. Add a hidden file input -->
+                                <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+                                
+                                <!-- 3. Add an ID to the button to attach a click listener -->
+                                <button type="button" class="btn-upload" id="uploadBtn">Upload New Photo</button>
+                                
                                 <button type="button" class="btn-remove">Remove</button>
                             </div>
+                            <!--  show uploading status -->
+                            <p id="uploadStatus" style="font-size: 12px; color: #ff9500; margin-top: 5px; display: none;">Uploading...</p>
                         </div>
                     </div>
                 </div>
@@ -800,6 +808,10 @@
             }
 
             if (profile) {
+                // If they have an avatar_url, use it. Otherwise, keep the default.
+                if (profile.avatar_url) {
+                    document.getElementById('profileImagePreview').src = profile.avatar_url;
+                }
                 // Use more specific selectors like IDs for reliability
                 // Example:
                 // <input type="text" id="fullNameInput" ...>
@@ -880,6 +892,83 @@
                 // IMPORTANT: We need to clear the session storage so the next page load
                 // will get the fresh data. The easiest way is to go back through the loading page.
                 window.location.href = 'loading.html'; 
+            }
+        });
+
+        // --- IMAGE UPLOAD LOGIC ---
+        // 1. Trigger the hidden file input when the button is clicked
+        const uploadBtn = document.getElementById('uploadBtn');
+        const fileInput = document.getElementById('avatarUpload');
+        const statusMsg = document.getElementById('uploadStatus');
+        const imgPreview = document.getElementById('profileImagePreview');
+
+        uploadBtn.addEventListener('click', () => {
+            fileInput.click(); // Opens the file selection dialog
+        });
+
+        // 2. Handle the file selection and upload
+        fileInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Basic validation (optional but good practice)
+            if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                alert("File is too big! Please upload an image smaller than 5MB.");
+                return;
+            }
+
+            // Get current user
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return alert("Please log in to upload a photo.");
+
+            // Show uploading status
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = "Uploading...";
+            statusMsg.style.display = 'block';
+
+            try {
+                // Create a unique file path: user_id/timestamp_filename
+                // This prevents caching issues and filename collisions
+                const fileExt = file.name.split('.').pop();
+                const filePath = `${user.id}/${Date.now()}.${fileExt}`;
+
+                // 3. Upload to Supabase Storage
+                //  bucket name is exactly "profile pictures"
+                const { error: uploadError } = await supabase.storage
+                    .from('profile pictures') 
+                    .upload(filePath, file);
+
+                if (uploadError) throw uploadError;
+
+                // 4. Get the Public URL
+                const { data: { publicUrl } } = supabase.storage
+                    .from('profile pictures')
+                    .getPublicUrl(filePath);
+
+                // 5. Update the user's profile in the database with the new URL
+                const { error: updateError } = await supabase
+                    .from('profiles')
+                    .update({ 
+                        avatar_url: publicUrl,
+                        updated_at: new Date()
+                    })
+                    .eq('id', user.id);
+
+                if (updateError) throw updateError;
+
+                // 6. Update the UI
+                imgPreview.src = publicUrl; // Show the new image immediately
+                alert("Profile picture updated successfully!");
+
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                alert('Error uploading image: ' + error.message);
+            } finally {
+                // Reset UI
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = "Upload New Photo";
+                statusMsg.style.display = 'none';
+                fileInput.value = ''; // Clear input for next time
             }
         });
     </script>
