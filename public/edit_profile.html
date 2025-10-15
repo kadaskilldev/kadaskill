@@ -946,18 +946,26 @@
                     .getPublicUrl(filePath);
 
                 // 5. Update the user's profile in the database with the new URL
-                const { error: updateError } = await supabase
+                const { data: updatedProfile, error: updateError } = await supabase
                     .from('profiles')
-                    .update({ 
-                        avatar_url: publicUrl,
-                        updated_at: new Date()
-                    })
-                    .eq('id', user.id);
+                    .update({ avatar_url: publicUrl, updated_at: new Date() })
+                    .eq('id', user.id)
+                    .select() // get the updated profile data back
+                    .single();
 
                 if (updateError) throw updateError;
 
-                // 6. Update the UI
-                imgPreview.src = publicUrl; // Show the new image immediately
+                 // 6. Call the global UI update function from script.js
+                if (window.updateUserUI && updatedProfile) {
+                    window.updateUserUI(user, updatedProfile);
+                }
+
+                // 7. Update sessionStorage with the fresh profile data
+                sessionStorage.setItem('userProfile', JSON.stringify(updatedProfile));
+                // -----------------------
+
+                // 8. Update the local page UI
+                imgPreview.src = publicUrl;
                 alert("Profile picture updated successfully!");
 
             } catch (error) {

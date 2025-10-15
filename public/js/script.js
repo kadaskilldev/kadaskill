@@ -49,7 +49,8 @@ document.addEventListener('DOMContentLoaded', function() {
             pathname.endsWith('learn.html') || 
             pathname.endsWith('learning.html') || 
             pathname.endsWith('certification.html') ||
-            pathname.endsWith('profile.html')
+            pathname.endsWith('profile.html') ||
+            pathname.endsWith('practice.html')
         ) {
             console.log(`On ${pathname}, loading user data...`);
             loadDashboardData();
@@ -751,9 +752,82 @@ async function loadDashboardData() {
         return;
     }
 
+    updateUserUI(user, profile);
+
     // At the end of the function, the setTimeout calls removeLoadingStates,
     // which will now correctly handle the certification page.
     setTimeout(() => {
         if (pageBody) pageBody.classList.remove('loading'); // Remove from body
     }, 100);
+}
+
+
+function updateUserUI(user, profile) {
+    if (!user || !profile) return; // Safety check
+
+    const userName = profile.full_name || user.email.split('@')[0];
+    const userInitial = userName.charAt(0).toUpperCase();
+    const avatarUrl = profile.avatar_url;
+
+    // --- UPDATE NAVBAR AVATAR ---
+    // We need to handle two types of navbars
+    
+    // 1. For the main navbar (learn.html, learning.html, etc.)
+    const headerAvatarDiv = document.querySelector('.header-right .user-avatar');
+    if (headerAvatarDiv && headerAvatarDiv.tagName === 'DIV') { // Check if it's the initial-only div
+        if (avatarUrl) {
+            headerAvatarDiv.outerHTML = `<img src="${avatarUrl}" alt="User Avatar" class="user-avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">`;
+        } else {
+            headerAvatarDiv.textContent = userInitial;
+        }
+    }
+    // Handle case where it has already been converted to an img
+    const headerAvatarImg = document.querySelector('.header-right .user-avatar');
+    if (headerAvatarImg && headerAvatarImg.tagName === 'IMG' && avatarUrl) {
+        headerAvatarImg.src = avatarUrl;
+    }
+
+
+    // 2. For the navbar on profile pages (profile.html, edit_profile.html)
+    const profilePicNav = document.querySelector('nav .profile-pic');
+    if (profilePicNav) {
+        if (avatarUrl) {
+            profilePicNav.src = avatarUrl;
+        } else {
+            profilePicNav.src = 'images/team/eijay.png'; // Fallback to default
+        }
+    }
+
+
+    // --- UPDATE MAIN PAGE AVATARS ---
+    //  handles the larger profile pictures within the page content.
+    // 3. For the avatar on learning.html
+    const learningPageAvatar = document.querySelector('.greeting-avatar');
+    if (learningPageAvatar) {
+        if (avatarUrl) {
+            learningPageAvatar.src = avatarUrl;
+        } else {
+            learningPageAvatar.src = 'images/team/eijay.png'; // Fallback to default
+        }
+    }
+
+    // 4. For the avatar on certification.html
+    const certificationPageAvatar = document.querySelector('.welcome-section .avatar-img');
+    if (certificationPageAvatar) {
+        if (avatarUrl) {
+            certificationPageAvatar.src = avatarUrl;
+        } else {
+            certificationPageAvatar.src = 'images/team/eijay.png'; // Fallback to default
+        }
+    }
+    
+    // 5. For the main avatar on profile.html
+    const profilePageAvatar = document.querySelector('.hero-section .profile-avatar');
+    if(profilePageAvatar) {
+        if (avatarUrl) {
+            profilePageAvatar.src = avatarUrl;
+        } else {
+            profilePageAvatar.src = 'images/team/eijay.png'; // Fallback to default
+        }
+    }
 }
