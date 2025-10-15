@@ -517,10 +517,10 @@
     <!-- Main Content -->
     <div class="container">
         <!-- Greeting Section -->
-        <div class="greeting">
+        <div class="greeting loading">
             <img src="images/team/eijay.png" alt="Eijay" class="greeting-avatar">
             <div class="greeting-text">
-                <h1>Hello there, <span class="name">Eijay!</span></h1>
+                <h1>Hello there, <span class="name" data-placeholder="greeting-name">...</span></h1>
             </div>
             <div class="streak">
                 <span class="streak-number">105</span> Daily Streak
@@ -708,6 +708,9 @@
             </div>
         </div>
     </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/script.js"></script>
 </body>
 
 </html>

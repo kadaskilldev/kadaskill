@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="loading/globals.css" />
     <link rel="stylesheet" href="loading/styleguide.css" />
     <link rel="stylesheet" href="loading/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -40,11 +41,49 @@
         </header>
     </main>
     <script>
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 5000);
-        });
+        // Use the same Supabase credentials
+        const SUPABASE_URL = 'https://kbpbubsnadnhebgdggdy.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImticGJ1YnNuYWRuaGViZ2RnZ2R5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMjA4MTksImV4cCI6MjA3MzU5NjgxOX0.4O8ZLeZ2iR786MZ8JS_55nzhn-5WxqabMtDQuAoZkAA';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // runs as soon as the page loads
+        async function fetchInitialDataAndRedirect() {
+            // Get the user from Supabase's local session
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!user) {
+                // If for some reason no user is found, go back to the login page
+                console.error("No user session found. Redirecting to login.");
+                window.location.replace('index.html'); // Use replace to avoid back-button issues
+                return;
+            }
+
+            // Fetch the user's profile from the database
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('full_name, total_xp') // Fetch all the data you need on the dashboard
+                .eq('id', user.id)
+                .single();
+
+            if (error) {
+                console.error("Failed to fetch profile:", error);
+                // Handle the error, maybe go to login with an error message
+                window.location.replace('index.html');
+                return;
+            }
+
+            // Store the fetched user and profile data in sessionStorage.
+            // sessionStorage is temporary storage that gets cleared when the browser tab is closed.
+            // We use JSON.stringify because storage can only hold strings.
+            sessionStorage.setItem('userProfile', JSON.stringify(profile));
+            sessionStorage.setItem('authUser', JSON.stringify(user));
+
+            // Now that the data is stored, redirect to the actual dashboard
+            window.location.replace('learn.html');
+        }
+
+        // Run the function
+        fetchInitialDataAndRedirect();
     </script>
 </body>
 

@@ -1191,3 +1191,37 @@ body {
         font-size: 1.4rem;
     }
 }
+
+/* When a container has the .loading class, style its placeholders */
+.loading [data-placeholder] {
+    color: transparent;
+    background-color: #e0e0e0; /* A light grey background */
+    border-radius: 4px;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+.loading .profile-name, .loading .profile-username { min-width: 150px; }
+.loading .bio-text { min-height: 80px; } /* Give the bio placeholder some height */
+/* Prevent the parent h1 from getting a grey background */
+.loading h1 {
+    background-color: transparent;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+}
+
+/* This is for the final fade-in effect.
+   We make the elements invisible by default when inside a .loading container. */
+.loading .highlight,
+.loading .name {
+    opacity: 0;
+}
+
+/* This creates the smooth transition effect */
+.highlight,
+.name {
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}

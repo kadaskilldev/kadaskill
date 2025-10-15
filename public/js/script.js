@@ -1,4 +1,4 @@
-const SUPABASE_URL = 'https://kbpbubsnadnhebgdggdy.supabase.co';
+const SUPABASE_URL = 'https://kbpbubsnadnhebgdggdy.supabase.co'; 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImticGJ1YnNuYWRuaGViZ2RnZ2R5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMjA4MTksImV4cCI6MjA3MzU5NjgxOX0.4O8ZLeZ2iR786MZ8JS_55nzhn-5WxqabMtDQuAoZkAA';
 
 // Initialize Supabase client
@@ -11,10 +11,10 @@ if (window.supabase && window.supabase.createClient) {
     console.error("Supabase client library not found on the window object. Did you include the CDN link in index.html?");
     // Mock for environments without the library loaded, to prevent immediate fatal errors in auth functions
     supabaseClient = {
-        auth: {
-            signUp: async() => ({ data: { user: { id: 'mock-id' } }, error: { message: 'Supabase Mock' } }),
-            signInWithPassword: async() => ({ data: { user: { id: 'mock-id' } }, error: { message: 'Supabase Mock' } }),
-            signInWithOAuth: async() => ({ error: { message: 'Supabase Mock: Library not loaded.' } }),
+        auth: { 
+            signUp: async () => ({ data: { user: { id: 'mock-id' } }, error: { message: 'Supabase Mock' } }),
+            signInWithPassword: async () => ({ data: { user: { id: 'mock-id' } }, error: { message: 'Supabase Mock' } }),
+            signInWithOAuth: async () => ({ error: { message: 'Supabase Mock: Library not loaded.' } }),
         }
     };
 }
@@ -24,7 +24,7 @@ const supabase = supabaseClient; // for compatibility with the rest of the code 
 document.addEventListener('DOMContentLoaded', function() {
     // Load shared components first
     loadSharedComponents();
-
+    
     // Then initialize page functionality
     setTimeout(() => {
         // Hide loading screen
@@ -40,9 +40,20 @@ document.addEventListener('DOMContentLoaded', function() {
         initializeFormHandling();
         initializePasswordToggle();
         initializeLoginToggle();
-
+        
         // Initialize page-specific functionality
         initializeCertificationPage();
+
+        const pathname = window.location.pathname;
+        if (
+            pathname.endsWith('learn.html') || 
+            pathname.endsWith('learning.html') || 
+            pathname.endsWith('certification.html') ||
+            pathname.endsWith('profile.html')
+        ) {
+            console.log(`On ${pathname}, loading user data...`);
+            loadDashboardData();
+        }
 
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -75,7 +86,7 @@ function loadSharedComponents() {
 function loadNavigation() {
     const navigationElement = document.getElementById('navigation');
     if (!navigationElement) return;
-
+    
     const nav = `
     <header class="header">
         <div class="container">
@@ -104,7 +115,7 @@ function loadNavigation() {
         </div>
     </header>
     `;
-
+    
     navigationElement.innerHTML = nav;
     setActiveNavigation();
 }
@@ -112,7 +123,7 @@ function loadNavigation() {
 function loadFooter() {
     const footerElement = document.getElementById('footer');
     if (!footerElement) return;
-
+    
     const footer = `
     <footer class="footer">
         <div class="container">
@@ -169,7 +180,7 @@ function loadFooter() {
         </div>
     </footer>
     `;
-
+    
     footerElement.innerHTML = footer;
 }
 
@@ -178,11 +189,11 @@ function setActiveNavigation() {
     const pathname = window.location.pathname;
     const currentPage = (pathname === '/' || pathname === '') ? 'home.html' : pathname.split('/').pop();
     const navLinks = document.querySelectorAll('.nav-btn');
-
+    
     navLinks.forEach(link => {
         link.classList.remove('active');
         const href = link.getAttribute('href');
-
+        
         if (href.includes(currentPage) ||
             (currentPage === 'certification.html' && href.includes('certification')) ||
             (currentPage === 'learn.html' && href.includes('learn')) ||
@@ -240,7 +251,7 @@ async function handleFormSubmit(e) {
     showNotification(isLogin ? 'Logging in...' : 'Creating your account...', 'info');
 
     let response;
-
+    
     if (isLogin) {
         // Supabase Login
         response = await supabase.auth.signInWithPassword({
@@ -270,14 +281,17 @@ async function handleFormSubmit(e) {
         loginForm.reset();
         return;
     }
-
+    
     if (data.user) {
-        // Successful login OR Sign-up (if email confirmation is OFF)
-        showNotification('Authentication successful! Redirecting to dashboard...', 'success');
-        // Redirect to home page
-        setTimeout(() => {
-            window.location.href = 'home.html';
-        }, 1500);
+        // If sign up requires verification
+        if (data.user && !data.session) {
+             showNotification('Welcome! Please check your email to verify your account.', 'success');
+             return;
+        }
+        // On successful login or signup (with auto-confirm)
+        // Supabase automatically handles the session in localStorage.
+        // We just need to navigate to the loading page.
+        window.location.href = 'loading.html';
     } else {
         showNotification('An unexpected authentication response was received.', 'error');
     }
@@ -290,18 +304,17 @@ async function handleSocialLogin(e) {
     let platform = '';
     let provider = '';
 
-    if (button.classList.contains('microsoft')) { platform = 'Microsoft';
-        provider = 'microsoft'; } else if (button.classList.contains('google')) { platform = 'Google';
-        provider = 'google'; } else if (button.classList.contains('linkedin')) { platform = 'LinkedIn';
-        provider = 'linkedin'; } else if (button.classList.contains('facebook')) { platform = 'Facebook';
-        provider = 'facebook'; }
+    if (button.classList.contains('microsoft')) { platform = 'Microsoft'; provider = 'microsoft'; } 
+    else if (button.classList.contains('google')) { platform = 'Google'; provider = 'google'; }
+    else if (button.classList.contains('linkedin')) { platform = 'LinkedIn'; provider = 'linkedin'; }
+    else if (button.classList.contains('facebook')) { platform = 'Facebook'; provider = 'facebook'; }
 
     // Only allow enabled providers (Google and LinkedIn)
     if (!provider || (provider !== 'google' && provider !== 'linkedin')) {
         showNotification(`${platform} login is not currently supported or enabled.`, 'info');
         return;
     }
-
+    
     showNotification(`Redirecting to ${platform} login...`, 'info');
 
     // Supabase OAuth Sign In
@@ -309,7 +322,7 @@ async function handleSocialLogin(e) {
         provider: provider,
         options: {
             // Redirect to the dashboard after successful login
-            redirectTo: window.location.origin + '/home.html',
+            redirectTo: window.location.origin + '/loading.html',
         },
     });
 
@@ -353,7 +366,7 @@ function initializeLoginToggle() {
     // function that handles the toggle logic
     const toggleHandler = function(e) {
         e.preventDefault();
-
+        
         let currentMode = loginForm.getAttribute('data-mode');
         let newMode = currentMode === 'signup' ? 'login' : 'signup';
 
@@ -373,10 +386,10 @@ function initializeLoginToggle() {
         const newToggle = document.querySelector('.login-link .login-toggle');
         if (newToggle) {
             // Re-attach the handler to the newly created element
-            newToggle.addEventListener('click', toggleHandler);
+            newToggle.addEventListener('click', toggleHandler); 
         }
     };
-
+    
     if (loginToggle) {
         // Add the listener to the initial element
         loginToggle.addEventListener('click', toggleHandler);
@@ -386,7 +399,7 @@ function initializeLoginToggle() {
 function handleCTAClick(e) {
     e.preventDefault();
     const targetUrl = this.getAttribute('href');
-
+    
     if (targetUrl === 'learn.html') {
         showNotification('Navigating to Learn page...', 'info');
         setTimeout(() => {
@@ -414,7 +427,7 @@ function handleCTAClick(e) {
 function initializeCertificationPage() {
     // Only run if we're on the certification page
     if (!document.querySelector('.certifications-grid-section')) return;
-
+    
     initializeFiltering();
     initializeSearch();
     initializeCertificationCards();
@@ -429,11 +442,11 @@ function initializeFiltering() {
     filterTabs.forEach(tab => {
         tab.addEventListener('click', function() {
             const filter = this.getAttribute('data-filter');
-
+            
             // Update active tab
             filterTabs.forEach(t => t.classList.remove('active'));
             this.classList.add('active');
-
+            
             // Filter cards
             filterCertifications(filter, certificationCards);
             updateCertificationCount();
@@ -445,7 +458,7 @@ function filterCertifications(filter, cards) {
     cards.forEach(card => {
         const category = card.getAttribute('data-category');
         const shouldShow = filter === 'all' || category.includes(filter);
-
+        
         if (shouldShow) {
             card.style.display = 'block';
             card.classList.add('fade-in');
@@ -466,19 +479,19 @@ function initializeSearch() {
         if (searchInput && certificationCards.length > 0) {
             searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase();
-
+                
                 certificationCards.forEach(card => {
                     const title = card.querySelector('.card-title').textContent.toLowerCase();
                     const description = card.querySelector('.card-description').textContent.toLowerCase();
                     const shouldShow = title.includes(searchTerm) || description.includes(searchTerm);
-
+                    
                     if (shouldShow) {
                         card.style.display = 'block';
                     } else {
                         card.style.display = 'none';
                     }
                 });
-
+                
                 updateCertificationCount();
             });
         }
@@ -490,15 +503,15 @@ function initializeSearch() {
 
 function initializeCertificationCards() {
     const certificationCards = document.querySelectorAll('.certification-card');
-
+    
     certificationCards.forEach(card => {
         const button = card.querySelector('.card-button');
-
+        
         if (button) {
             button.addEventListener('click', function() {
                 const title = card.querySelector('.card-title').textContent;
                 const buttonText = this.textContent.trim();
-
+                
                 if (buttonText === 'Resume') {
                     showNotification(`Resuming ${title} course...`, 'info');
                 } else {
@@ -511,7 +524,7 @@ function initializeCertificationCards() {
 
 function initializeContinueCard() {
     const continueBtn = document.querySelector('.continue-btn');
-
+    
     if (continueBtn) {
         continueBtn.addEventListener('click', function() {
             showNotification('Continuing Data Analyst Track...', 'info');
@@ -523,7 +536,7 @@ function initializeContinueCard() {
 function updateCertificationCount() {
     const visibleCards = document.querySelectorAll('.certification-card[style*="display: block"], .certification-card:not([style*="display: none"])');
     const countElement = document.getElementById('cert-count');
-
+    
     if (countElement) {
         countElement.textContent = visibleCards.length;
     }
@@ -535,7 +548,7 @@ async function fetchUserData() {
         // When backend is ready, replace with actual API call
         // const response = await fetch('/api/user/profile');
         // return await response.json();
-
+        
         // Mock data for now
         return {
             id: 1,
@@ -557,10 +570,11 @@ async function fetchCertifications() {
         // When backend is ready, replace with actual API call
         // const response = await fetch('/api/certifications');
         // return await response.json();
-
+        
         // Mock data structure that matches expected backend response
         return {
-            certifications: [{
+            certifications: [
+                {
                     id: 1,
                     title: 'AWS Certified Solutions Architect – Associate',
                     description: 'Validates your ability to design and deploy scalable, highly available systems on AWS...',
@@ -672,4 +686,74 @@ function getNotificationColor(type) {
         info: '#17a2b8'
     };
     return colors[type] || colors.info;
+}
+
+async function loadDashboardData() {
+    const pageBody = document.querySelector('body.loading');
+    // Retrieve the data we stored on the loading page.
+    // JSON.parse turns the string back into a JavaScript object.
+    const welcomeSection = document.querySelector('.welcome'); // on learn.html
+    const greetingSection = document.querySelector('.greeting'); // on learning.html
+    const certWelcomeSection = document.querySelector('.welcome-section.loading'); // certification.html
+
+    const profile = JSON.parse(sessionStorage.getItem('userProfile'));
+    const user = JSON.parse(sessionStorage.getItem('authUser'));
+
+    if (profile) {
+        // update the page instantly with the pre-fetched data
+        const userName = profile.full_name || user.email.split('@')[0];
+        
+        const welcomeHighlight = document.querySelector('[data-placeholder="name"]'); 
+        if (welcomeHighlight) {
+            welcomeHighlight.textContent = userName;
+        }
+        
+        const greetingName = document.querySelector('[data-placeholder="greeting-name"]'); // on learning.html and certification.html 
+        if (greetingName) {
+            greetingName.textContent = userName;
+        }
+        
+        // learn.html sidebar
+        const xpElement = document.querySelector('.profile-card .stats-grid .stat-item:nth-child(1) .stat-number');
+        if (xpElement) xpElement.textContent = profile.total_xp || 0
+
+        if (welcomeSection) {
+            welcomeSection.classList.remove('loading');
+        }
+        if (greetingSection) {
+            greetingSection.classList.remove('loading');
+        }
+        if (certWelcomeSection){
+            certWelcomeSection.classList.remove('loading');
+        }
+
+        // --- FOR PROFILE.HTML ---
+        const profileName = document.querySelector('[data-placeholder="profile-name"]');
+        if (profileName) profileName.textContent = userName;
+        console.log("did it get through?");
+
+        const profileUsername = document.querySelector('[data-placeholder="profile-username"]');
+        if (profileUsername) profileUsername.textContent = `@${user.email.split('@')[0]}`;
+        
+        const profileBio = document.querySelector('[data-placeholder="profile-bio"]');
+        if (profileBio) profileBio.textContent = profile.bio || 'No biography set. Click "Edit Profile" to add one!';
+        // ---------------------------------------------
+    }
+
+    // If for some reason the data isn't there, stop the function.
+    if (!profile || !user) {
+        console.error("User data not found in session storage. Maybe the loading page failed.");
+        // If data is missing, we should still remove the loading state
+        // to show the placeholders without animation.
+        if (welcomeSection) welcomeSection.classList.remove('loading');
+        if (greetingSection) greetingSection.classList.remove('loading');
+        if (certWelcomeSection) certWelcomeSection.classList.remove('loading');
+        return;
+    }
+
+    // At the end of the function, the setTimeout calls removeLoadingStates,
+    // which will now correctly handle the certification page.
+    setTimeout(() => {
+        if (pageBody) pageBody.classList.remove('loading'); // Remove from body
+    }, 100);
 }

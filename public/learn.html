@@ -50,13 +50,13 @@
                 <!-- Left Content -->
                 <div class="left-content">
                     <!-- Welcome Section -->
-                    <section class="welcome">
+                    <section class="welcome loading">
                         <div class="welcome-header">
                             <div class="welcome-robot">
                                 <img src="images/robot-hero.png" alt="Welcome Robot" class="welcome-robot-img" onerror="this.outerHTML='<i class=\'fas fa-robot\'></i>';">
                             </div>
                             <div class="welcome-text">
-                                <h1>Welcome Back, <span class="highlight">Eijay!</span></h1>
+                                <h1>Welcome Back, <span class="highlight" data-placeholder="name">...</span></h1>
                                 <p>Weekly goal progress tracker:</p>
                                 <div class="progress-tracker">
                                     <div class="day-circle pending">S</div>
@@ -446,6 +446,9 @@
             </div>
         </div>
     </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/script.js"></script>
 </body>
 
 </html>

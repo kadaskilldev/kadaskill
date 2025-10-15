@@ -774,7 +774,46 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/script.js"></script>
     <script>
+        async function populateProfileForm() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                alert("You must be logged in to edit your profile.");
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Fetch the FULL profile from the database directly, not session storage,
+            // to ensure we have the most up-to-date data.
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('*') // Get all columns
+                .eq('id', user.id)
+                .single();
+
+            if (error) {
+                console.error("Error fetching profile for editing:", error);
+                alert("Could not load your profile data.");
+                return;
+            }
+
+            if (profile) {
+                // Use more specific selectors like IDs for reliability
+                // Example (you'll need to add these IDs to your HTML inputs):
+                // <input type="text" id="fullNameInput" ...>
+                document.querySelector('input[placeholder="Enter your full name"]').value = profile.full_name || '';
+                document.querySelector('input[placeholder="Enter your username"]').value = `@${user.email.split('@')[0]}`;
+                document.querySelector('textarea').value = profile.bio || '';
+                // Add lines for location, work, education, etc.
+            }
+        }
+        // Add an event listener to run this function when the page is ready
+        document.addEventListener('DOMContentLoaded', populateProfileForm);
+
+
+
         // Focus area selection
         document.querySelectorAll('.focus-card').forEach(card => {
             card.addEventListener('click', function() {
@@ -812,10 +851,36 @@
         });
 
         // Form submission
-        document.getElementById('editProfileForm').addEventListener('submit', function(e) {
+        document.getElementById('editProfileForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            alert('Profile updated successfully!');
-            window.location.href = 'profile.html';
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return alert("Your session has expired. Please log in again.");
+
+            // 1. Collect all the updated data from the form fields
+            const updates = {
+                full_name: document.querySelector('input[placeholder="Enter your full name"]').value,
+                bio: document.querySelector('textarea').value,
+                // Add the other fields you want to save
+                // location: document.querySelector('input[placeholder="Enter your location"]').value,
+                updated_at: new Date() // It's good practice to set an updated_at timestamp
+            };
+
+            // 2. Send the update request to Supabase
+            const { error } = await supabase
+                .from('profiles')
+                .update(updates)
+                .eq('id', user.id); // Crucial: only update the row for the logged-in user
+
+            // 3. Provide feedback to the user
+            if (error) {
+                console.error('Error updating profile:', error);
+                alert('There was an error saving your profile. Please try again.');
+            } else {
+                alert('Profile updated successfully!');
+                // IMPORTANT: We need to clear the session storage so the next page load
+                // will get the fresh data. The easiest way is to go back through the loading page.
+                window.location.href = 'loading.html'; 
+            }
         });
     </script>
 </body>
