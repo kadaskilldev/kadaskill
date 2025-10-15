@@ -61,7 +61,7 @@
             // Fetch the user's profile from the database
             const { data: profile, error } = await supabase
                 .from('profiles')
-                .select('full_name, total_xp') // Fetch all the data you need on the dashboard
+                .select('full_name, total_xp') // Fetch all the data we need on the dashboard
                 .eq('id', user.id)
                 .single();
 

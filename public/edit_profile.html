@@ -801,12 +801,12 @@
 
             if (profile) {
                 // Use more specific selectors like IDs for reliability
-                // Example (you'll need to add these IDs to your HTML inputs):
+                // Example:
                 // <input type="text" id="fullNameInput" ...>
                 document.querySelector('input[placeholder="Enter your full name"]').value = profile.full_name || '';
                 document.querySelector('input[placeholder="Enter your username"]').value = `@${user.email.split('@')[0]}`;
                 document.querySelector('textarea').value = profile.bio || '';
-                // Add lines for location, work, education, etc.
+                // Since this for debugging, we might add lines for location, work, education, etc. in the future, not sure as of now.
             }
         }
         // Add an event listener to run this function when the page is ready
@@ -860,7 +860,7 @@
             const updates = {
                 full_name: document.querySelector('input[placeholder="Enter your full name"]').value,
                 bio: document.querySelector('textarea').value,
-                // Add the other fields you want to save
+                // Add the other fields we want to save
                 // location: document.querySelector('input[placeholder="Enter your location"]').value,
                 updated_at: new Date() // It's good practice to set an updated_at timestamp
             };
