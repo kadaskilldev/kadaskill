@@ -13,6 +13,10 @@ body {
     overflow-x: hidden;
 }
 
+:root {
+    --header-height: 88px;
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -23,26 +27,43 @@ body {
 /* Header */
 
 .header {
-    position: absolute;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    position: fixed;
     top: 0;
     left: 0;
+    right: 0;
     width: 100%;
-    z-index: 100;
+    z-index: 1000;
     padding: 1rem 0;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+body.has-fixed-header {
+    padding-top: var(--header-height, 88px);
+}
+
+.header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .logo {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a202c;
 }
 
 .logo-img {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-radius: 8px;
     object-fit: contain;
-    /* Prevent stretching */
 }
 
 .logo span {
@@ -50,6 +71,460 @@ body {
     font-weight: 700;
 }
 
+.nav {
+    display: flex;
+    align-items: center;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    align-items: center;
+    margin: 0;
+}
+
+.nav-btn {
+    text-decoration: none;
+    color: #64748b;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 0.5rem 0;
+    transition: color 0.2s;
+    border-bottom: 2px solid transparent;
+}
+
+.nav-btn:hover,
+.nav-btn.active {
+    color: #3b82f6;
+    border-bottom-color: #3b82f6;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-box input {
+    padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    width: 280px;
+    background: #f8fafc;
+}
+
+.search-box i {
+    position: absolute;
+    left: 0.75rem;
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.user-profile {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    background: #3b82f6;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.user-avatar__initial {
+    font-weight: 600;
+}
+
+.user-profile__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.user-profile__toggle .user-profile__icon {
+    transition: transform 0.2s ease;
+}
+
+.user-profile__toggle.is-open .user-profile__icon,
+.user-profile__icon.is-rotated {
+    transform: rotate(-180deg);
+}
+
+.user-profile__toggle:hover,
+.user-profile__toggle:focus-visible {
+    background: rgba(59, 130, 246, 0.1);
+    outline: none;
+}
+
+.user-profile__icon {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+.user-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    width: 175px;
+    padding: 12px 0;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 22px 44px -12px rgba(15, 23, 42, 0.28);
+    border: 1px solid rgba(35, 47, 62, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 10;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.user-menu[hidden] {
+    display: none;
+}
+
+.user-menu.is-open {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.user-menu__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    margin: 0 8px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #232f3e;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.user-menu__item:hover,
+.user-menu__item:focus-visible,
+.user-menu__item.is-active {
+    background: #ff9900;
+    color: #232f3e;
+    outline: none;
+}
+
+.user-menu__item--danger:hover,
+.user-menu__item--danger:focus-visible,
+.user-menu__item--danger.is-active {
+    background: #ff9900;
+}
+
+.user-menu__icon-wrap {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-menu__icon {
+    width: 18px;
+    height: 18px;
+}
+
+.user-menu__label {
+    flex: 1;
+}
+
+
+/* CTA Section */
+
+.cta-section {
+    position: relative;
+    width: 100%;
+    background-color: #efeff5;
+    overflow: hidden;
+    margin-bottom: -1px;
+}
+
+.cta-container {
+    position: relative;
+    width: min(1440px, 100%);
+    margin: 0 auto;
+    padding: 120px 16px 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.cta-bg,
+.cta-accent {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+    transform-origin: center center;
+    will-change: transform;
+    animation: cta-accent-swirl 8s linear infinite;
+}
+
+.cta-bg-left,
+.cta-bg-right {
+    width: clamp(240px, 28vw, 380px);
+    height: clamp(240px, 28vw, 380px);
+    object-fit: contain;
+}
+.cta-bg-left {
+    top: 420px;
+    right: -120px;
+}
+.cta-bg-right {
+    top: -80px;
+    left: -180px;
+}
+
+.cta-accent-left {
+    top: 380px;
+    left: 80px;
+    width: clamp(140px, 18vw, 220px);
+    height: auto;
+    transform: rotate(148.8deg);
+}
+
+.cta-accent-right {
+    top: 9px;
+    right: 200px;
+    width: 162px;
+    height: auto;
+    transform: rotate(148.8deg);
+}
+
+.cta-content {
+    position: relative;
+    z-index: 2; /* bumped so robot sits below content but above background accents */
+    margin-top: 0;
+    text-align: center;
+    max-width: 820px;
+}
+
+.cta-title {
+    font-family: var(--header-font-family);
+    font-weight: var(--header-font-weight);
+    font-size: clamp(2.5rem, 4vw, var(--header-font-size));
+    letter-spacing: var(--header-letter-spacing);
+    color: var(--variable-collection-primary-color);
+    margin-bottom: 28px;
+}
+
+.cta-subtitle {
+    font-family: var(--title-3-font-family);
+    font-weight: var(--title-3-font-weight);
+    color: var(--variable-collection-text);
+    font-size: var(--title-3-font-size);
+    letter-spacing: var(--title-3-letter-spacing);
+    margin-bottom: 64px;
+}
+
+.cta-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(210px, 1fr));
+    gap: 36px;
+    justify-content: center;
+    width: min(960px, 100%);
+    margin: 0 auto;
+}
+
+.cta-button {
+    position: relative;
+    width: 100%;
+    height: 65px;
+    border-radius: 14px;
+    font-family: var(--button-font-family);
+    font-weight: var(--button-font-weight);
+    letter-spacing: var(--button-letter-spacing);
+    font-size: 1.6rem;
+    color: var(--variable-collection-secondary-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    filter: drop-shadow(0px 6px 0px #8d5602);
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.cta-button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: url('../images/home/cta/btn.svg') no-repeat center / cover;
+    z-index: 0;
+}
+
+.cta-button:hover::before {
+    background: linear-gradient(180deg, #ffe8b0 0%, #ffbf4d 100%);
+}
+
+.cta-button span {
+    position: relative;
+    z-index: 1;
+}
+
+.cta-robot {
+    /* Larger base size so the icon reads better */
+    --cta-robot-size: clamp(80px, 11vw, 160px);
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: var(--cta-robot-size);
+    height: auto;
+    pointer-events: none;
+    transform-origin: center;
+    backface-visibility: visible; /* keep visible during flips */
+    will-change: left, top, transform;
+    /* subtle drop shadow so robot reads above the background shapes */
+    filter: drop-shadow(0 8px 18px rgba(15, 23, 42, 0.18));
+    /* Keep the overall duration similar to earlier but smooth out transitions */
+    animation: cta-robot-loop 8s cubic-bezier(.22,.9,.37,.99) infinite;
+}
+
+@keyframes cta-robot-loop {
+    /* 0%: start top-left, initial size */
+    0% {
+        top: 20px;
+        left: 20px;
+        transform: translateZ(0) scale(1) scaleX(1) rotate(0deg);
+    }
+
+    /* 18%: slowly grow while remaining top-left (gentle ease-in for size) */
+    18% {
+        top: 20px;
+        left: 20px;
+        transform: translateZ(0) scale(1.25) scaleX(1) rotate(0deg);
+    }
+
+    /* 33%: slant to bottom-right and shrink + flip (scaleX -1) - shrink happens gradually between 18% and 33% */
+    33% {
+        top: calc(100% - var(--cta-robot-size) - 20px);
+        left: calc(100% - var(--cta-robot-size) - 20px);
+        transform: translateZ(0) scale(0.75) scaleX(-1) rotate(8deg);
+    }
+
+    /* 50%: hold a little at bottom-right to avoid abrupt jump */
+    50% {
+        top: calc(100% - var(--cta-robot-size) - 20px);
+        left: calc(100% - var(--cta-robot-size) - 20px);
+        transform: translateZ(0) scale(0.8) scaleX(-1) rotate(8deg);
+    }
+
+    /* 66%: move horizontally to bottom-left and grow again (same size as top-left at 18%) */
+    66% {
+        top: calc(100% - var(--cta-robot-size) - 20px);
+        left: 20px;
+        transform: translateZ(0) scale(1.25) scaleX(1) rotate(-6deg);
+    }
+
+    /* 85%: start moving up back toward top-left while slightly reducing size before final settle */
+    85% {
+        top: 20px;
+        left: 20px;
+        transform: translateZ(0) scale(1.05) scaleX(1) rotate(0deg);
+    }
+
+    /* 100%: closed loop back to top-left exact start state */
+    100% {
+        top: 20px;
+        left: 20px;
+        transform: translateZ(0) scale(1) scaleX(1) rotate(0deg);
+    }
+}
+
+/* Swirl animation for CTA background/accent elements synchronized with robot loop */
+@keyframes cta-accent-swirl {
+    /* 0 - 18%: idle (no swirl) */
+    0% {
+        transform: rotate(0deg) translate(0,0);
+    }
+    18% {
+        transform: rotate(0deg) translate(0,0);
+    }
+
+    /* 18 - 33%: swirl while robot slants to bottom-right */
+    33% {
+        transform: rotate(360deg) translate(8px, 8px);
+    }
+
+    /* 33 - 50%: hold the swirl state (no further rotation) */
+    50% {
+        transform: rotate(360deg) translate(8px, 8px);
+    }
+
+    /* 50 - 66%: swirl again while robot moves to bottom-left */
+    66% {
+        transform: rotate(720deg) translate(-8px, 8px);
+    }
+
+    /* 66 - 85%: hold that state */
+    85% {
+        transform: rotate(720deg) translate(-8px, 8px);
+    }
+
+    /* 85 - 100%: final swirl while moving up, return towards starting transform */
+    100% {
+        transform: rotate(1080deg) translate(0, 0);
+    }
+}
+
+/* Make subtle differences so the left/right accents feel organic (optional) */
+.cta-bg-left { animation-delay: 0s; }
+.cta-bg-right { animation-delay: 0.05s; }
+.cta-accent-left { animation-delay: 0.1s; }
+.cta-accent-right { animation-delay: 0.15s; }
+
+/* Respect user reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .cta-bg,
+    .cta-accent {
+        animation: none;
+        transition: none;
+    }
+}
+
+@media (max-width: 900px) {
+    .cta-container {
+        padding: 96px 16px 120px;
+    }
+
+    .cta-actions {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    .cta-button {
+        width: min(320px, 70vw);
+    }
+}
 
 /* Hero Section */
 
@@ -96,23 +571,6 @@ body {
     font-size: 1.2rem;
     margin-bottom: 2rem;
     color: #666;
-}
-
-.cta-button {
-    background: #FF8C00;
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.cta-button:hover {
-    background: #e67e00;
-    transform: translateY(-2px);
 }
 
 .partners {
@@ -703,17 +1161,6 @@ body {
     width: 100%;
 }
 
-.team-row:first-child {
-    /* First row with 3 members */
-}
-
-.team-row:nth-child(2) {
-    /* Second row with 3 members */
-}
-
-.team-row:last-child {
-    /* Last row with 2 members - centered */
-}
 
 .team-member {
     background: #0f7b7e;
@@ -1039,6 +1486,7 @@ body {
     background: #2c3e50;
     color: white;
     padding: 3rem 0 1rem;
+    margin-top: 0;
 }
 
 .footer-content {
@@ -1128,6 +1576,34 @@ body {
 }
 
 
+/* Collapse vertical gaps between main/hero, CTA and footer without moving CTA internals */
+/* Keep .cta-container internal padding intact so CTA content position doesn't change */
+.main-content {
+    /* Remove only the bottom padding that creates gap before CTA */
+    padding-bottom: 0;
+}
+
+/* Ensure CTA block doesn't introduce extra external spacing */
+.cta-section {
+    margin-top: 0;    /* don't pull CTA down */
+    margin-bottom: 0; /* remove any external gap at bottom */
+}
+
+/* When CTA immediately follows main-content, remove any leftover top gap */
+.main-content + .cta-section {
+    margin-top: 0;
+}
+
+/* Bring footer up so it sits flush to the preceding section (CTA) */
+.footer {
+    margin-top: 0;
+}
+
+/* Ensure no default element spacing remains between the blocks */
+.cta-section + .footer {
+    margin-top: 0;
+}
+
 /* Responsive Design */
 
 @media (max-width: 968px) {
@@ -1190,38 +1666,4 @@ body {
     .about-text h2 {
         font-size: 1.4rem;
     }
-}
-
-/* When a container has the .loading class, style its placeholders */
-.loading [data-placeholder] {
-    color: transparent;
-    background-color: #e0e0e0; /* A light grey background */
-    border-radius: 4px;
-    animation: pulse 1.5s infinite ease-in-out;
-}
-.loading .profile-name, .loading .profile-username { min-width: 150px; }
-.loading .bio-text { min-height: 80px; } /* Give the bio placeholder some height */
-/* Prevent the parent h1 from getting a grey background */
-.loading h1 {
-    background-color: transparent;
-}
-
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.4; }
-    100% { opacity: 1; }
-}
-
-/* This is for the final fade-in effect.
-   We make the elements invisible by default when inside a .loading container. */
-.loading .highlight,
-.loading .name {
-    opacity: 0;
-}
-
-/* This creates the smooth transition effect */
-.highlight,
-.name {
-    opacity: 1;
-    transition: opacity 0.3s ease-in-out;
 }

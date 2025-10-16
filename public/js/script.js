@@ -43,18 +43,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Initialize page-specific functionality
         initializeCertificationPage();
-
-        const pathname = window.location.pathname;
-        if (
-            pathname.endsWith('learn.html') || 
-            pathname.endsWith('learning.html') || 
-            pathname.endsWith('certification.html') ||
-            pathname.endsWith('profile.html') ||
-            pathname.endsWith('practice.html')
-        ) {
-            console.log(`On ${pathname}, loading user data...`);
-            loadDashboardData();
-        }
+        initializeCalendar();
+        initializeLearnPage();
+        initializePracticePage();
 
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -84,10 +75,122 @@ function loadSharedComponents() {
     loadFooter();
 }
 
+function initializeUserMenu(scope = document) {
+    const avatarToggle = scope.querySelector('.user-profile__toggle');
+    const avatarBadge = scope.querySelector('.user-avatar');
+    const menu = scope.querySelector('.user-menu');
+    const toggleIcon = avatarToggle?.querySelector('.user-profile__icon');
+    if (!avatarToggle || !menu) return;
+
+    const closeMenu = () => {
+        avatarToggle.setAttribute('aria-expanded', 'false');
+        menu.hidden = true;
+        menu.classList.remove('is-open');
+        avatarToggle.classList.remove('is-open');
+        toggleIcon?.classList.remove('is-rotated');
+        document.removeEventListener('click', onOutsideClick);
+        document.removeEventListener('keydown', onEscape, true);
+    };
+
+    const openMenu = () => {
+        avatarToggle.setAttribute('aria-expanded', 'true');
+        menu.hidden = false;
+        requestAnimationFrame(() => menu.classList.add('is-open'));
+        avatarToggle.classList.add('is-open');
+        toggleIcon?.classList.add('is-rotated');
+        setTimeout(() => menu.querySelector('a')?.focus(), 0);
+        document.addEventListener('click', onOutsideClick);
+        document.addEventListener('keydown', onEscape, true);
+    };
+
+    const onOutsideClick = (event) => {
+        const isAvatar = avatarBadge?.contains(event.target);
+        const isToggle = avatarToggle.contains(event.target);
+        if (!menu.contains(event.target) && !isToggle && !isAvatar) {
+            closeMenu();
+        }
+    };
+
+    const onEscape = (event) => {
+        if (event.key === 'Escape') {
+            closeMenu();
+            avatarToggle.focus();
+        }
+    };
+
+    const handleToggleClick = (event) => {
+        event.stopPropagation();
+        const isExpanded = avatarToggle.getAttribute('aria-expanded') === 'true';
+        if (isExpanded) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    };
+
+    avatarToggle.addEventListener('click', handleToggleClick);
+    avatarBadge?.addEventListener('click', handleToggleClick);
+
+    menu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('keydown', (event) => {
+            if (event.key === 'Tab' && !event.shiftKey && event.target === menu.lastElementChild) {
+                closeMenu();
+            }
+        });
+    });
+    menu.querySelectorAll('.user-menu__item').forEach(item => {
+        item.addEventListener('mouseenter', () => {
+            menu.querySelectorAll('.user-menu__item').forEach(el => el.classList.remove('is-active'));
+            item.classList.add('is-active');
+        });
+        item.addEventListener('mouseleave', () => item.classList.remove('is-active'));
+    });
+}
+
 function loadNavigation() {
     const navigationElement = document.getElementById('navigation');
     if (!navigationElement) return;
-    
+
+    const pathname = window.location.pathname;
+    const currentPage = (pathname === '/' || pathname === '') ? 'home.html' : pathname.split('/').pop();
+    const pagesWithoutProfileMenu = ['certification.html', 'learn.html', 'practice.html'];
+    const isProfileMenuDisabled = pagesWithoutProfileMenu.includes(currentPage);
+
+    const userProfileMarkup = isProfileMenuDisabled
+        ? `
+                <div class="user-profile">
+                    <div class="user-avatar" aria-hidden="true">E</div>
+                </div>
+        `
+        : `
+                <div class="user-profile">
+                    <div class="user-avatar" aria-hidden="true">E</div>
+                    <button class="user-profile__toggle" aria-label="Open profile menu" aria-haspopup="true" aria-expanded="false">
+                        <img src="images/profile/Vector.svg" alt="" class="user-profile__icon">
+                    </button>
+                    <div class="user-menu" role="menu" hidden>
+                        <a href="profile.html" class="user-menu__item" role="menuitem">
+                            <span class="user-menu__icon-wrap">
+                                <img src="images/profile/icon-profile.svg" alt="" class="user-menu__icon" />
+                            </span>
+                            <span class="user-menu__label">Profile</span>
+                        </a>
+                        <a href="profile.html" class="user-menu__item" role="menuitem">
+                            <span class="user-menu__icon-wrap">
+                                <img src="images/profile/icon-settings.svg" alt="" class="user-menu__icon" />
+                            </span>
+                            <span class="user-menu__label">Settings</span>
+                        </a>
+                        <a href="#" class="user-menu__item user-menu__item--danger" role="menuitem">
+                            <span class="user-menu__icon-wrap">
+                                <img src="images/profile/icon-signout.svg" alt="" class="user-menu__icon" />
+                            </span>
+                            <span class="user-menu__label">Sign out</span>
+                        </a>
+                    </div>
+                </div>
+        `;
+
     const nav = `
     <header class="header">
         <div class="container">
@@ -109,15 +212,34 @@ function loadNavigation() {
                     <i class="fas fa-search"></i>
                     <input type="text" placeholder="Search...">
                 </div>
-                <div class="user-profile">
-                    <div class="user-avatar">E</div>
-                </div>
+                ${userProfileMarkup}
             </div>
         </div>
     </header>
     `;
-    
+
     navigationElement.innerHTML = nav;
+
+    const headerElement = navigationElement.querySelector('.header');
+    if (headerElement) {
+        const updateHeaderOffset = () => {
+            const headerHeight = headerElement.getBoundingClientRect().height;
+            document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
+        };
+
+        const applyHeaderOffset = () => {
+            document.body.classList.add('has-fixed-header');
+            updateHeaderOffset();
+        };
+
+        applyHeaderOffset();
+        window.addEventListener('resize', updateHeaderOffset, { passive: true });
+        window.addEventListener('load', updateHeaderOffset, { once: true });
+    }
+
+    if (!isProfileMenuDisabled) {
+        initializeUserMenu(navigationElement);
+    }
     setActiveNavigation();
 }
 
@@ -195,10 +317,16 @@ function setActiveNavigation() {
         link.classList.remove('active');
         const href = link.getAttribute('href');
         
+        if (currentPage === 'profile.html') {
+            // Do not highlight any nav link when on profile page
+            return;
+        }
+
         if (href.includes(currentPage) ||
             (currentPage === 'certification.html' && href.includes('certification')) ||
             (currentPage === 'learn.html' && href.includes('learn')) ||
-            (currentPage === 'home.html' && href.includes('home'))) {
+            (currentPage === 'home.html' && href.includes('home')) ||
+            (currentPage === 'practice.html' && href.includes('practice'))) {
             link.classList.add('active');
         }
     });
@@ -284,15 +412,12 @@ async function handleFormSubmit(e) {
     }
     
     if (data.user) {
-        // If sign up requires verification
-        if (data.user && !data.session) {
-             showNotification('Welcome! Please check your email to verify your account.', 'success');
-             return;
-        }
-        // On successful login or signup (with auto-confirm)
-        // Supabase automatically handles the session in localStorage.
-        // We just need to navigate to the loading page.
-        window.location.href = 'loading.html';
+        // Successful login OR Sign-up (if email confirmation is OFF)
+        showNotification('Authentication successful! Redirecting to dashboard...', 'success');
+        // Redirect to home page
+        setTimeout(() => {
+            window.location.href = 'home.html'; 
+        }, 1500);
     } else {
         showNotification('An unexpected authentication response was received.', 'error');
     }
@@ -323,7 +448,7 @@ async function handleSocialLogin(e) {
         provider: provider,
         options: {
             // Redirect to the dashboard after successful login
-            redirectTo: window.location.origin + '/loading.html',
+            redirectTo: window.location.origin + '/home.html', 
         },
     });
 
@@ -543,6 +668,227 @@ function updateCertificationCount() {
     }
 }
 
+/* Calendar: dynamic month/year rendering, preserves existing row classes/structure when possible */
+function initializeCalendar() {
+    const monthEl = document.querySelector('.text-wrapper-11');
+    const yearEl = document.querySelector('.text-wrapper-22');
+    let gridEl = document.querySelector('.group-9[role="grid"]');
+    let nextBtn = document.querySelector('.vector-2[aria-label="Next month"]');
+    let prevBtn = document.querySelector('.vector-3[aria-label="Previous month"]');
+    if (!monthEl || !yearEl || !gridEl) return;
+
+    gridEl.classList.add('dynamic-calendar');
+
+    const today = new Date();
+    let state = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    function daysInMonth(y, m) { return new Date(y, m + 1, 0).getDate(); }
+    function weekdayLetter(i) { return ['S','M','T','W','T','F','S'][i]; }
+
+    function render(date) {
+        const y = date.getFullYear(), m = date.getMonth();
+        monthEl.textContent = new Intl.DateTimeFormat('en', { month: 'long' }).format(date);
+        yearEl.textContent = String(y);
+        gridEl.setAttribute('aria-label', `${monthEl.textContent} ${y} Calendar`);
+
+        const days = daysInMonth(y, m);
+        const firstDayOfWeek = new Date(y, m, 1).getDay();
+        const numWeeks = Math.max(5, Math.ceil((firstDayOfWeek + days) / 7));
+        const totalCells = numWeeks * 7;
+        const weeksMatrix = Array.from({ length: numWeeks }, () => Array(7).fill(null));
+
+        for (let cellIndex = 0; cellIndex < totalCells; cellIndex++) {
+            const weekIndex = Math.floor(cellIndex / 7);
+            const weekdayIndex = cellIndex % 7;
+            const dayNumber = cellIndex - firstDayOfWeek + 1;
+
+            if (dayNumber > 0 && dayNumber <= days) {
+                weeksMatrix[weekIndex][weekdayIndex] = dayNumber;
+            }
+        }
+
+    gridEl.dataset.weeks = String(numWeeks);
+    gridEl.style.setProperty('--calendar-gap', numWeeks === 6 ? '12px' : '16px');
+    gridEl.style.setProperty('--calendar-header-gap', numWeeks === 6 ? '8px' : '10px');
+        const profileContent = gridEl.closest('.profile-content');
+        if (profileContent) {
+            profileContent.dataset.calendarWeeks = String(numWeeks);
+            const profileSection = profileContent.closest('.profile-section-2');
+            if (profileSection) {
+                profileSection.dataset.calendarWeeks = String(numWeeks);
+            }
+        }
+
+        // Build new DOM
+        const frag = document.createDocumentFragment();
+        for (let w = 0; w < 7; w++) {
+            const row = document.createElement('div');
+            row.classList.add('calendar-column');
+            row.setAttribute('role','row');
+
+            const header = document.createElement('span');
+            header.classList.add('calendar-header');
+            header.setAttribute('role','columnheader');
+            header.textContent = weekdayLetter(w);
+            row.appendChild(header);
+
+            for (let week = 0; week < numWeeks; week++) {
+                const dayNum = weeksMatrix[week][w];
+                const cell = document.createElement('span');
+                cell.classList.add('calendar-cell');
+                cell.setAttribute('role','gridcell');
+
+                if (dayNum !== null && dayNum !== undefined) {
+                    cell.textContent = String(dayNum);
+                    cell.removeAttribute('aria-hidden');
+                    cell.classList.remove('empty');
+
+                    if (y === today.getFullYear() && m === today.getMonth() && dayNum === today.getDate()) {
+                        cell.classList.add('is-today');
+                        cell.setAttribute('aria-current', 'date');
+                    } else {
+                        cell.classList.remove('is-today');
+                        cell.removeAttribute('aria-current');
+                    }
+                } else {
+                    cell.textContent = '';
+                    cell.classList.add('empty');
+                    cell.setAttribute('aria-hidden', 'true');
+                    cell.classList.remove('is-today');
+                    cell.removeAttribute('aria-current');
+                }
+
+                row.appendChild(cell);
+            }
+            frag.appendChild(row);
+        }
+
+        // Replace grid content
+        gridEl.innerHTML = '';
+        gridEl.appendChild(frag);
+    }
+
+    function change(offset) {
+        state.setMonth(state.getMonth() + offset);
+        // Normalize date if month overflowed/underflowed
+        state = new Date(state.getFullYear(), state.getMonth(), 1);
+        render(state);
+    }
+
+    const handleNextClick = (event) => {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        change(1);
+    };
+
+    const handlePrevClick = (event) => {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        change(-1);
+    };
+
+    function bindNavButtons() {
+        const candidateNext = document.querySelector('.vector-2[aria-label="Next month"]');
+        if (candidateNext !== nextBtn) {
+            if (nextBtn) {
+                nextBtn.removeEventListener('click', handleNextClick);
+                delete nextBtn.dataset.calendarBound;
+            }
+            nextBtn = candidateNext;
+        }
+        if (nextBtn && !nextBtn.dataset.calendarBound) {
+            nextBtn.addEventListener('click', handleNextClick);
+            nextBtn.dataset.calendarBound = 'true';
+        }
+        // visual click feedback: toggle .is-active briefly
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                nextBtn.classList.add('is-active');
+                setTimeout(() => nextBtn.classList.remove('is-active'), 300);
+            });
+        }
+
+        const candidatePrev = document.querySelector('.vector-3[aria-label="Previous month"]');
+        if (candidatePrev !== prevBtn) {
+            if (prevBtn) {
+                prevBtn.removeEventListener('click', handlePrevClick);
+                delete prevBtn.dataset.calendarBound;
+            }
+            prevBtn = candidatePrev;
+        }
+        if (prevBtn && !prevBtn.dataset.calendarBound) {
+            prevBtn.addEventListener('click', handlePrevClick);
+            prevBtn.dataset.calendarBound = 'true';
+        }
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                prevBtn.classList.add('is-active');
+                setTimeout(() => prevBtn.classList.remove('is-active'), 300);
+            });
+        }
+    }
+
+    render(state);
+    bindNavButtons();
+
+    // Keyboard navigation when calendar has focus
+    if (!gridEl.hasAttribute('tabindex')) gridEl.setAttribute('tabindex','0');
+    gridEl.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') { change(1); e.preventDefault(); }
+        if (e.key === 'ArrowLeft')  { change(-1); e.preventDefault(); }
+    });
+
+    // Expose simple API for tests/debugging
+    gridEl._calendarState = () => ({ year: state.getFullYear(), month: state.getMonth() });
+
+    // Debug: confirm initialization and UI hooks
+    try {
+        console.debug('initializeCalendar: mounted', { gridEl, nextBtn, prevBtn, state: gridEl._calendarState() });
+    } catch (err) {
+        console.debug('initializeCalendar: debug log failed', err);
+    }
+
+    // Watch for DOM replacements that might remove/replace the grid and re-bind/render
+    const calendarObserver = new MutationObserver((mutations) => {
+        let navChanged = false;
+        for (const m of mutations) {
+            // If the grid element was removed or a new one was added, re-query and re-render
+            const removed = Array.from(m.removedNodes || []).some(n => n === gridEl || (n.querySelector && n.querySelector('.group-9[role="grid"]')));
+            const added = Array.from(m.addedNodes || []).some(n => n.querySelector && n.querySelector('.group-9[role="grid"]'));
+            if (removed || added) {
+                const newGrid = document.querySelector('.group-9[role="grid"]');
+                if (newGrid && newGrid !== gridEl) {
+                    console.debug('initializeCalendar: grid replaced — updating reference and re-render');
+                    gridEl = newGrid;
+                    // Ensure tabindex and keyboard listener remain set
+                    if (!gridEl.hasAttribute('tabindex')) gridEl.setAttribute('tabindex','0');
+                    // re-render current state into the new grid
+                    render(state);
+                    bindNavButtons();
+                }
+            }
+
+            const navSelectors = ['.vector-2[aria-label="Next month"]', '.vector-3[aria-label="Previous month"]'];
+            if (!navChanged) {
+                navChanged = navSelectors.some(selector =>
+                    Array.from(m.addedNodes || []).some(n => n.matches?.(selector) || n.querySelector?.(selector)) ||
+                    Array.from(m.removedNodes || []).some(n => n.matches?.(selector) || n.querySelector?.(selector))
+                );
+            }
+        }
+        if (navChanged) {
+            bindNavButtons();
+        }
+    });
+
+    // Observe at body level for subtree changes
+    calendarObserver.observe(document.body, { childList: true, subtree: true });
+}
+
 // Backend-ready functions for future API integration
 async function fetchUserData() {
     try {
@@ -689,157 +1035,163 @@ function getNotificationColor(type) {
     return colors[type] || colors.info;
 }
 
-async function loadDashboardData() {
-    const pageBody = document.querySelector('body.loading');
-    // Retrieve the data we stored on the loading page.
-    // JSON.parse turns the string back into a JavaScript object.
-    const welcomeSection = document.querySelector('.welcome'); // on learn.html
-    const greetingSection = document.querySelector('.greeting'); // on learning.html
-    const certWelcomeSection = document.querySelector('.welcome-section.loading'); // certification.html
-
-    const profile = JSON.parse(sessionStorage.getItem('userProfile'));
-    const user = JSON.parse(sessionStorage.getItem('authUser'));
-
-    if (profile) {
-        // update the page instantly with the pre-fetched data
-        const userName = profile.full_name || user.email.split('@')[0];
-        
-        const welcomeHighlight = document.querySelector('[data-placeholder="name"]'); 
-        if (welcomeHighlight) {
-            welcomeHighlight.textContent = userName;
-        }
-        
-        const greetingName = document.querySelector('[data-placeholder="greeting-name"]'); // on learning.html and certification.html 
-        if (greetingName) {
-            greetingName.textContent = userName;
-        }
-        
-        // learn.html sidebar
-        const xpElement = document.querySelector('.profile-card .stats-grid .stat-item:nth-child(1) .stat-number');
-        if (xpElement) xpElement.textContent = profile.total_xp || 0
-
-        if (welcomeSection) {
-            welcomeSection.classList.remove('loading');
-        }
-        if (greetingSection) {
-            greetingSection.classList.remove('loading');
-        }
-        if (certWelcomeSection){
-            certWelcomeSection.classList.remove('loading');
-        }
-
-        // --- FOR PROFILE.HTML ---
-        const profileName = document.querySelector('[data-placeholder="profile-name"]');
-        if (profileName) profileName.textContent = userName;
-        console.log("did it get through?");
-
-        const profileUsername = document.querySelector('[data-placeholder="profile-username"]');
-        if (profileUsername) profileUsername.textContent = `@${user.email.split('@')[0]}`;
-        
-        const profileBio = document.querySelector('[data-placeholder="profile-bio"]');
-        if (profileBio) profileBio.textContent = profile.bio || 'No biography set. Click "Edit Profile" to add one!';
-        // ---------------------------------------------
-    }
-
-    // If for some reason the data isn't there, stop the function.
-    if (!profile || !user) {
-        console.error("User data not found in session storage. Maybe the loading page failed.");
-        // If data is missing, we should still remove the loading state
-        // to show the placeholders without animation.
-        if (welcomeSection) welcomeSection.classList.remove('loading');
-        if (greetingSection) greetingSection.classList.remove('loading');
-        if (certWelcomeSection) certWelcomeSection.classList.remove('loading');
-        return;
-    }
-
-    updateUserUI(user, profile);
-
-    // At the end of the function, the setTimeout calls removeLoadingStates,
-    // which will now correctly handle the certification page.
-    setTimeout(() => {
-        if (pageBody) pageBody.classList.remove('loading'); // Remove from body
-    }, 100);
+// Learn Page Functionality
+function initializeLearnPage() {
+    // Only run if we're on the learn page
+    if (!document.querySelector('.learn-main-content')) return;
+    
+    initializeCourseFiltering();
+    initializeCourseSearch();
+    initializeCourseCards();
+    initializeContinueButton();
+    updateCourseCount();
 }
 
+function initializeCourseFiltering() {
+    const filterTabs = document.querySelectorAll('.filter-tab-btn');
+    const courseCards = document.querySelectorAll('.course-card');
 
-function updateUserUI(user, profile) {
-    if (!user || !profile) return; // Safety check
+    filterTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const filter = this.getAttribute('data-category');
+            
+            // Update active tab
+            filterTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filter courses
+            filterCourses(filter, courseCards);
+            updateCourseCount();
+        });
+    });
+}
 
-    const userName = profile.full_name || user.email.split('@')[0];
-    const userInitial = userName.charAt(0).toUpperCase();
-    const avatarUrl = profile.avatar_url;
+function filterCourses(filter, cards) {
+    cards.forEach(card => {
+        const category = card.getAttribute('data-category');
+        const shouldShow = filter === 'all' || category === filter;
+        
+        if (shouldShow) {
+            card.style.display = 'block';
+            setTimeout(() => card.classList.add('fade-in'), 10);
+        } else {
+            card.classList.remove('fade-in');
+            setTimeout(() => card.style.display = 'none', 300);
+        }
+    });
+}
 
-    // --- UPDATE NAVBAR AVATAR ---
-    // We need to handle two types of navbars
+function initializeCourseSearch() {
+    const searchInput = document.querySelector('#course-search');
+    const courseCards = document.querySelectorAll('.course-card');
+
+    if (searchInput && courseCards.length > 0) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            courseCards.forEach(card => {
+                const title = card.querySelector('.course-card-title').textContent.toLowerCase();
+                const description = card.querySelector('.course-card-description').textContent.toLowerCase();
+                const shouldShow = title.includes(searchTerm) || description.includes(searchTerm);
+                
+                if (shouldShow) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            updateCourseCount();
+        });
+    }
+}
+
+function initializeCourseCards() {
+    const courseCards = document.querySelectorAll('.course-card');
     
-    // 1. For the main navbar (learn.html, learning.html, etc.)
-    const headerAvatarDiv = document.querySelector('.header-right .user-avatar');
-    if (headerAvatarDiv && headerAvatarDiv.tagName === 'DIV') { // Check if it's the initial-only div
-        if (avatarUrl) {
-            headerAvatarDiv.outerHTML = `<img src="${avatarUrl}" alt="User Avatar" class="user-avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">`;
-        } else {
-            headerAvatarDiv.textContent = userInitial;
+    courseCards.forEach(card => {
+        const button = card.querySelector('.course-card-btn');
+        
+        if (button) {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const title = card.querySelector('.course-card-title').textContent;
+                const buttonText = this.textContent.trim();
+                
+                if (buttonText === 'Resume') {
+                    showNotification(`Resuming "${title}"...`, 'info');
+                    setTimeout(() => {
+                        showNotification(`Continuing from where you left off in ${title}`, 'success');
+                    }, 1500);
+                } else {
+                    showNotification(`Starting "${title}"...`, 'info');
+                    setTimeout(() => {
+                        showNotification(`Welcome to ${title}! Let's begin your learning journey.`, 'success');
+                    }, 1500);
+                }
+            });
         }
-    }
-    // Handle case where it has already been converted to an img
-    const headerAvatarImg = document.querySelector('.header-right .user-avatar');
-    if (headerAvatarImg && headerAvatarImg.tagName === 'IMG' && avatarUrl) {
-        headerAvatarImg.src = avatarUrl;
-    }
+    });
+}
 
-
-    // 2. For the navbar on profile pages (profile.html, edit_profile.html)
-    const profilePicNav = document.querySelector('nav .profile-pic');
-    if (profilePicNav) {
-        if (avatarUrl) {
-            profilePicNav.src = avatarUrl;
-        } else {
-            profilePicNav.src = 'images/team/eijay.png'; // Fallback to default
-        }
-    }
-
-
-    // --- UPDATE MAIN PAGE AVATARS ---
-    //  handles the larger profile pictures within the page content.
-    // 3. For the avatar on learning.html
-    const learningPageAvatar = document.querySelector('.greeting-avatar');
-    if (learningPageAvatar) {
-        if (avatarUrl) {
-            learningPageAvatar.src = avatarUrl;
-        } else {
-            learningPageAvatar.src = 'images/team/eijay.png'; // Fallback to default
-        }
-    }
-
-    // 4. For the avatar on certification.html
-    const certificationPageAvatar = document.querySelector('.welcome-section .avatar-img');
-    if (certificationPageAvatar) {
-        if (avatarUrl) {
-            certificationPageAvatar.src = avatarUrl;
-        } else {
-            certificationPageAvatar.src = 'images/team/eijay.png'; // Fallback to default
-        }
-    }
+function initializeContinueButton() {
+    const continueBtn = document.querySelector('.continue-btn-primary');
     
-    // 5. For the main avatar on profile.html
-    const profilePageAvatar = document.querySelector('.hero-section .profile-avatar');
-    if(profilePageAvatar) {
-        if (avatarUrl) {
-            profilePageAvatar.src = avatarUrl;
-        } else {
-            profilePageAvatar.src = 'images/team/eijay.png'; // Fallback to default
-        }
+    if (continueBtn) {
+        continueBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const courseName = document.querySelector('.course-name')?.textContent || 'your course';
+            showNotification(`Continuing ${courseName}...`, 'info');
+            setTimeout(() => {
+                showNotification(`Resuming from Lesson 3: AI Fundamentals`, 'success');
+            }, 1500);
+        });
     }
+}
 
-    // --- UPDATE SIDEBAR AVATAR (for learn.html) ---
-    const sidebarAvatar = document.querySelector('[data-placeholder="sidebar-avatar"]');
-    if (sidebarAvatar) {
-        if (avatarUrl) {
-            // If an image URL exists, replace the div with a styled <img> tag
-            sidebarAvatar.outerHTML = `<img src="${avatarUrl}" alt="User Avatar" class="profile-avatar" data-placeholder="sidebar-avatar" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">`;
-        } else {
-            // Otherwise, just show the initial
-            sidebarAvatar.textContent = userInitial;
-        }
+function updateCourseCount() {
+    const visibleCards = document.querySelectorAll('.course-card:not([style*="display: none"])');
+    const countElement = document.getElementById('course-count');
+    
+    if (countElement) {
+        countElement.textContent = visibleCards.length;
     }
+}
+
+// Practice Page Functionality
+function initializePracticePage() {
+    // Only run if we're on the practice page
+    if (!document.querySelector('.practice-main-content')) return;
+    
+    initializePracticeCards();
+}
+
+function initializePracticeCards() {
+    const practiceCards = document.querySelectorAll('.practice-card');
+    
+    practiceCards.forEach(card => {
+        const button = card.querySelector('.practice-btn');
+        
+        if (button) {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const title = card.querySelector('.practice-card-title').textContent;
+                const badge = card.querySelector('.practice-badge').textContent;
+                
+                showNotification(`Starting "${title}"...`, 'info');
+                setTimeout(() => {
+                    showNotification(`Welcome to ${title}! Category: ${badge}`, 'success');
+                }, 1500);
+            });
+        }
+        
+        // Add hover animation effect
+        card.addEventListener('mouseenter', function() {
+            this.style.borderColor = '#fbbf24';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.borderColor = '#f59e0b';
+        });
+    });
 }

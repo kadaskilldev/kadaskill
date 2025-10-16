@@ -1,51 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Certify Your Skills - KadaSkill</title>
-    <link rel="stylesheet" href="css/home.css">
-    <link rel="stylesheet" href="css/certification.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/certification.css">
 </head>
-
 <body>
-    <!-- Navigation -->
-    <nav>
-        <div class="nav-container">
-            <div class="logo">
-                <img src="images/logo.png" alt="KadaSkill Logo" class="logo-icon">
-                <span><span style="color: #FFA500;">Kada</span><span style="color: #333;">Skill</span></span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="learn.html">Home</a></li>
-                <li><a href="learning.html">Learn</a></li>
-                <li><a href="practice.html">Practice</a></li>
-                <li><a href="certification.html">Certification</a></li>
-                <li><a href="index.html">About Us</a></li>
-            </ul>
-            <div class="search-profile">
-                <input type="text" class="search-bar" placeholder="Search...">
-                <img src="images/team/eijay.png" alt="Profile" class="profile-pic">
-            </div>
-        </div>
-    </nav>
+<!-- Navigation Placeholder -->
+<div id="navigation"></div>
+
     <!-- Main Content -->
     <main class="main-content">
         <div class="container">
             <!-- Welcome Section -->
-            <section class="welcome-section loading">
+            <section class="welcome-section">
                 <div class="profile-greeting">
                     <div class="profile-avatar-large">
-                        <img src="images\team\eijay.png" alt="Eijay" class="avatar-img">
+                        <img src="images/user-avatar.jpg" alt="Eijay" class="avatar-img">
                     </div>
-                    <h1>Hello there, <span class="name" data-placeholder="greeting-name">...</span></h1>
+                    <h1 class="greeting-text">Hello there, <span class="highlight">Eijay!</span></h1>
                 </div>
 
+                <!-- Pick up where you left off -->
                 <div class="continue-section">
                     <h2 class="section-title">Pick up where you left off</h2>
                     <div class="continue-card">
@@ -67,7 +49,8 @@
             <section class="certify-section">
                 <h2 class="section-title">Certify Your Skills</h2>
                 <p class="section-description">
-                    Complete any KadaSkill course and unlock official certificates in Cloud, AI, and Cybersecurity. Download and share your micro-credentials to showcase your expertise and stand out in today's fast-paced tech landscape.
+                    Complete any KadaSkill course and unlock official certificates in Cloud, AI, and Cybersecurity. 
+                    Download and share your micro-credentials to showcase your expertise and stand out in today's fast-paced tech landscape.
                 </p>
             </section>
 
@@ -79,7 +62,7 @@
                     <button class="filter-tab" data-filter="cybersecurity">Cybersecurity</button>
                     <button class="filter-tab" data-filter="cloud">Cloud Computing</button>
                 </div>
-
+                
                 <div class="search-and-count">
                     <div class="certification-count">
                         <span id="cert-count">9</span> Certifications
@@ -244,55 +227,9 @@
         </div>
     </main>
 
+    <!-- Footer Placeholder -->
+    <div id="footer"></div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div>
-                <div class="footer-logo">
-                    <img src="images/logo.png" alt="KadaSkill Logo" class="footer-logo-icon" onerror="this.style.display='none';">
-                    <span><span class="kada">Kada</span><span class="skill">Skill</span></span>
-                </div>
-                <p class="footer-tagline">By upskilling together, we grow forever, unlocking limitless opportunities as a community.</p>
-            </div>
-
-            <div class="footer-section">
-                <h3>Contact Us</h3>
-                <div class="footer-contact">
-                    <span>📧 kadaskill@gmail.com</span>
-                    <span>🌐 KadaSkill</span>
-                    <span>📷 @kadaskill</span>
-                    <span>🔗 KadaSkill</span>
-                </div>
-            </div>
-
-            <div class="footer-section">
-                <h3>General</h3>
-                <ul class="footer-links">
-                    <li><a href="learn.html">Home</a></li>
-                    <li><a href="learning.html">Learn</a></li>
-                    <li><a href="practice.html">Practice</a></li>
-                    <li><a href="#">Certification</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-section">
-                <h3>About Us</h3>
-                <ul class="footer-links">
-                    <li><a href="#">Mission & Vision</a></li>
-                    <li><a href="#">Meet the Team</a></li>
-                    <li><a href="#">Contact Us</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            Copyright © 2025 by KadaSkill. All rights reserved
-        </div>
-    </footer>
+    <script src="js/script.js"></script>
 </body>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/script.js"></script>
-</body>
-
 </html>

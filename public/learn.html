@@ -4,450 +4,286 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KadaSkill - Learn & Get Certified</title>
+    <title>Learn - KadaSkill</title>
+    <link rel="stylesheet" href="css/home.css">
     <link rel="stylesheet" href="css/learn.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preload" href="images/robot-hero.png" as="image">
-    <link rel="preload" href="images/logo.png" as="image">
 </head>
 
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="logo">
-                <img src="images/logo.png" alt="KadaSkill" class="logo-img" onerror="this.style.display='none';">
-                <span><span class="kada">Kada</span><span class="skill">Skill</span></span>
-            </div>
-            <nav class="nav">
-                <ul class="nav-links">
-                    <li><a href="learn.html" class="nav-btn active">Home</a></li>
-                    <li><a href="learning.html" class="nav-btn">Learn</a></li>
-                    <li><a href="practice.html" class="nav-btn">Practice</a></li>
-                    <li><a href="certification.html" class="nav-btn">Certification</a></li>
-                    <li><a href="index.html" class="nav-btn">About Us</a></li>
-                </ul>
-            </nav>
-            <div class="header-right">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search...">
-                </div>
-                <div class="user-profile">
-                    <div class="user-avatar">E</div>
-                </div>
-            </div>
-        </div>
-    </header>
+    <!-- Navigation Placeholder -->
+    <div id="navigation"></div>
 
     <!-- Main Content -->
-    <main class="main-content">
-        <div class="container">
-            <div class="content-wrapper">
-                <!-- Left Content -->
-                <div class="left-content">
-                    <!-- Welcome Section -->
-                    <section class="welcome loading">
-                        <div class="welcome-header">
-                            <div class="welcome-robot">
-                                <img src="images/robot-hero.png" alt="Welcome Robot" class="welcome-robot-img" onerror="this.outerHTML='<i class=\'fas fa-robot\'></i>';">
-                            </div>
-                            <div class="welcome-text">
-                                <h1>Welcome Back, <span class="highlight" data-placeholder="name">...</span></h1>
-                                <p>Weekly goal progress tracker:</p>
-                                <div class="progress-tracker">
-                                    <div class="day-circle pending">S</div>
-                                    <div class="day-circle completed">M</div>
-                                    <div class="day-circle completed">T</div>
-                                    <div class="day-circle completed">W</div>
-                                    <div class="day-circle current">T</div>
-                                    <div class="day-circle pending">F</div>
-                                    <div class="day-circle pending">S</div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- Learn Section -->
-                    <section class="learn-section">
-                        <div class="section-header">
-                            <h2>Learn <i class="fas fa-chevron-right"></i></h2>
-                        </div>
-
-                        <div class="course-grid">
-                            <div class="course-card">
-                                <div class="course-content">
-                                    <div class="course-label">Course</div>
-                                    <h3>Python Foundation of AI</h3>
-                                    <div class="course-buttons">
-                                        <button class="btn btn-practice"><i class="fas fa-dumbbell"></i> Practice</button>
-                                        <button class="btn btn-continue">Continue</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="track-card">
-                                <div class="track-label">Enrolled Track</div>
-                                <h4>Google Cloud Professional Machine Learning Engineer</h4>
-                                <a href="#" class="track-link">See Track <i class="fas fa-chevron-right"></i></a>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- Review Section -->
-                    <section class="review-section">
-                        <div class="section-header">
-                            <h3>Review</h3>
-                            <a href="#" class="view-all-link">View All Practices</a>
-                        </div>
-
-                        <div class="practice-grid">
-                            <div class="practice-card">
-                                <div class="practice-label">PRACTICE</div>
-                                <h4>NumPy Warm-up</h4>
-                                <div class="practice-xp">
-                                    <i class="fas fa-star"></i>
-                                    <span>250 XP</span>
-                                </div>
-                                <i class="fas fa-chevron-right practice-arrow"></i>
-                            </div>
-
-                            <div class="practice-card">
-                                <div class="practice-label">PRACTICE</div>
-                                <h4>Pandas Review</h4>
-                                <div class="practice-xp">
-                                    <i class="fas fa-star"></i>
-                                    <span>250 XP</span>
-                                </div>
-                                <i class="fas fa-chevron-right practice-arrow"></i>
-                            </div>
-
-                            <div class="practice-card">
-                                <div class="practice-label">PRACTICE</div>
-                                <h4>Python Basics</h4>
-                                <div class="practice-xp">
-                                    <i class="fas fa-star"></i>
-                                    <span>250 XP</span>
-                                </div>
-                                <i class="fas fa-chevron-right practice-arrow"></i>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- Certifications Section -->
-                    <section class="certifications-section">
-                        <div class="section-header">
-                            <h2>Certifications <i class="fas fa-chevron-right"></i></h2>
-                        </div>
-
-                        <div class="cert-grid">
-                            <div class="cert-card aws-cert">
-                                <div class="cert-image">
-                                    <!-- Placeholder for AWS certification image -->
-                                    <div class="cert-placeholder">
-                                        <i class="fab fa-aws"></i>
-                                        <span>AWS Certified</span>
-                                    </div>
-                                </div>
-                                <div class="cert-content">
-                                    <h4>AWS Certified Solutions Architect – Associate</h4>
-                                    <p>Validates your ability to design and deploy scalable, highly available systems on AWS, covering core services like EC2, S3, VPC, and architecture best practices, and cost optimization.</p>
-                                    <button class="btn btn-get-started">Get Started</button>
-                                </div>
-                            </div>
-
-                            <div class="cert-card cissp-cert">
-                                <div class="cert-image">
-                                    <!-- Placeholder for CISSP certification image -->
-                                    <div class="cert-placeholder cissp-placeholder">
-                                        <i class="fas fa-shield-alt"></i>
-                                        <span>CISSP Certified</span>
-                                    </div>
-                                </div>
-                                <div class="cert-content">
-                                    <h4>Certified Information Systems Security Professional (CISSP)</h4>
-                                    <p>Recognized globally, this ISC² certification demonstrates mastery of security and risk management, asset security, communications and network security, and more.</p>
-                                    <button class="btn btn-get-started">Get Started</button>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- Level Up Section -->
-                    <section class="level-up-section">
-                        <h1>Level Up Your Skills Today!</h1>
-                        <p>Explore new certifications and unlock more badges.</p>
-                        <div class="level-up-buttons">
-                            <button class="btn btn-level-up">Start Learning</button>
-                            <button class="btn btn-level-up">Get Certified</button>
-                            <button class="btn btn-level-up">Start Practicing</button>
-                        </div>
-                    </section>
-
-                    <!-- Badges Section -->
-                    <section class="badges-section">
-                        <h3>Badges</h3>
-                        <div class="badges-grid">
-                            <div class="badge-item">
-                                <div class="badge-placeholder badge-1">
-                                    <i class="fas fa-trophy"></i>
-                                </div>
-                            </div>
-                            <div class="badge-item">
-                                <div class="badge-placeholder badge-2">
-                                    <i class="fas fa-star"></i>
-                                </div>
-                            </div>
-                            <div class="badge-item">
-                                <div class="badge-placeholder badge-3">
-                                    <i class="fas fa-medal"></i>
-                                </div>
-                            </div>
-                            <div class="badge-item">
-                                <div class="badge-placeholder badge-4">
-                                    <i class="fas fa-crown"></i>
-                                </div>
-                            </div>
-                            <div class="badge-item">
-                                <div class="badge-placeholder badge-5">
-                                    <i class="fas fa-gem"></i>
-                                </div>
-                            </div>
-                            <div class="badge-item">
-                                <div class="badge-placeholder badge-6">
-                                    <i class="fas fa-award"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+    <main class="learn-main-content">
+        <div class="learn-container">
+            <!-- Hero Section with Profile -->
+            <section class="learn-hero-section">
+                <div class="profile-greeting">
+                    <div class="profile-avatar-large">
+                        <img src="images/user-avatar.jpg" alt="Eijay" class="avatar-img" onerror="this.style.display='none';">
+                    </div>
+                    <h1 class="greeting-text">Hello there, <span class="highlight-name">Eijay!</span></h1>
                 </div>
 
-                <!-- Right Sidebar -->
-                <aside class="right-sidebar">
-                    <!-- Profile Card -->
-                    <div class="profile-card">
-                        <div class="profile-header">
-                            <div class="profile-avatar">E</div>
-                            <div class="profile-info">
-                                <h4 class="profile-username" data-placeholder="profile-username">@...</h4>
-                                <p>Level 143</p>
-                            </div>
-                        </div>
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <div class="stat-icon"><i class="fas fa-star"></i></div>
-                                <div class="stat-number">0</div>
-                                <div class="stat-label">Total XP</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-icon"><i class="fas fa-medal"></i></div>
-                                <div class="stat-number">32</div>
-                                <div class="stat-label">Badges</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-icon mythical"><i class="fas fa-crown"></i></div>
-                                <div class="stat-number">4</div>
-                                <div class="stat-label">Day Streak</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-icon"><i class="fas fa-trophy"></i></div>
-                                <div class="stat-number">143</div>
-                                <div class="stat-label">Mythical Rank</div>
-                            </div>
-                        </div>
-                        <a href="profile.html" class="btn btn-view-profile">View Profile</a>
+                <div class="streak-badge">
+                    <div class="streak-icon">🔥</div>
+                    <div class="streak-info">
+                        <span class="streak-number">105</span>
+                        <span class="streak-label">Daily Streak</span>
                     </div>
+                </div>
+            </section>
 
-                    <!-- Calendar -->
-                    <div class="calendar-card">
-                        <div class="calendar-header">
-                            <button class="calendar-nav"><i class="fas fa-chevron-left"></i></button>
-                            <h4>June 2025</h4>
-                            <button class="calendar-nav"><i class="fas fa-chevron-right"></i></button>
+            <!-- Pick up where you left off -->
+            <section class="continue-learning-section">
+                <h2 class="section-title-main">Pick up where you left off</h2>
+                <div class="continue-course-card">
+                    <div class="continue-course-content">
+                        <div class="course-icon-box">
+                            <i class="fas fa-cloud-upload-alt"></i>
                         </div>
-                        <div class="calendar-grid">
-                            <div class="calendar-day header">S</div>
-                            <div class="calendar-day header">M</div>
-                            <div class="calendar-day header">T</div>
-                            <div class="calendar-day header">W</div>
-                            <div class="calendar-day header">T</div>
-                            <div class="calendar-day header">F</div>
-                            <div class="calendar-day header">S</div>
+                        <div class="course-details">
+                            <h3 class="course-name">Python Foundation for AI</h3>
+                            <p class="course-time-left"><i class="fas fa-clock"></i> 50 minutes left to learn</p>
+                        </div>
+                    </div>
+                    <button class="continue-btn-primary">Continue</button>
+                </div>
+            </section>
 
-                            <div class="calendar-day">1</div>
-                            <div class="calendar-day">2</div>
-                            <div class="calendar-day">3</div>
-                            <div class="calendar-day">4</div>
-                            <div class="calendar-day">5</div>
-                            <div class="calendar-day">6</div>
-                            <div class="calendar-day">7</div>
-                            <div class="calendar-day">8</div>
-                            <div class="calendar-day">9</div>
-                            <div class="calendar-day">10</div>
-                            <div class="calendar-day">11</div>
-                            <div class="calendar-day">12</div>
-                            <div class="calendar-day">13</div>
-                            <div class="calendar-day">14</div>
-                            <div class="calendar-day">15</div>
-                            <div class="calendar-day current">16</div>
-                            <div class="calendar-day">17</div>
-                            <div class="calendar-day">18</div>
-                            <div class="calendar-day">19</div>
-                            <div class="calendar-day">20</div>
-                            <div class="calendar-day">21</div>
-                            <div class="calendar-day">22</div>
-                            <div class="calendar-day">23</div>
-                            <div class="calendar-day">24</div>
-                            <div class="calendar-day">25</div>
-                            <div class="calendar-day">26</div>
-                            <div class="calendar-day">27</div>
-                            <div class="calendar-day">28</div>
-                            <div class="calendar-day">29</div>
-                            <div class="calendar-day">30</div>
+            <!-- My Courses Section -->
+            <section class="my-courses-section">
+                <div class="section-header">
+                    <h2 class="section-title-main">My Courses</h2>
+                    <p class="section-description">
+                        Welcome to My Courses—your hub for professional, hands-on learning. Each course is designed to build real-world skills you can apply immediately with confidence and curiosity.
+                    </p>
+                </div>
+
+                <!-- Course Filter Tabs -->
+                <div class="course-filter-tabs">
+                    <button class="filter-tab-btn active" data-category="all">My Courses</button>
+                    <button class="filter-tab-btn" data-category="ai">Artificial Intelligence</button>
+                    <button class="filter-tab-btn" data-category="cybersecurity">Cybersecurity</button>
+                    <button class="filter-tab-btn" data-category="cloud">Cloud Computing</button>
+                </div>
+
+                <!-- Course Count and Search -->
+                <div class="courses-controls">
+                    <div class="course-count">
+                        <span class="count-number" id="course-count">12</span> Courses
+                    </div>
+                    <div class="course-search-box">
+                        <input type="text" placeholder="Search" class="course-search-input" id="course-search">
+                        <i class="fas fa-search course-search-icon"></i>
+                    </div>
+                </div>
+
+                <!-- Courses Grid -->
+                <div class="courses-grid" id="courses-grid">
+                    <!-- Course Card 1: Python Foundation for AI -->
+                    <div class="course-card" data-category="ai">
+                        <div class="course-card-image">
+                            <img src="images/courses/python-ai.jpg" alt="Python Foundation for AI" onerror="this.style.display='none';">
+                            <div class="course-badge beginner">Beginner</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Python Foundation for AI</h3>
+                            <p class="course-card-description">The quickest way to write clear, data-focused Python that works well for machine learning tasks.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 4 hours</span>
+                                <button class="course-card-btn resume">Resume</button>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Leaderboard -->
-                    <div class="leaderboard-card">
-                        <h4><i class="fas fa-trophy"></i> Leaderboard</h4>
-                        <div class="leaderboard-list">
-                            <div class="leaderboard-item">
-                                <div class="leaderboard-user">
-                                    <div class="leaderboard-avatar">R</div>
-                                    <span>@roan</span>
-                                </div>
-                                <div class="leaderboard-xp">20000</div>
-                            </div>
-                            <div class="leaderboard-item">
-                                <div class="leaderboard-user">
-                                    <div class="leaderboard-avatar">D</div>
-                                    <span>@daniela</span>
-                                </div>
-                                <div class="leaderboard-xp">19897</div>
-                            </div>
-                            <div class="leaderboard-item">
-                                <div class="leaderboard-user">
-                                    <div class="leaderboard-avatar">D</div>
-                                    <span>@debby</span>
-                                </div>
-                                <div class="leaderboard-xp">19478</div>
-                            </div>
-                            <div class="leaderboard-item">
-                                <div class="leaderboard-user">
-                                    <div class="leaderboard-avatar">S</div>
-                                    <span>@sirpaul</span>
-                                </div>
-                                <div class="leaderboard-xp">19320</div>
-                            </div>
-                            <div class="leaderboard-item current-user">
-                                <div class="leaderboard-user">
-                                    <div class="leaderboard-avatar">E</div>
-                                    <span>@eijay</span>
-                                </div>
-                                <div class="leaderboard-xp">19319</div>
-                            </div>
-                            <div class="leaderboard-item">
-                                <div class="leaderboard-user">
-                                    <div class="leaderboard-avatar">F</div>
-                                    <span>@fecr</span>
-                                </div>
-                                <div class="leaderboard-xp">19310</div>
-                            </div>
-                            <div class="leaderboard-item">
-                                <div class="leaderboard-user">
-                                    <div class="leaderboard-avatar">R</div>
-                                    <span>@roljohn</span>
-                                </div>
-                                <div class="leaderboard-xp">19305</div>
-                            </div>
-                            <div class="leaderboard-item">
-                                <div class="leaderboard-user">
-                                    <div class="leaderboard-avatar">D</div>
-                                    <span>@daniel</span>
-                                </div>
-                                <div class="leaderboard-xp">19295</div>
-                            </div>
-                            <div class="leaderboard-item">
-                                <div class="leaderboard-user">
-                                    <div class="leaderboard-avatar">S</div>
-                                    <span>@sirjosh</span>
-                                </div>
-                                <div class="leaderboard-xp">19279</div>
-                            </div>
-                            <div class="leaderboard-item">
-                                <div class="leaderboard-user">
-                                    <div class="leaderboard-avatar">S</div>
-                                    <span>@sireqs</span>
-                                </div>
-                                <div class="leaderboard-xp">19260</div>
+                    <!-- Course Card 2: AWS Cloud Practitioner Essentials -->
+                    <div class="course-card" data-category="cloud">
+                        <div class="course-card-image">
+                            <img src="images/courses/aws-cloud.jpg" alt="AWS Cloud Practitioner" onerror="this.style.display='none';">
+                            <div class="course-badge intermediate">Intermediate</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">AWS Cloud Practitioner Essentials</h3>
+                            <p class="course-card-description">Build your AWS Cloud knowledge with this course that covers core AWS services, security, architecture, pricing, and support.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 4 hours 5 minutes</span>
+                                <button class="course-card-btn">Resume</button>
                             </div>
                         </div>
                     </div>
-                </aside>
-            </div>
+
+                    <!-- Course Card 3: Secure Network Foundations -->
+                    <div class="course-card" data-category="cybersecurity">
+                        <div class="course-card-image">
+                            <img src="images/courses/network-security.jpg" alt="Secure Network Foundations" onerror="this.style.display='none';">
+                            <div class="course-badge intermediate">Intermediate</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Secure Network Foundations</h3>
+                            <p class="course-card-description">Learn how firewalls, VPNs, and IDS/IPS help keep corporate traffic—and your career—on a secure track.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 4 hours 5 minutes</span>
+                                <button class="course-card-btn">Resume</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 4: Introduction to Cloud Computing -->
+                    <div class="course-card" data-category="cloud">
+                        <div class="course-card-image">
+                            <img src="images/courses/intro-cloud.jpg" alt="Introduction to Cloud Computing" onerror="this.style.display='none';">
+                            <div class="course-badge beginner">Beginner</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Introduction to Cloud Computing</h3>
+                            <p class="course-card-description">Learn the fundamental concepts of cloud computing, including service models (IaaS, PaaS, SaaS) and deployment models.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 4 hours 5 minutes</span>
+                                <button class="course-card-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 5: Deep Learning with PyTorch -->
+                    <div class="course-card" data-category="ai">
+                        <div class="course-card-image">
+                            <img src="images/courses/pytorch.jpg" alt="Deep Learning with PyTorch" onerror="this.style.display='none';">
+                            <div class="course-badge intermediate">Intermediate</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Deep Learning with PyTorch</h3>
+                            <p class="course-card-description">Train neural nets in CNNs & RNNs. Build, train, and deploy deep neural nets with PyTorch.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 4 hours 5 minutes</span>
+                                <button class="course-card-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 6: Google Cloud Digital Leader -->
+                    <div class="course-card" data-category="cloud">
+                        <div class="course-card-image">
+                            <img src="images/courses/google-cloud.jpg" alt="Google Cloud Digital Leader" onerror="this.style.display='none';">
+                            <div class="course-badge expert">Expert</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Google Cloud Digital Leader</h3>
+                            <p class="course-card-description">Gain foundational knowledge of Google Cloud core products & services and learn how they enable business transformation.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 4 hours 5 minutes</span>
+                                <button class="course-card-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 7: Machine Learning Fundamentals -->
+                    <div class="course-card" data-category="ai">
+                        <div class="course-card-image">
+                            <img src="images/courses/ml-fundamentals.jpg" alt="Machine Learning Fundamentals" onerror="this.style.display='none';">
+                            <div class="course-badge beginner">Beginner</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Machine Learning Fundamentals</h3>
+                            <p class="course-card-description">Discover the core concepts of machine learning, including supervised and unsupervised learning algorithms.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 5 hours</span>
+                                <button class="course-card-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 8: Ethical Hacking Essentials -->
+                    <div class="course-card" data-category="cybersecurity">
+                        <div class="course-card-image">
+                            <img src="images/courses/ethical-hacking.jpg" alt="Ethical Hacking Essentials" onerror="this.style.display='none';">
+                            <div class="course-badge intermediate">Intermediate</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Ethical Hacking Essentials</h3>
+                            <p class="course-card-description">Learn penetration testing techniques and vulnerability assessment to secure systems against cyber threats.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 6 hours</span>
+                                <button class="course-card-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 9: Azure Cloud Administrator -->
+                    <div class="course-card" data-category="cloud">
+                        <div class="course-card-image">
+                            <img src="images/courses/azure-admin.jpg" alt="Azure Cloud Administrator" onerror="this.style.display='none';">
+                            <div class="course-badge intermediate">Intermediate</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Azure Cloud Administrator</h3>
+                            <p class="course-card-description">Master Microsoft Azure administration, including virtual machines, storage, networking, and security.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 5 hours 30 minutes</span>
+                                <button class="course-card-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 10: Natural Language Processing -->
+                    <div class="course-card" data-category="ai">
+                        <div class="course-card-image">
+                            <img src="images/courses/nlp.jpg" alt="Natural Language Processing" onerror="this.style.display='none';">
+                            <div class="course-badge expert">Expert</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Natural Language Processing</h3>
+                            <p class="course-card-description">Dive into NLP techniques for text analysis, sentiment analysis, and building chatbots with transformers.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 7 hours</span>
+                                <button class="course-card-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 11: Incident Response & Forensics -->
+                    <div class="course-card" data-category="cybersecurity">
+                        <div class="course-card-image">
+                            <img src="images/courses/incident-response.jpg" alt="Incident Response & Forensics" onerror="this.style.display='none';">
+                            <div class="course-badge expert">Expert</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Incident Response & Forensics</h3>
+                            <p class="course-card-description">Learn to detect, investigate, and respond to security incidents with advanced forensic techniques.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 6 hours 30 minutes</span>
+                                <button class="course-card-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 12: Kubernetes & Container Orchestration -->
+                    <div class="course-card" data-category="cloud">
+                        <div class="course-card-image">
+                            <img src="images/courses/kubernetes.jpg" alt="Kubernetes & Container Orchestration" onerror="this.style.display='none';">
+                            <div class="course-badge expert">Expert</div>
+                        </div>
+                        <div class="course-card-content">
+                            <h3 class="course-card-title">Kubernetes & Container Orchestration</h3>
+                            <p class="course-card-description">Master container orchestration with Kubernetes, including deployment, scaling, and management of containerized applications.</p>
+                            <div class="course-card-footer">
+                                <span class="course-duration"><i class="fas fa-clock"></i> 8 hours</span>
+                                <button class="course-card-btn">Start</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section brand">
-                    <div class="footer-logo">
-                        <img src="images/logo.png" alt="KadaSkill" onerror="this.style.display='none';">
-                        <span><span class="kada">Kada</span><span class="skill">Skill</span></span>
-                    </div>
-                    <p>By upskilling together, we grow forever, unlocking limitless opportunities as a community.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Contact Us</h4>
-                    <div class="footer-contact">
-                        <div class="contact-item">
-                            <i class="fas fa-envelope"></i>
-                            <span>kadaskill@gmail.com</span>
-                        </div>
-                        <div class="contact-item">
-                            <i class="fab fa-facebook"></i>
-                            <span>kadaskill</span>
-                        </div>
-                        <div class="contact-item">
-                            <i class="fab fa-instagram"></i>
-                            <span>@kadaskill</span>
-                        </div>
-                        <div class="contact-item">
-                            <i class="fab fa-linkedin"></i>
-                            <span>KadaSkill</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="footer-section">
-                    <h4>General</h4>
-                    <ul>
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Learn</a></li>
-                        <li><a href="#">Practice</a></li>
-                        <li><a href="#">Certification</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>About Us</h4>
-                    <ul>
-                        <li><a href="#">Mission & Vision</a></li>
-                        <li><a href="#">Meet the Team</a></li>
-                        <li><a href="#">Contact Us</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>Copyright © 2025 by KadaSkill. All rights reserved</p>
-            </div>
-        </div>
-    </footer>
+    <!-- Footer Placeholder -->
+    <div id="footer"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/script.js"></script>
 </body>
 
