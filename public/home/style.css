@@ -186,6 +186,170 @@
   margin-top: 0.5rem;
 }
 
+.practice-review {
+  margin-top: 1.75rem;
+  padding: 1.75rem 2rem;
+  background: #f0eff7;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.practice-review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.practice-review-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1d192b;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+.practice-review-link {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ff9900;
+  text-decoration: none;
+}
+
+.practice-review-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.practice-card {
+  background: #f8f7fc;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  box-shadow: 0 4px 14px rgba(17, 23, 39, 0.06);
+  position: relative;
+}
+
+.practice-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.practice-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: auto;
+  gap: 0.75rem;
+  padding-right: 2.5rem;
+}
+
+
+.practice-card-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #a5a3aa;
+}
+
+.practice-card-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1d192b;
+  margin: 0;
+}
+
+.practice-card-xp {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #454545;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.practice-card-xp::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  background: url('../images/home/Vector.svg') no-repeat center / 12px 12px;
+}
+
+.practice-card-chevron {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  position: absolute;
+  top: 50%;
+  right: 0.9rem;
+  transform: translateY(-50%);
+}
+
+.practice-card-chevron::before {
+  content: '';
+  width: 28px;
+  height: 28px;
+  background: url('../images/home/next main.svg') no-repeat center / 18px 18px;
+}
+
+.practice-card-arrow {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .practice-review {
+    padding: 1.5rem;
+  }
+
+  .practice-review-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .practice-review {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .practice-review-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .practice-card {
+    padding: 1.25rem;
+    gap: 0.85rem;
+  }
+
+  .practice-card-meta {
+    width: 100%;
+  }
+
+  .practice-card-body {
+    gap: 0.5rem;
+  }
+
+  .practice-card-meta {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+  }
+}
+
 .dashboard-sidebar {
   display: flex;
   flex-direction: column;
@@ -668,7 +832,7 @@
   }
 
   .hero-section .greetings {
-    align-items: center;
+  align-items: center;
     text-align: center;
   }
 
