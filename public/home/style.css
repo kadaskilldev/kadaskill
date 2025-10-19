@@ -160,6 +160,28 @@
   width: 100%;
 }
 
+.greeting-learn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.greeting-learn .learn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1d192b;
+  text-decoration: none;
+}
+
+.greeting-learn .learn-chevron {
+  width: 18px;
+  height: 18px;
+}
+
 .greeting-main .learning-overview {
   margin-top: 0.5rem;
 }
