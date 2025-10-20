@@ -182,6 +182,97 @@
   height: 18px;
 }
 
+.certification-callouts {
+  margin-top: 1.75rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.certification-callout {
+  background: linear-gradient(180deg, #121a2b 0%, #0b1120 100%);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 22px 48px rgba(8, 12, 24, 0.35);
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.certification-callout__media {
+  padding: 0;
+}
+
+.certification-callout__image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.certification-callout__content {
+  padding: 1.5rem 1.75rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  flex: 1;
+}
+
+.certification-callout__title {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.certification-callout__description {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(226, 232, 240, 0.88);
+  margin: 0;
+}
+
+.certification-callout__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 2rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #1f2937;
+  text-decoration: none;
+  background: url('../images/home/Group 73-1.svg') no-repeat center / cover;
+  border-radius: 12px;
+  margin-top: auto;
+  align-self: flex-end;
+  transition: transform 0.2s ease;
+}
+
+.certification-callout__cta:hover,
+.certification-callout__cta:focus-visible {
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.certification-callout__cta span {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .certification-callout__content {
+    padding: 1.25rem 1.5rem 1.5rem;
+  }
+
+  .certification-callout__cta {
+    width: 100%;
+    align-self: stretch;
+  }
+}
+
 .greeting-main .learning-overview {
   margin-top: 0.5rem;
 }
@@ -194,6 +285,10 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+.practice-review + .greeting-learn {
+  margin-top: 1.5rem;
 }
 
 .practice-review-header {
@@ -724,15 +819,16 @@
 
 /* Calendar panel */
 .profile-section-2 {
-  width: 312px;
+  width: 288px;
   margin: 0 auto;
 }
 
 .profile-section-2 .profile-content {
-  border-radius: 28px;
-  background: #fff;
-  box-shadow: 0 32px 80px rgba(39, 65, 106, 0.18);
+  border-radius: 15px;
+  background: #ffffff;
+  box-shadow: 0 0 10px rgba(165, 163, 170, 0.25);
   padding: 2rem;
+  overflow: hidden;
 }
 
 .profile-section-2 .profile-header {

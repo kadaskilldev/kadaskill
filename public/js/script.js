@@ -153,16 +153,8 @@ function loadNavigation() {
 
     const pathname = window.location.pathname;
     const currentPage = (pathname === '/' || pathname === '') ? 'home.html' : pathname.split('/').pop();
-    const pagesWithoutProfileMenu = ['certification.html', 'learn.html', 'practice.html'];
-    const isProfileMenuDisabled = pagesWithoutProfileMenu.includes(currentPage);
 
-    const userProfileMarkup = isProfileMenuDisabled
-        ? `
-                <div class="user-profile">
-                    <div class="user-avatar" aria-hidden="true">E</div>
-                </div>
-        `
-        : `
+    const userProfileMarkup = `
                 <div class="user-profile">
                     <div class="user-avatar" aria-hidden="true">E</div>
                     <button class="user-profile__toggle" aria-label="Open profile menu" aria-haspopup="true" aria-expanded="false">
@@ -237,9 +229,7 @@ function loadNavigation() {
         window.addEventListener('load', updateHeaderOffset, { once: true });
     }
 
-    if (!isProfileMenuDisabled) {
-        initializeUserMenu(navigationElement);
-    }
+    initializeUserMenu(navigationElement);
     setActiveNavigation();
 }
 
