@@ -47,6 +47,18 @@ document.addEventListener('DOMContentLoaded', function() {
         initializeLearnPage();
         initializePracticePage();
 
+        const pathname = window.location.pathname;
+        if (
+            pathname.endsWith('learn.html') ||
+            pathname.endsWith('learning.html') ||
+            pathname.endsWith('certification.html') ||
+            pathname.endsWith('profile.html') ||
+            pathname.endsWith('practice.html')
+        ) {
+            console.log(`On ${pathname}, loading user data...`);
+            loadDashboardData();
+        }
+
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
@@ -402,12 +414,15 @@ async function handleFormSubmit(e) {
     }
     
     if (data.user) {
-        // Successful login OR Sign-up (if email confirmation is OFF)
-        showNotification('Authentication successful! Redirecting to dashboard...', 'success');
-        // Redirect to home page
-        setTimeout(() => {
-            window.location.href = 'home.html'; 
-        }, 1500);
+        // If sign up requires verification
+        if (data.user && !data.session) {
+             showNotification('Welcome! Please check your email to verify your account.', 'success');
+             return;
+        }
+        // On successful login or signup (with auto-confirm)
+        // Supabase automatically handles the session in localStorage.
+        // We just need to navigate to the loading page.
+        window.location.href = 'loading.html';
     } else {
         showNotification('An unexpected authentication response was received.', 'error');
     }
@@ -438,7 +453,7 @@ async function handleSocialLogin(e) {
         provider: provider,
         options: {
             // Redirect to the dashboard after successful login
-            redirectTo: window.location.origin + '/home.html', 
+            redirectTo: window.location.origin + '/loading.html',
         },
     });
 
@@ -1184,4 +1199,125 @@ function initializePracticeCards() {
             this.style.borderColor = '#f59e0b';
         });
     });
+}
+
+// Supabase dashboard helpers
+function loadDashboardData() {
+    let profile = null;
+    let user = null;
+
+    try {
+        const profileRaw = sessionStorage.getItem('userProfile');
+        if (profileRaw) {
+            profile = JSON.parse(profileRaw);
+        }
+    } catch (error) {
+        console.warn('Failed to parse stored profile data:', error);
+    }
+
+    try {
+        const userRaw = sessionStorage.getItem('authUser');
+        if (userRaw) {
+            user = JSON.parse(userRaw);
+        }
+    } catch (error) {
+        console.warn('Failed to parse stored auth user data:', error);
+    }
+
+    if (!profile || !user) {
+        console.warn('Supabase profile data not found in sessionStorage.');
+        return;
+    }
+
+    updateUserUI(user, profile);
+}
+
+function updateUserUI(user, profile) {
+    if (!user || !profile) return;
+
+    const fallbackAvatar = 'images/user-avatar.jpg';
+    const fallbackProfileAvatar = 'images/profile/profile-avatar.png';
+    const fallbackNavAvatar = 'images/team/eijay.png';
+
+    const userName = (profile.full_name && profile.full_name.trim()) || (user.email ? user.email.split('@')[0] : 'Learner');
+    const userInitial = userName.charAt(0).toUpperCase();
+    const avatarUrl = profile.avatar_url;
+
+    const headerAvatar = document.querySelector('.header-right .user-avatar');
+    if (headerAvatar) {
+        if (avatarUrl) {
+            headerAvatar.innerHTML = '';
+            const avatarImg = document.createElement('img');
+            avatarImg.src = avatarUrl;
+            avatarImg.alt = 'User Avatar';
+            avatarImg.className = 'user-avatar-image';
+            avatarImg.style.width = '32px';
+            avatarImg.style.height = '32px';
+            avatarImg.style.borderRadius = '50%';
+            avatarImg.style.objectFit = 'cover';
+            headerAvatar.appendChild(avatarImg);
+        } else {
+            headerAvatar.textContent = userInitial;
+        }
+    }
+
+    const navProfilePic = document.querySelector('nav .profile-pic');
+    if (navProfilePic) {
+        navProfilePic.src = avatarUrl || fallbackNavAvatar;
+    }
+
+    const learnHeroAvatar = document.querySelector('.profile-avatar-large img');
+    if (learnHeroAvatar) {
+        learnHeroAvatar.src = avatarUrl || fallbackAvatar;
+    }
+
+    const learnGreetingHighlight = document.querySelector('.greeting-text .highlight-name');
+    if (learnGreetingHighlight) {
+        learnGreetingHighlight.textContent = `${userName}!`;
+    }
+
+    const learnGreetingHighlightAlt = document.querySelector('.greeting-text .highlight');
+    if (learnGreetingHighlightAlt) {
+        learnGreetingHighlightAlt.textContent = `${userName}!`;
+    }
+
+    const learningGreetingName = document.querySelector('[data-placeholder="greeting-name"], .greeting-text .name');
+    if (learningGreetingName) {
+        learningGreetingName.textContent = userName;
+    }
+
+    const learningGreetingAvatar = document.querySelector('.greeting-avatar');
+    if (learningGreetingAvatar) {
+        learningGreetingAvatar.src = avatarUrl || fallbackNavAvatar;
+    }
+
+    const certificationAvatar = document.querySelector('.welcome-section .profile-avatar-large img, .welcome-section .avatar-img');
+    if (certificationAvatar) {
+        certificationAvatar.src = avatarUrl || fallbackAvatar;
+    }
+
+    const certificationGreeting = document.querySelector('.welcome-section .greeting-text .highlight, .welcome-section .greeting-text .highlight-name');
+    if (certificationGreeting) {
+        certificationGreeting.textContent = `${userName}!`;
+    }
+
+    const profileHeroName = document.querySelector('.profile-hero__name');
+    if (profileHeroName) {
+        profileHeroName.textContent = userName;
+    }
+
+    const profileHeroHandle = document.querySelector('.profile-hero__handle');
+    if (profileHeroHandle && user.email) {
+        profileHeroHandle.textContent = `@${user.email.split('@')[0]}`;
+    }
+
+    const profileHeroAvatar = document.querySelector('.profile-hero__avatar-image');
+    if (profileHeroAvatar) {
+        profileHeroAvatar.src = avatarUrl || fallbackProfileAvatar;
+    }
+
+    const profileBio = document.querySelector('.profile-bio-card__copy');
+    if (profileBio) {
+        profileBio.textContent = profile.bio || 'No biography set. Click "Edit Profile" to add one!';
+    }
 }

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="loading/globals.css" />
     <link rel="stylesheet" href="loading/styleguide.css" />
     <link rel="stylesheet" href="loading/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
   <body>
     <main class="loading-screen" role="main">
@@ -45,13 +46,44 @@
       </header>
     </main>
     <script>
-      window.addEventListener('load', () => {
-        // breathing lasts 5000ms, popZoom lasts 500ms and starts at 5000ms
-        // give a small buffer so the exit animation is visible before navigation
-        setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 5600);
-      });
+      const SUPABASE_URL = 'https://kbpbubsnadnhebgdggdy.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImticGJ1YnNuYWRuaGViZ2RnZ2R5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMjA4MTksImV4cCI6MjA3MzU5NjgxOX0.4O8ZLeZ2iR786MZ8JS_55nzhn-5WxqabMtDQuAoZkAA';
+
+      async function fetchInitialDataAndRedirect() {
+        if (!window.supabase || !window.supabase.createClient) {
+          console.error('Supabase client library not found. Redirecting to login.');
+          window.location.replace('index.html');
+          return;
+        }
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+          console.error('No user session found. Redirecting to login.');
+          window.location.replace('index.html');
+          return;
+        }
+
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('full_name, total_xp, bio, avatar_url')
+          .eq('id', user.id)
+          .single();
+
+        if (error) {
+          console.error('Failed to fetch profile:', error);
+          window.location.replace('index.html');
+          return;
+        }
+
+        sessionStorage.setItem('userProfile', JSON.stringify(profile));
+        sessionStorage.setItem('authUser', JSON.stringify(user));
+
+        window.location.replace('learn.html');
+      }
+
+      fetchInitialDataAndRedirect();
     </script>
   </body>
 </html>
