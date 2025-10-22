@@ -420,7 +420,7 @@ body.has-fixed-header {
 .right-sidebar {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0;
 }
 
 .profile-card,
@@ -1012,6 +1012,121 @@ body.has-fixed-header {
 .learning-card-link:focus {
     outline: 2px solid rgba(255, 153, 0, 0.65);
     outline-offset: 2px;
+}
+
+/* Leaderboard Card */
+
+.leaderboard-card {
+    width: 288px;
+    margin: 2.5rem auto 0;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(165, 163, 170, 0.25);
+    padding: 2rem;
+    font-family: "Amazon Ember", Helvetica, sans-serif;
+    color: #1d192b;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.leaderboard-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.75rem;
+}
+
+.leaderboard-card__title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.leaderboard-card__icon {
+    width: 39px;
+    height: 41px;
+    object-fit: contain;
+}
+
+.leaderboard-card__heading {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.1px;
+    line-height: 1.2;
+    color: #1d192b;
+    margin: 0;
+}
+
+.leaderboard-card__xp-label {
+    display: block;
+    width: 72px;
+    align-self: flex-end;
+    text-align: center;
+    margin: 0.25rem 0 0;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.08px;
+    color: #454545;
+}
+
+.leaderboard-card__list {
+    list-style: none;
+    margin: 0.35rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.leaderboard-entry {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.leaderboard-entry__profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.leaderboard-entry__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.leaderboard-entry__name {
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.08px;
+}
+
+.leaderboard-entry__score {
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.08px;
+    color: #1d192b;
+    width: 72px;
+    text-align: center;
+}
+
+@media (max-width: 1024px) {
+    .leaderboard-card {
+        width: 100%;
+        max-width: 288px;
+        margin: 2rem auto 0;
+        padding: 1.5rem;
+    }
+
+    .leaderboard-entry__avatar {
+        width: 36px;
+        height: 36px;
+    }
 }
 
 @media (max-width: 900px) {
