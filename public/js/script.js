@@ -49,6 +49,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const pathname = window.location.pathname;
         if (
+            pathname.endsWith('home.html') ||
+            pathname === '/' ||
             pathname.endsWith('learn.html') ||
             pathname.endsWith('learning.html') ||
             pathname.endsWith('certification.html') ||
@@ -690,6 +692,21 @@ function initializeCalendar() {
     function daysInMonth(y, m) { return new Date(y, m + 1, 0).getDate(); }
     function weekdayLetter(i) { return ['S','M','T','W','T','F','S'][i]; }
 
+    const activeFlashTimers = new WeakMap();
+
+    function flashNav(button) {
+        if (!button) return;
+        if (activeFlashTimers.has(button)) {
+            clearTimeout(activeFlashTimers.get(button));
+        }
+        button.classList.add('is-active');
+        const timeoutId = setTimeout(() => {
+            button.classList.remove('is-active');
+            activeFlashTimers.delete(button);
+        }, 260);
+        activeFlashTimers.set(button, timeoutId);
+    }
+
     function render(date) {
         const y = date.getFullYear(), m = date.getMonth();
         monthEl.textContent = new Intl.DateTimeFormat('en', { month: 'long' }).format(date);
@@ -786,6 +803,7 @@ function initializeCalendar() {
             event.stopPropagation();
         }
         change(1);
+        flashNav(nextBtn);
     };
 
     const handlePrevClick = (event) => {
@@ -794,6 +812,7 @@ function initializeCalendar() {
             event.stopPropagation();
         }
         change(-1);
+        flashNav(prevBtn);
     };
 
     function bindNavButtons() {
@@ -809,13 +828,6 @@ function initializeCalendar() {
             nextBtn.addEventListener('click', handleNextClick);
             nextBtn.dataset.calendarBound = 'true';
         }
-        // visual click feedback: toggle .is-active briefly
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => {
-                nextBtn.classList.add('is-active');
-                setTimeout(() => nextBtn.classList.remove('is-active'), 300);
-            });
-        }
 
         const candidatePrev = document.querySelector('.vector-3[aria-label="Previous month"]');
         if (candidatePrev !== prevBtn) {
@@ -828,12 +840,6 @@ function initializeCalendar() {
         if (prevBtn && !prevBtn.dataset.calendarBound) {
             prevBtn.addEventListener('click', handlePrevClick);
             prevBtn.dataset.calendarBound = 'true';
-        }
-        if (prevBtn) {
-            prevBtn.addEventListener('click', () => {
-                prevBtn.classList.add('is-active');
-                setTimeout(() => prevBtn.classList.remove('is-active'), 300);
-            });
         }
     }
 
@@ -1237,19 +1243,27 @@ function updateUserUI(user, profile) {
 
     const fallbackAvatar = 'images/user-avatar.jpg';
     const fallbackProfileAvatar = 'images/profile/profile-avatar.png';
-    const fallbackNavAvatar = 'images/team/eijay.png';
 
     const userName = (profile.full_name && profile.full_name.trim()) || (user.email ? user.email.split('@')[0] : 'Learner');
     const userInitial = userName.charAt(0).toUpperCase();
+    let userHandle = profile.username && profile.username.trim()
+        ? profile.username.trim()
+        : (user.email
+            ? `@${user.email.split('@')[0]}`
+            : `@${userName.replace(/\s+/g, '').toLowerCase()}`);
+    if (userHandle && !userHandle.startsWith('@')) {
+        userHandle = `@${userHandle}`;
+    }
     const avatarUrl = profile.avatar_url;
 
     const headerAvatar = document.querySelector('.header-right .user-avatar');
+    let resolvedAvatar = avatarUrl;
     if (headerAvatar) {
         if (avatarUrl) {
             headerAvatar.innerHTML = '';
             const avatarImg = document.createElement('img');
             avatarImg.src = avatarUrl;
-            avatarImg.alt = 'User Avatar';
+            avatarImg.alt = `${userName} avatar`;
             avatarImg.className = 'user-avatar-image';
             avatarImg.style.width = '32px';
             avatarImg.style.height = '32px';
@@ -1259,16 +1273,27 @@ function updateUserUI(user, profile) {
         } else {
             headerAvatar.textContent = userInitial;
         }
+        const headerAvatarImg = headerAvatar.querySelector('img');
+        if (!resolvedAvatar && headerAvatarImg?.src) {
+            resolvedAvatar = headerAvatarImg.src;
+        }
+    }
+
+    if (!resolvedAvatar) {
+        resolvedAvatar = fallbackAvatar;
     }
 
     const navProfilePic = document.querySelector('nav .profile-pic');
     if (navProfilePic) {
-        navProfilePic.src = avatarUrl || fallbackNavAvatar;
+        navProfilePic.src = resolvedAvatar;
+        navProfilePic.alt = `${userName} avatar`;
     }
 
     const learnHeroAvatar = document.querySelector('.profile-avatar-large img');
     if (learnHeroAvatar) {
-        learnHeroAvatar.src = avatarUrl || fallbackAvatar;
+        learnHeroAvatar.src = resolvedAvatar;
+        learnHeroAvatar.alt = `${userName} avatar`;
+        learnHeroAvatar.style.removeProperty('display');
     }
 
     const learnGreetingHighlight = document.querySelector('.greeting-text .highlight-name');
@@ -1288,12 +1313,14 @@ function updateUserUI(user, profile) {
 
     const learningGreetingAvatar = document.querySelector('.greeting-avatar');
     if (learningGreetingAvatar) {
-        learningGreetingAvatar.src = avatarUrl || fallbackNavAvatar;
+        learningGreetingAvatar.src = resolvedAvatar;
+        learningGreetingAvatar.alt = `${userName} avatar`;
     }
 
     const certificationAvatar = document.querySelector('.welcome-section .profile-avatar-large img, .welcome-section .avatar-img');
     if (certificationAvatar) {
-        certificationAvatar.src = avatarUrl || fallbackAvatar;
+        certificationAvatar.src = resolvedAvatar;
+        certificationAvatar.alt = `${userName} avatar`;
     }
 
     const certificationGreeting = document.querySelector('.welcome-section .greeting-text .highlight, .welcome-section .greeting-text .highlight-name');
@@ -1307,17 +1334,35 @@ function updateUserUI(user, profile) {
     }
 
     const profileHeroHandle = document.querySelector('.profile-hero__handle');
-    if (profileHeroHandle && user.email) {
-        profileHeroHandle.textContent = `@${user.email.split('@')[0]}`;
+    if (profileHeroHandle) {
+        profileHeroHandle.textContent = userHandle;
     }
 
     const profileHeroAvatar = document.querySelector('.profile-hero__avatar-image');
     if (profileHeroAvatar) {
         profileHeroAvatar.src = avatarUrl || fallbackProfileAvatar;
+        profileHeroAvatar.alt = `${userName} avatar`;
     }
 
     const profileBio = document.querySelector('.profile-bio-card__copy');
     if (profileBio) {
         profileBio.textContent = profile.bio || 'No biography set. Click "Edit Profile" to add one!';
+    }
+
+    const homeSidebarHandle = document.querySelector('.profile-section .group-2 .text-wrapper');
+    if (homeSidebarHandle) {
+        homeSidebarHandle.textContent = userHandle;
+    }
+
+    const homeSidebarAvatar = document.querySelector('.profile-section .profile-icon');
+    if (homeSidebarAvatar) {
+        homeSidebarAvatar.src = resolvedAvatar;
+        homeSidebarAvatar.alt = `${userName} avatar`;
+        homeSidebarAvatar.style.objectFit = 'cover';
+        homeSidebarAvatar.style.borderRadius = '50%';
+        homeSidebarAvatar.onerror = () => {
+            homeSidebarAvatar.src = fallbackAvatar;
+            homeSidebarAvatar.onerror = null;
+        };
     }
 }
