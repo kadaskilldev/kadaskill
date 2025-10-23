@@ -579,7 +579,7 @@
             </ul>
             <div class="search-profile">
                 <input type="text" class="search-bar" placeholder="Search...">
-                <img src="images/team/eijay.png" alt="Profile" class="profile-pic">
+                <img src="images/profile/default-avatar.svg" alt="Profile avatar" class="profile-pic">
             </div>
         </div>
     </nav>
@@ -633,7 +633,7 @@
                 <div class="form-section">
                     <div class="profile-photo-section">
                         <!-- 1. Add an ID to the image to update its src later -->
-                        <img src="images/team/eijay.png" alt="Profile Photo" class="current-photo" id="profileImagePreview">
+                        <img src="images/profile/default-avatar.svg" alt="Profile photo preview" class="current-photo" id="profileImagePreview">
                         <div class="photo-actions">
                             <h3>Profile Photo</h3>
                             <p>Update your profile photo. JPG, PNG or GIF. Max size of 5MB.</p>
@@ -658,11 +658,11 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">Full Name</label>
-                            <input type="text" class="form-input" value="Eijay Palpal-latoc" placeholder="Enter your full name">
+                            <input type="text" class="form-input" value="" placeholder="Enter your full name">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Username</label>
-                            <input type="text" class="form-input" value="@eijay" placeholder="Enter your username">
+                            <input type="text" class="form-input" value="" placeholder="Enter your username">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Location</label>
@@ -684,7 +684,7 @@
                     <h2 class="form-section-title">Biography</h2>
                     <div class="form-group full-width">
                         <label class="form-label">About You</label>
-                        <textarea class="form-textarea" placeholder="Write a brief description about yourself...">Passionate about continuous learning and skill development. I thrive on exploring new areas of design, technology, and personal growth. Focused on creating meaningful digital experiences that empower users to learn, practice, and succeed.</textarea>
+                        <textarea class="form-textarea" placeholder="Write a brief description about yourself..." data-default-bio="No bio yet. Tell us about yourself to personalize your profile.">No bio yet. Tell us about yourself to personalize your profile.</textarea>
                     </div>
                 </div>
 
@@ -817,7 +817,11 @@
                 // <input type="text" id="fullNameInput" ...>
                 document.querySelector('input[placeholder="Enter your full name"]').value = profile.full_name || '';
                 document.querySelector('input[placeholder="Enter your username"]').value = `@${user.email.split('@')[0]}`;
-                document.querySelector('textarea').value = profile.bio || '';
+                const bioField = document.querySelector('textarea');
+                if (bioField) {
+                    const defaultBio = bioField.dataset.defaultBio || '';
+                    bioField.value = profile.bio && profile.bio.trim() ? profile.bio : defaultBio;
+                }
                 // Since this for debugging, we might add lines for location, work, education, etc. in the future, not sure as of now.
             }
         }

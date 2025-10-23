@@ -915,7 +915,7 @@ async function fetchUserData() {
             xp: 19319,
             badges: 32,
             streak: 4,
-            avatar: 'images/user-avatar.jpg'
+            avatar: 'images/profile/default-avatar.svg'
         };
     } catch (error) {
         console.error('Error fetching user data:', error);
@@ -1241,8 +1241,8 @@ function loadDashboardData() {
 function updateUserUI(user, profile) {
     if (!user || !profile) return;
 
-    const fallbackAvatar = 'images/user-avatar.jpg';
-    const fallbackProfileAvatar = 'images/profile/profile-avatar.png';
+    const fallbackAvatar = 'images/profile/default-avatar.svg';
+    const fallbackProfileAvatar = 'images/profile/default-avatar.svg';
 
     const userName = (profile.full_name && profile.full_name.trim()) || (user.email ? user.email.split('@')[0] : 'Learner');
     const userInitial = userName.charAt(0).toUpperCase();
@@ -1346,7 +1346,9 @@ function updateUserUI(user, profile) {
 
     const profileBio = document.querySelector('.profile-bio-card__copy');
     if (profileBio) {
-        profileBio.textContent = profile.bio || 'No biography set. Click "Edit Profile" to add one!';
+        profileBio.textContent = profile.bio && profile.bio.trim()
+            ? profile.bio
+            : 'No bio yet. Add one from your profile settings.';
     }
 
     const homeSidebarHandle = document.querySelector('.profile-section .group-2 .text-wrapper');

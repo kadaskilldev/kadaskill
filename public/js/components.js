@@ -24,7 +24,7 @@ function loadNavigation() {
                     <i class="fas fa-search search-icon"></i>
                 </div>
                 <div class="user-profile">
-                    <img src="images/user-avatar.jpg" alt="User" class="user-avatar">
+                    <img src="images/profile/default-avatar.svg" alt="User" class="user-avatar">
                     <i class="fas fa-chevron-down"></i>
                 </div>
             </div>
