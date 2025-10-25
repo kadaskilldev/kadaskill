@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Initialize page-specific functionality
         initializeCertificationPage();
+        initializeCertificationDetailPage();
         initializeCalendar();
         initializeLearnPage();
         initializePracticePage();
@@ -637,18 +638,44 @@ function initializeSearch() {
 function initializeCertificationCards() {
     const certificationCards = document.querySelectorAll('.certification-card');
     
+    // Map of certification titles to detail page IDs
+    const certIdMap = {
+        'Data Scientist': 'data-scientist',
+        'Security Analyst (SOC)': 'security-analyst',
+        'Cloud Security Engineer': 'cloud-security-engineer',
+        'Cybersecurity Analyst': 'cybersecurity-analyst',
+        'Cloud Solutions Architect': 'cloud-solutions-architect',
+        'AI/ML Engineer': 'ai-ml-engineer',
+        'Cloud DevOps Engineer': 'cloud-devops-engineer',
+        'Data Analyst': 'data-analyst',
+        'Ethical Hacker': 'ethical-hacker'
+    };
+    
     certificationCards.forEach(card => {
         const button = card.querySelector('.card-button');
         
         if (button) {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
                 const title = card.querySelector('.card-title').textContent;
                 const buttonText = this.textContent.trim();
                 
-                if (buttonText === 'Resume') {
-                    showNotification(`Resuming ${title} course...`, 'info');
+                // Get the certification ID from the map
+                const certId = certIdMap[title];
+                
+                if (certId) {
+                    // Redirect to certification detail page with ID
+                    showNotification(`Loading ${title}...`, 'info');
+                    setTimeout(() => {
+                        window.location.href = `certification-detail.html?id=${certId}`;
+                    }, 500);
                 } else {
-                    showNotification(`Starting ${title} certification...`, 'info');
+                    // Fallback for certifications without detail pages yet
+                    if (buttonText === 'Resume') {
+                        showNotification(`Resuming ${title} course...`, 'info');
+                    } else {
+                        showNotification(`Starting ${title} certification...`, 'info');
+                    }
                 }
             });
         }
@@ -1367,4 +1394,277 @@ function updateUserUI(user, profile) {
             homeSidebarAvatar.onerror = null;
         };
     }
+}
+
+
+// Certification details data structure with links, hardcoded (fallback) for now, to be fetched from backend later
+const certificationDataFallback = {
+    'data-scientist': {
+        title: 'Data Scientist',
+        subtitle: 'Extract insights from data using AI and ML techniques to guide business decisions',
+        category: 'Artificial Intelligence',
+        duration: 45,
+        level: 'intermediate',
+        icon: 'fab fa-python',
+        description: 'This comprehensive certification program will equip you with the essential skills to become a successful Data Scientist. You\'ll learn to extract meaningful insights from complex datasets using advanced AI and machine learning techniques, statistical analysis, and data visualization tools.',
+        prerequisites: [
+            'Basic understanding of Python programming',
+            'Fundamental knowledge of statistics and probability',
+            'Familiarity with data structures and algorithms',
+            'Basic SQL knowledge recommended'
+        ],
+        steps: [
+            {
+                title: 'Learn Python Programming',
+                description: 'Master Python fundamentals and data manipulation libraries.',
+                links: [
+                    {
+                        title: 'Python.org Official Tutorial',
+                        url: 'https://docs.python.org/3/tutorial/',
+                        icon: 'fas fa-book',
+                        description: 'Official Python documentation and tutorials'
+                    },
+                    {
+                        title: 'Codecademy Python Course',
+                        url: 'https://www.codecademy.com/learn/learn-python-3',
+                        icon: 'fas fa-code',
+                        description: 'Interactive Python programming course'
+                    },
+                    {
+                        title: 'NumPy & Pandas Tutorial',
+                        url: 'https://numpy.org/doc/stable/user/quickstart.html',
+                        icon: 'fas fa-table',
+                        description: 'Learn data manipulation with NumPy and Pandas'
+                    }
+                ]
+            },
+            {
+                title: 'Study Machine Learning',
+                description: 'Understand ML algorithms and model training.',
+                links: [
+                    {
+                        title: 'Coursera ML Specialization',
+                        url: 'https://www.coursera.org/specializations/machine-learning-introduction',
+                        icon: 'fas fa-graduation-cap',
+                        description: 'Andrew Ng\'s Machine Learning course'
+                    },
+                    {
+                        title: 'Scikit-learn Documentation',
+                        url: 'https://scikit-learn.org/stable/tutorial/index.html',
+                        icon: 'fas fa-flask',
+                        description: 'Official scikit-learn tutorials'
+                    },
+                    {
+                        title: 'Kaggle Learn',
+                        url: 'https://www.kaggle.com/learn',
+                        icon: 'fas fa-chart-line',
+                        description: 'Hands-on ML practice with real datasets'
+                    }
+                ]
+            },
+            {
+                title: 'Practice with Projects',
+                description: 'Build real-world projects to demonstrate your skills.',
+                links: [
+                    {
+                        title: 'Kaggle Competitions',
+                        url: 'https://www.kaggle.com/competitions',
+                        icon: 'fas fa-trophy',
+                        description: 'Compete in data science challenges'
+                    },
+                    {
+                        title: 'GitHub Data Science Projects',
+                        url: 'https://github.com/topics/data-science',
+                        icon: 'fab fa-github',
+                        description: 'Explore open-source projects'
+                    }
+                ]
+            },
+            {
+                title: 'Get Certified',
+                description: 'Take official certification exams.',
+                links: [
+                    {
+                        title: 'Google Data Analytics Certificate',
+                        url: 'https://www.coursera.org/professional-certificates/google-data-analytics',
+                        icon: 'fab fa-google',
+                        description: 'Professional certificate by Google'
+                    },
+                    {
+                        title: 'IBM Data Science Certificate',
+                        url: 'https://www.coursera.org/professional-certificates/ibm-data-science',
+                        icon: 'fas fa-certificate',
+                        description: 'Professional certificate by IBM'
+                    }
+                ]
+            }
+        ]
+    },
+    'security-analyst': {
+        title: 'Security Analyst (SOC)',
+        subtitle: 'Monitor and analyze real-time threats in a Security Operations Center environment',
+        category: 'Cybersecurity',
+        duration: 50,
+        level: 'intermediate',
+        icon: 'fas fa-shield-halved',
+        description: 'Become a proficient Security Operations Center (SOC) Analyst. Learn to monitor, detect, analyze, and respond to cybersecurity incidents in real-time.',
+        prerequisites: [
+            'Basic networking concepts (TCP/IP, DNS, HTTP)',
+            'Understanding of operating systems (Windows, Linux)',
+            'Familiarity with security concepts',
+            'Basic command line experience'
+        ],
+        steps: [
+            {
+                title: 'Learn Security Fundamentals',
+                description: 'Understand core cybersecurity concepts and principles.',
+                links: [
+                    {
+                        title: 'Cybrary Security+ Course',
+                        url: 'https://www.cybrary.it/course/comptia-security-plus',
+                        icon: 'fas fa-shield-alt',
+                        description: 'CompTIA Security+ preparation'
+                    },
+                    {
+                        title: 'SANS Cyber Aces',
+                        url: 'https://www.cyberaces.org/',
+                        icon: 'fas fa-book-open',
+                        description: 'Free security tutorials by SANS'
+                    }
+                ]
+            },
+            {
+                title: 'Master Network Security',
+                description: 'Learn network protocols and security monitoring.',
+                links: [
+                    {
+                        title: 'Wireshark Tutorial',
+                        url: 'https://www.wireshark.org/docs/',
+                        icon: 'fas fa-network-wired',
+                        description: 'Learn packet analysis with Wireshark'
+                    },
+                    {
+                        title: 'TryHackMe Network Security',
+                        url: 'https://tryhackme.com/paths',
+                        icon: 'fas fa-server',
+                        description: 'Hands-on network security training'
+                    }
+                ]
+            },
+            {
+                title: 'Practice Threat Detection',
+                description: 'Develop skills in identifying and responding to threats.',
+                links: [
+                    {
+                        title: 'Blue Team Labs Online',
+                        url: 'https://blueteamlabs.online/',
+                        icon: 'fas fa-search',
+                        description: 'SOC analyst challenges and labs'
+                    },
+                    {
+                        title: 'CyberDefenders',
+                        url: 'https://cyberdefenders.org/',
+                        icon: 'fas fa-user-shield',
+                        description: 'Blue team CTF challenges'
+                    }
+                ]
+            },
+            {
+                title: 'Get Certified',
+                description: 'Obtain professional certifications.',
+                links: [
+                    {
+                        title: 'CompTIA Security+',
+                        url: 'https://www.comptia.org/certifications/security',
+                        icon: 'fas fa-certificate',
+                        description: 'Industry-standard security certification'
+                    },
+                    {
+                        title: 'Certified SOC Analyst',
+                        url: 'https://www.eccouncil.org/programs/certified-soc-analyst-csa/',
+                        icon: 'fas fa-award',
+                        description: 'EC-Council SOC Analyst certification'
+                    }
+                ]
+            }
+        ]
+    }
+    // Add more certifications as needed
+};
+
+// Try Supabase first, fallback to hardcoded data
+async function getCertificationData(certId) {
+    try {
+        const { data, error } = await supabase
+            .from('certifications')
+            .select('*')
+            .eq('slug', certId)
+            .single();
+        
+        if (data && !error) {
+            return data;
+        }
+    } catch (error) {
+        console.warn('Supabase fetch failed, using fallback data:', error);
+    }
+    
+    return certificationDataFallback[certId];
+}
+
+async function initializeCertificationDetailPage() {
+    if (!document.querySelector('.cert-header')) return;
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const certId = urlParams.get('id');
+    
+    if (!certId) {
+        window.location.href = 'certification.html';
+        return;
+    }
+    
+    const certData = await getCertificationData(certId);
+    
+    if (certData) {
+        loadCertificationDetails(certData);
+    } else {
+        window.location.href = 'certification.html';
+    }
+}
+
+function loadCertificationDetails(cert) {
+    document.getElementById('cert-icon').innerHTML = `<i class="${cert.icon}"></i>`;
+    document.getElementById('cert-title').textContent = cert.title;
+    document.getElementById('cert-subtitle').textContent = cert.subtitle;
+    document.getElementById('cert-category').textContent = cert.category;
+    document.getElementById('cert-duration').textContent = cert.duration;
+    document.getElementById('cert-level').textContent = cert.level;
+    document.getElementById('cert-description').textContent = cert.description;
+    
+    const prereqList = document.getElementById('prerequisites-list');
+    prereqList.innerHTML = cert.prerequisites.map(prereq => 
+        `<li><i class="fas fa-check-circle"></i> ${prereq}</li>`
+    ).join('');
+    
+    const stepsContainer = document.getElementById('guide-steps');
+    stepsContainer.innerHTML = cert.steps.map((step, index) => `
+        <div class="guide-step">
+            <div class="step-header">
+                <div class="step-number">${index + 1}</div>
+                <h3 class="step-title">${step.title}</h3>
+            </div>
+            <p class="step-description">${step.description}</p>
+            <div class="step-links">
+                ${step.links.map(link => `
+                    <a href="${link.url}" class="step-link" target="_blank" rel="noopener noreferrer">
+                        <i class="${link.icon}"></i>
+                        <div class="step-link-text">
+                            <div class="step-link-title">${link.title}</div>
+                            <div class="step-link-desc">${link.description}</div>
+                        </div>
+                        <i class="fas fa-external-link-alt" style="color: #f59e0b; font-size: 0.875rem;"></i>
+                    </a>
+                `).join('')}
+            </div>
+        </div>
+    `).join('');
 }
