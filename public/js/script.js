@@ -356,6 +356,7 @@ function setActiveNavigation() {
         if (href.includes(currentPage) ||
             (currentPage === 'certification.html' && href.includes('certification')) ||
             (currentPage === 'learn.html' && href.includes('learn')) ||
+            (currentPage === 'learning.html' && href.includes('learn')) ||
             (currentPage === 'home.html' && href.includes('home')) ||
             (currentPage === 'practice.html' && href.includes('practice'))) {
             link.classList.add('active');
