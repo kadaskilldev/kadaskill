@@ -1653,7 +1653,6 @@ const certificationDataFallback = {
             }
         ]
     }
-    // Add more certifications as needed
 };
 
 // Try Supabase first, fallback to hardcoded data
