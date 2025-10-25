@@ -397,13 +397,18 @@ body.has-fixed-header {
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: url('../images/home/cta/btn.svg') no-repeat center;
+    background-image: url('../images/home/cta/btn.svg');
+    background-repeat: no-repeat;
+    background-position: center;
     background-size: 100% 100%;
+    transition: background-image 0.2s ease;
     z-index: 0;
 }
 
-.cta-button:hover::before {
-    background: linear-gradient(180deg, #ffe8b0 0%, #ffbf4d 100%);
+.cta-button:hover::before,
+.cta-button:focus-visible::before,
+.cta-button:active::before {
+    background-image: url('../images/home/cta/btn-hover.svg');
 }
 
 .cta-button span {
