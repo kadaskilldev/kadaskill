@@ -160,6 +160,32 @@ function initializeUserMenu(scope = document) {
         });
         item.addEventListener('mouseleave', () => item.classList.remove('is-active'));
     });
+
+    const signOutLink = menu.querySelector('.user-menu__item--danger');
+    if (signOutLink && !signOutLink.dataset.signOutBound) {
+        signOutLink.addEventListener('click', async (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (!supabase || !supabase.auth || typeof supabase.auth.signOut !== 'function') {
+                showNotification('Sign out is unavailable right now. Please try again later.', 'error');
+                return;
+            }
+
+            try {
+                showNotification('Signing you out...', 'info');
+                await supabase.auth.signOut();
+                sessionStorage.removeItem('userProfile');
+                sessionStorage.removeItem('authUser');
+                closeMenu();
+                window.location.href = 'index.html';
+            } catch (signOutError) {
+                console.error('Sign-out failed:', signOutError);
+                showNotification('Failed to sign out. Please try again.', 'error');
+            }
+        });
+        signOutLink.dataset.signOutBound = 'true';
+    }
 }
 
 function loadNavigation() {
@@ -405,20 +431,58 @@ async function handleFormSubmit(e) {
 
     if (error) {
         console.error('Auth Error:', error);
+
+        if (!isLogin) {
+            // Supabase returns a recognizable message when the email has an existing account
+            const message = (error.message || '').toLowerCase();
+            const alreadyRegistered = message.includes('already registered') || message.includes('already been registered') || message.includes('already exists');
+
+            if (alreadyRegistered) {
+                showNotification('That email is already registered. Please log in instead.', 'error');
+
+                if (loginForm.getAttribute('data-mode') !== 'login') {
+                    const loginToggle = document.querySelector('.login-link .login-toggle');
+                    if (loginToggle) {
+                        loginToggle.click();
+                    }
+                }
+                return;
+            }
+        }
+
         showNotification(`Authentication failed: ${error.message}`, 'error');
         return;
     }
 
-    if (!data.user && !isLogin) {
+    const user = data?.user ?? null;
+    const session = data?.session ?? null;
+
+    if (!isLogin) {
+        // Supabase returns an empty identities array when the email already exists (even if unconfirmed)
+        const duplicatesSuspected = Array.isArray(user?.identities) && user.identities.length === 0;
+        if (duplicatesSuspected) {
+            showNotification('That email is already registered. Please log in instead.', 'error');
+
+            if (loginForm.getAttribute('data-mode') !== 'login') {
+                const loginToggle = document.querySelector('.login-link .login-toggle');
+                if (loginToggle) {
+                    loginToggle.click();
+                }
+            }
+            return;
+        }
+    }
+
+    if (!user && !isLogin) {
         // Successful sign-up but user needs to confirm email (if Email Confirmation is ON)
         showNotification('Welcome to KadaSkill! Please check your email to verify your account and complete your sign-up.', 'success');
         loginForm.reset();
         return;
     }
     
-    if (data.user) {
+    if (user) {
         // If sign up requires verification
-        if (data.user && !data.session) {
+        if (!session) {
              showNotification('Welcome! Please check your email to verify your account.', 'success');
              return;
         }

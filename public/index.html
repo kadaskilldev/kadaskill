@@ -6,15 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KadaSkill - Step Into Your Next Skill</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        (function() {
-            const flagKey = 'kadaskillLoaderShown';
-            if (!sessionStorage.getItem(flagKey)) {
-                sessionStorage.setItem(flagKey, 'true');
-                window.location.replace('loading.html');
-            }
-        })();
-    </script>
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,7 +37,7 @@
                 <div class="hero-text">
                     <h1>Step Into Your<br>Next Skill</h1>
                     <p>Join now to learn, practice, and earn certifications</p>
-                    <a href="learn.html" class="cta-button">Get Started</a>
+                    <a href="learn.html" class="cta-button"><span>Get Started</span></a>
 
                     <div class="partners">
                         <span class="partners-label">Supported by</span>
@@ -288,7 +279,7 @@
         <div class="container">
             <h2>Ready to Level Up Your Skills?</h2>
             <p>Join KadaSkill today and start your bite-sized journey in cloud, AI & cybersecurity.</p>
-            <button class="cta-button">Register Now</button>
+            <button class="cta-button"><span>Register Now</span></button>
         </div>
     </section>
 
