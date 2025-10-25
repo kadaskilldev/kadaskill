@@ -374,20 +374,22 @@ body.has-fixed-header {
 
 .cta-button {
     position: relative;
-    width: 100%;
-    height: 65px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 65px;
+    padding: 0 3rem;
     border-radius: 14px;
+    border: none;
+    background: transparent;
     font-family: var(--button-font-family);
     font-weight: var(--button-font-weight);
     letter-spacing: var(--button-letter-spacing);
     font-size: 1.6rem;
     color: var(--variable-collection-secondary-color);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     text-decoration: none;
-    filter: drop-shadow(0px 6px 0px #8d5602);
-    transition: transform 0.2s ease, filter 0.2s ease;
+    cursor: pointer;
+    transition: transform 0.2s ease;
 }
 
 .cta-button::before {
@@ -395,7 +397,8 @@ body.has-fixed-header {
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: url('../images/home/cta/btn.svg') no-repeat center / cover;
+    background: url('../images/home/cta/btn.svg') no-repeat center;
+    background-size: 100% 100%;
     z-index: 0;
 }
 
@@ -543,7 +546,8 @@ body.has-fixed-header {
         gap: 24px;
     }
     .cta-button {
-        width: min(320px, 70vw);
+        width: auto;
+        max-width: 100%;
     }
 }
 
