@@ -439,7 +439,7 @@ body {
 }
 
 .profile-courses {
-  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  margin-top: clamp(3rem, 6vw, 4.5rem);
 }
 
 .profile-courses__header {
@@ -477,15 +477,53 @@ body {
   color: #ff9900;
 }
 
-.profile-courses__chevron {
-  width: 14px;
-  height: 14px;
+.profile-courses__chevrons {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
 }
 
-.profile-courses__grid {
+.profile-courses__chevron {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
+}
+
+.profile-courses__chevron:hover {
+  transform: translateY(-1px);
+}
+
+.profile-courses__chevron.is-hidden {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.profile-courses__chevron.is-active {
+  filter: brightness(0) saturate(100%) invert(69%) sepia(83%) saturate(675%) hue-rotate(357deg) brightness(101%) contrast(101%);
+}
+
+.profile-courses__viewport {
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+}
+
+.profile-courses__track {
+  display: flex;
+  gap: 0;
+  transition: transform 0.45s ease;
+  will-change: transform;
+  background: transparent;
+}
+
+.profile-courses__slide {
+  flex: 0 0 100%;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: clamp(1.25rem, 3vw, 1.75rem);
+  background: transparent;
 }
 
 .profile-course-card {
@@ -494,7 +532,6 @@ body {
   border-radius: 22px;
   background: radial-gradient(120% 120% at 115% 15%, rgba(15, 102, 122, 0.65), rgba(9, 28, 42, 0.97));
   min-height: 220px;
-  box-shadow: 0 22px 40px rgba(13, 38, 53, 0.25);
 }
 
 .profile-course-card__background {
@@ -556,7 +593,7 @@ body {
 }
 
 @media (max-width: 960px) {
-  .profile-courses__grid {
+  .profile-courses__slide {
     grid-template-columns: 1fr;
   }
 }

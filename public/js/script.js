@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
         initializeCalendar();
         initializeLearnPage();
         initializePracticePage();
+        initializeProfileCoursesNavigation();
 
         const pathname = window.location.pathname;
         if (
@@ -1269,6 +1270,175 @@ function updateCourseCount() {
     if (countElement) {
         countElement.textContent = visibleCards.length;
     }
+}
+
+function initializeProfileCoursesNavigation() {
+    const profileCoursesSection = document.querySelector('.profile-courses');
+    if (!profileCoursesSection) return;
+
+    const coursesTrack = profileCoursesSection.querySelector('.profile-courses__track');
+    const prevChevron = profileCoursesSection.querySelector('.profile-courses__chevron--prev');
+    const nextChevron = profileCoursesSection.querySelector('.profile-courses__chevron--next');
+
+    if (!coursesTrack || !nextChevron) return;
+
+    const coursePages = [
+        [
+            { title: 'Intermediate Python', aria: 'Intermediate Python course', eyebrow: 'Course', cta: 'Continue' },
+            { title: 'Time Management', aria: 'Time Management course', eyebrow: 'Course', cta: 'Continue' },
+            { title: 'Wireframing', aria: 'Wireframing course', eyebrow: 'Course', cta: 'Continue' },
+            { title: 'Project Scheduling', aria: 'Project Scheduling course', eyebrow: 'Course', cta: 'Continue' }
+        ],
+        Array.from({ length: 4 }, (_, idx) => ({
+            title: 'Text Here',
+            aria: `Placeholder course ${idx + 1}`,
+            eyebrow: 'Course',
+            cta: 'Continue'
+        })),
+        Array.from({ length: 4 }, (_, idx) => ({
+            title: 'Text Here',
+            aria: `Placeholder course ${idx + 5}`,
+            eyebrow: 'Course',
+            cta: 'Continue'
+        }))
+    ];
+
+    let currentIndex = 0;
+    let isAnimating = false;
+
+    const buildCourseSlide = (courses, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'profile-courses__grid profile-courses__slide';
+        slide.dataset.profileSlideIndex = String(index);
+        slide.innerHTML = courses.map(course => `
+            <article class="profile-course-card" aria-label="${course.aria}">
+              <div class="profile-course-card__background"></div>
+              <div class="profile-course-card__content">
+                <span class="profile-course-card__eyebrow">${course.eyebrow || 'Course'}</span>
+                <h3 class="profile-course-card__title">${course.title}</h3>
+                <a href="#" class="profile-course-card__cta" role="button">${course.cta || 'Continue'}</a>
+              </div>
+            </article>
+        `).join('');
+        return slide;
+    };
+
+    const syncTrackPosition = ({ immediate = false } = {}) => {
+        const targetTransform = `translateX(-${currentIndex * 100}%)`;
+        if (immediate) {
+            const previousTransition = coursesTrack.style.transition;
+            coursesTrack.style.transition = 'none';
+            coursesTrack.style.transform = targetTransform;
+            // force reflow so the next frame can animate as expected
+            void coursesTrack.offsetWidth;
+            coursesTrack.style.transition = previousTransition;
+        } else {
+            coursesTrack.style.transform = targetTransform;
+        }
+    };
+
+    const updateSlideVisibility = () => {
+        const slides = coursesTrack.querySelectorAll('.profile-courses__slide');
+        slides.forEach((slide, slideIndex) => {
+            slide.setAttribute('aria-hidden', slideIndex === currentIndex ? 'false' : 'true');
+        });
+    };
+
+    const renderSlides = () => {
+        coursesTrack.innerHTML = '';
+        coursePages.forEach((page, pageIndex) => {
+            coursesTrack.appendChild(buildCourseSlide(page, pageIndex));
+        });
+        syncTrackPosition({ immediate: true });
+        updateSlideVisibility();
+    };
+
+    const updateChevronState = () => {
+        if (prevChevron) {
+            const shouldHidePrev = currentIndex === 0;
+            prevChevron.classList.toggle('is-hidden', shouldHidePrev);
+            prevChevron.setAttribute('aria-hidden', shouldHidePrev ? 'true' : 'false');
+            prevChevron.setAttribute('aria-disabled', shouldHidePrev ? 'true' : 'false');
+            if (shouldHidePrev) {
+                prevChevron.classList.remove('is-active');
+                if (prevChevron._flashTimeoutId) {
+                    clearTimeout(prevChevron._flashTimeoutId);
+                    prevChevron._flashTimeoutId = null;
+                }
+            }
+        }
+
+        if (nextChevron) {
+            const shouldHideNext = currentIndex === coursePages.length - 1;
+            nextChevron.classList.toggle('is-hidden', shouldHideNext);
+            nextChevron.setAttribute('aria-hidden', shouldHideNext ? 'true' : 'false');
+            nextChevron.setAttribute('aria-disabled', shouldHideNext ? 'true' : 'false');
+            if (shouldHideNext) {
+                nextChevron.classList.remove('is-active');
+                if (nextChevron._flashTimeoutId) {
+                    clearTimeout(nextChevron._flashTimeoutId);
+                    nextChevron._flashTimeoutId = null;
+                }
+            }
+        }
+    };
+
+    const flashChevron = (icon) => {
+        if (!icon || icon.classList.contains('is-hidden')) return;
+        if (icon._flashTimeoutId) {
+            clearTimeout(icon._flashTimeoutId);
+        }
+        icon.classList.add('is-active');
+        icon._flashTimeoutId = setTimeout(() => {
+            icon.classList.remove('is-active');
+            icon._flashTimeoutId = null;
+        }, 180);
+    };
+
+    const startTransition = (direction) => {
+        if (isAnimating) return;
+
+        const delta = direction === 'next' ? 1 : -1;
+        const newIndex = currentIndex + delta;
+        if (newIndex < 0 || newIndex >= coursePages.length) return;
+
+        const targetChevron = direction === 'next' ? nextChevron : prevChevron;
+        flashChevron(targetChevron);
+
+        isAnimating = true;
+
+        currentIndex = newIndex;
+        updateChevronState();
+        updateSlideVisibility();
+
+        const handleTransitionEnd = (event) => {
+            if (event.target !== coursesTrack) return;
+            coursesTrack.removeEventListener('transitionend', handleTransitionEnd);
+            isAnimating = false;
+        };
+
+        requestAnimationFrame(() => {
+            coursesTrack.addEventListener('transitionend', handleTransitionEnd);
+            syncTrackPosition();
+        });
+    };
+
+    const addInteractionListener = (chevron, direction) => {
+        if (!chevron) return;
+        chevron.addEventListener('click', () => startTransition(direction));
+        chevron.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                startTransition(direction);
+            }
+        });
+    };
+
+    renderSlides();
+    updateChevronState();
+
+    addInteractionListener(nextChevron, 'next');
+    addInteractionListener(prevChevron, 'prev');
 }
 
 // Practice Page Functionality
