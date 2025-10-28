@@ -1,0 +1,75 @@
+<!-- In public/watch.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch Lesson - KadaSkill</title>
+    <link rel="stylesheet" href="css/style.css"> <!-- Or we can use a shared CSS if you guys want if ever -->
+    <style>
+        .watch-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+        }
+        #videoPlayer {
+            width: 100%;
+            border-radius: 8px;
+        }
+        #lessonTitle {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="navigation"></div>
+
+    <div class="watch-container">
+        <h1 id="lessonTitle">Loading lesson...</h1>
+        <video id="videoPlayer" controls autoplay>
+            <!-- The video source will be set by JavaScript -->
+        </video>
+    </div>
+
+    <div id="footer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/script.js"></script>
+    <script>
+        // This script will run when watch.html loads
+        async function loadVideo() {
+            // 1. Get the material ID from the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const materialId = urlParams.get('id');
+
+            if (!materialId) {
+                document.getElementById('lessonTitle').textContent = "Error: No lesson ID provided.";
+                return;
+            }
+
+            // 2. Fetch the specific lesson from the database
+            const { data: material, error } = await supabase
+                .from('course_materials')
+                .select('title, file_url')
+                .eq('id', materialId)
+                .single();
+
+            if (error || !material) {
+                console.error("Error fetching lesson:", error);
+                document.getElementById('lessonTitle').textContent = "Error: Could not find this lesson.";
+                return;
+            }
+
+            // 3. Update the page with the data
+            document.getElementById('lessonTitle').textContent = material.title;
+            const videoPlayer = document.getElementById('videoPlayer');
+            videoPlayer.src = material.file_url;
+            videoPlayer.play();
+        }
+
+        document.addEventListener('DOMContentLoaded', loadVideo);
+    </script>
+</body>
+</html>

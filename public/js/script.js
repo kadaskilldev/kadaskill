@@ -21,9 +21,188 @@ if (window.supabase && window.supabase.createClient) {
 
 const supabase = supabaseClient; // for compatibility with the rest of the code logic
 
-document.addEventListener('DOMContentLoaded', function() {
+// --- MASTER AUTHENTICATION & DATA FETCHING FUNCTION ---
+async function checkAuthAndLoadUserData() {
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+        // Redirect to login if the user is on a protected page
+        const publicPages = ['/', '/index.html', '/loading.html'];
+        if (!publicPages.includes(window.location.pathname)) {
+            window.location.href = 'index.html';
+        }
+        return null;
+    }
+
+    const user = session.user;
+
+    // Fetch the user's full profile from the database
+    const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+    if (error) {
+        console.error('Critical Error: Could not fetch user profile. Signing out.', error);
+        await supabase.auth.signOut();
+        window.location.href = 'index.html';
+        return null;
+    }
+
+    // Return both the auth user and the database profile
+    return { user, profile };
+}
+
+// --- UI UPDATE LOGIC ---
+function updateUserUI(user, profile) {
+    if (!user || !profile) return;
+
+    const userName = profile.full_name || user.email.split('@')[0];
+    const userInitial = userName.charAt(0).toUpperCase();
+    const avatarUrl = profile.avatar_url;
+
+    // 1. Update all possible name/greeting elements
+    const nameElements = document.querySelectorAll('.highlight-name, .text-wrapper-37, .profile-hero__name, .highlight');
+    nameElements.forEach(el => {
+        if (el) el.textContent = userName;
+    });
+
+    // 2. Update all possible handle/@username elements
+    const handleElements = document.querySelectorAll('.profile-hero__handle, .text-wrapper');
+    handleElements.forEach(el => {
+        if(el) el.textContent = `@${user.email.split('@')[0]}`;
+    });
+
+    // 3. Update all possible avatar elements
+    const avatarPlaceholders = document.querySelectorAll('.user-avatar, .avatar-img, .profile-hero__avatar-image, .profile-pic');
+    avatarPlaceholders.forEach(el => {
+        if (avatarUrl) {
+            // If it's an IMG tag, set the src
+            if (el.tagName === 'IMG') {
+                el.src = avatarUrl;
+            } else {
+                // If it's a DIV, replace its content with an image
+                el.innerHTML = ''; // Clear initial
+                const img = document.createElement('img');
+                img.src = avatarUrl;
+                img.alt = `Avatar for ${userName}`;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                img.style.borderRadius = '50%';
+                el.appendChild(img);
+            }
+        } else {
+            // If no avatar URL, show the initial
+            if (el.tagName === 'DIV') {
+                el.textContent = userInitial;
+            } else { // It's an IMG tag without a source
+                el.src = 'images/user-avatar.jpg'; // A default placeholder image
+            }
+        }
+    });
+
+    // 4. Update the bio on the profile page
+    const bioElement = document.querySelector('.profile-bio-card__copy');
+    if (bioElement) {
+        bioElement.textContent = profile.bio || 'No biography has been set. Click "Edit Profile" to add one.';
+    }
+}
+
+async function loadMyCourses() {
+    // 1. Find the grid container on learn.html page
+    const coursesGrid = document.getElementById('courses-grid');
+    if (!coursesGrid) return; // Stop if we're not on the right page
+
+    // Add a loading message
+    coursesGrid.innerHTML = '<p style="color: #666;">Loading your courses...</p>';
+
+    // 2. Fetch all published courses from the database
+    const { data: courses, error } = await supabase
+        .from('courses')
+        .select('*')
+        .eq('is_published', true)
+        .order('created_at', { ascending: false }); // Show newest courses first
+
+    if (error) {
+        console.error("Error fetching courses:", error);
+        coursesGrid.innerHTML = '<p style="color: #dc3545;">Could not load courses at this time.</p>';
+        return;
+    }
+
+    if (courses.length === 0) {
+        coursesGrid.innerHTML = '<p>No courses are available yet. Check back soon!</p>';
+        return;
+    }
+    
+    // Update the course count
+    const countElement = document.getElementById('course-count');
+    if (countElement) {
+        countElement.textContent = courses.length;
+    }
+
+    // 3. Clear the loading message
+    coursesGrid.innerHTML = '';
+
+    // 4. Loop through the fetched courses and create a card for each one
+    for (const course of courses) {
+        // Find the first lesson to link to
+        const { data: firstMaterial } = await supabase
+            .from('course_materials')
+            .select('id')
+            .eq('course_id', course.id)
+            .order('order_index', { ascending: true })
+            .limit(1)
+            .single();
+
+        const courseCard = document.createElement('div');
+        courseCard.className = 'course-card';
+        courseCard.setAttribute('data-category', course.category_id || 'general'); // For filtering
+
+        // Use the data from the 'course' object to fill the card
+        courseCard.innerHTML = `
+            <div class="course-card-image">
+                <img src="${course.thumbnail_url || 'images/courses/placeholder.jpg'}" alt="${course.title}" onerror="this.onerror=null;this.src='images/courses/placeholder.jpg';">
+                <div class="course-badge ${course.difficulty?.toLowerCase() || 'beginner'}">${course.difficulty || 'Beginner'}</div>
+            </div>
+            <div class="course-card-content">
+                <h3 class="course-card-title">${course.title}</h3>
+                <p class="course-card-description">${course.description}</p>
+                <div class="course-card-footer">
+                    <span class="course-duration"><i class="fas fa-clock"></i> ${course.xp_reward} XP</span>
+                    <button class="course-card-btn">Start</button>
+                </div>
+            </div>
+        `;
+
+        // 5. Add a click listener to the card to navigate to the watch page
+        if (firstMaterial) {
+            courseCard.addEventListener('click', () => {
+                // Navigate to the video player, passing the lesson ID
+                window.location.href = `watch.html?id=${firstMaterial.id}`;
+            });
+        } else {
+            // If there are no lessons, maybe disable the card or show a "coming soon" message
+            courseCard.style.opacity = '0.6';
+            courseCard.querySelector('.course-card-btn').textContent = 'Soon';
+        }
+        
+        coursesGrid.appendChild(courseCard);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+    // Check Auth and Fetch Data FIRST
+    const userData = await checkAuthAndLoadUserData();
+
     // Load shared components first
     loadSharedComponents();
+
+    // Update the UI with the fetched data
+    if (userData) {
+        updateUserUI(userData.user, userData.profile);
+    }
     
     // Then initialize page functionality
     setTimeout(() => {
@@ -46,6 +225,17 @@ document.addEventListener('DOMContentLoaded', function() {
         initializeCalendar();
         initializeLearnPage();
         initializePracticePage();
+
+        const pathname = window.location.pathname;
+
+        if (pathname.endsWith('learn.html')) {
+            // This is the new "My Courses" page
+            loadMyCourses();
+            
+            // Re-initialize the filtering and searching now that the cards are dynamic
+            initializeLearnPage(); 
+        }
+
 
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -156,7 +346,7 @@ function loadNavigation() {
 
     const userProfileMarkup = `
                 <div class="user-profile">
-                    <div class="user-avatar" aria-hidden="true">E</div>
+                    <div class="user-avatar" aria-hidden="true"></div>
                     <button class="user-profile__toggle" aria-label="Open profile menu" aria-haspopup="true" aria-expanded="false">
                         <img src="images/profile/Vector.svg" alt="" class="user-profile__icon">
                     </button>
@@ -405,7 +595,7 @@ async function handleFormSubmit(e) {
         // Successful login OR Sign-up (if email confirmation is OFF)
         showNotification('Authentication successful! Redirecting to dashboard...', 'success');
         // Redirect to home page
-        setTimeout(() => {
+        setTimeout(() => { 
             window.location.href = 'home.html'; 
         }, 1500);
     } else {
