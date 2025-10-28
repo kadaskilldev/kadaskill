@@ -1014,11 +1014,28 @@ body.has-fixed-header {
 }
 
 .learning-action-continue {
-    color: #232f3e;
+    min-height: 48px;
+    padding: 0 1.9rem;
+    border-radius: 14px;
+    font-family: var(--button-font-family);
+    font-weight: var(--button-font-weight);
+    letter-spacing: var(--button-letter-spacing);
+    font-size: 1.15rem;
+    color: var(--variable-collection-secondary-color);
+    transition: transform 0.2s ease;
 }
 
 .learning-action-continue::before {
-    background-image: url('../images/home/Group 73-1.svg');
+    background-image: url('../images/home/cta/btn.svg');
+    background-size: 100% 100%;
+    background-position: center;
+    transition: background-image 0.2s ease;
+}
+
+.learning-action-continue:hover::before,
+.learning-action-continue:focus-visible::before,
+.learning-action-continue:active::before {
+    background-image: url('../images/home/cta/btn-hover.svg');
 }
 
 .learning-card-link {
@@ -1046,9 +1063,10 @@ body.has-fixed-header {
 }
 
 .learning-action:focus,
-.learning-card-link:focus {
-    outline: 2px solid rgba(255, 153, 0, 0.65);
-    outline-offset: 2px;
+.learning-action:focus-visible,
+.learning-card-link:focus,
+.learning-card-link:focus-visible {
+    outline: none;
 }
 
 /* Leaderboard Card */
