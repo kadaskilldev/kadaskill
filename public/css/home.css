@@ -876,7 +876,7 @@ body.has-fixed-header {
 
 .learning-overview {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
     gap: 1.5rem;
     align-items: stretch;
     margin-top: 1.25rem;
@@ -970,8 +970,11 @@ body.has-fixed-header {
 
 .learning-card-actions {
     display: flex;
-    gap: 0.75rem;
-    margin-top: 1.75rem;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-top: auto;
+    width: 100%;
+    gap: 1rem;
     position: relative;
     z-index: 1;
 }
@@ -992,6 +995,9 @@ body.has-fixed-header {
     color: #1d192b;
     background: none;
     min-width: 132px;
+    gap: 0.6rem;
+    min-height: 48px;
+    line-height: 1;
 }
 
 .learning-action::before {
@@ -1006,7 +1012,6 @@ body.has-fixed-header {
 }
 
 .learning-action-practice {
-    min-height: 48px;
     padding: 0 1.9rem;
     border-radius: 14px;
     font-family: var(--button-font-family);
@@ -1015,12 +1020,38 @@ body.has-fixed-header {
     font-size: 1.15rem;
     color: var(--variable-collection-secondary-color);
     transition: transform 0.2s ease;
+    justify-content: flex-start;
 }
 
 .learning-action-practice::before {
     background-image: url('../images/home/Group 73.svg');
     background-size: 100% 100%;
     background-position: center;
+    transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.learning-action-practice:hover::before,
+.learning-action-practice:focus-visible::before,
+.learning-action-practice:active::before {
+    filter: brightness(1.15);
+}
+
+.learning-action-practice:hover,
+.learning-action-practice:focus-visible,
+.learning-action-practice:active {
+    transform: translateY(-1px);
+}
+
+.learning-action-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.learning-action-label {
+    display: inline-flex;
+    align-items: center;
 }
 
 .learning-action-continue {
