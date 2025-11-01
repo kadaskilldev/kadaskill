@@ -1006,11 +1006,21 @@ body.has-fixed-header {
 }
 
 .learning-action-practice {
-    color: #1d192b;
+    min-height: 48px;
+    padding: 0 1.9rem;
+    border-radius: 14px;
+    font-family: var(--button-font-family);
+    font-weight: var(--button-font-weight);
+    letter-spacing: var(--button-letter-spacing);
+    font-size: 1.15rem;
+    color: var(--variable-collection-secondary-color);
+    transition: transform 0.2s ease;
 }
 
 .learning-action-practice::before {
     background-image: url('../images/home/Group 73.svg');
+    background-size: 100% 100%;
+    background-position: center;
 }
 
 .learning-action-continue {
