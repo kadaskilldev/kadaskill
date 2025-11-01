@@ -720,13 +720,13 @@
 
 .profile-section .div-wrapper {
   position: absolute;
-  width: 63px;
+  min-width: 63px;
   height: 35px;
   top: 86px;
-  left: 175px;
+  left: 165px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
 }
 
@@ -828,14 +828,15 @@
 
 .profile-section .group-7 {
   position: absolute;
-  width: 32.29%;
-  height: 12.64%;
+  min-width: 63px;
+  height: 35px;
   top: 138px;
-  left: 175px;
+  left: 165px;
   padding: 0;
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
 }
 
 .profile-section .group-8 {
@@ -880,9 +881,11 @@
 
 
 .profile-section .img {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
+  display: block;
+  transform: translateX(-4px);
 }
 
 .profile-section .untitled-design {
