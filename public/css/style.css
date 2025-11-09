@@ -460,6 +460,62 @@ body.has-fixed-header {
     z-index: 1;
 }
 
+.cta-pill {
+    position: relative;
+    z-index: 0;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.9rem;
+    min-height: 46px;
+    border: none;
+    border-radius: 14px;
+    background: transparent;
+    font-family: var(--button-font-family, 'Inter', sans-serif);
+    font-weight: var(--button-font-weight, 600);
+    letter-spacing: var(--button-letter-spacing, 0.02em);
+    line-height: 1;
+    color: var(--variable-collection-secondary-color, #232f3e);
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cta-pill::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-image: url('../images/home/cta/btn.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    transition: background-image 0.2s ease, filter 0.2s ease;
+    z-index: -1;
+}
+
+.cta-pill:hover,
+.cta-pill:focus-visible {
+    transform: translateY(-2px);
+}
+
+.cta-pill:hover::before,
+.cta-pill:focus-visible::before {
+    background-image: url('../images/home/cta/btn-hover.svg');
+}
+
+.cta-pill:active {
+    transform: translateY(0);
+    box-shadow: 0 10px 18px rgba(255, 153, 0, 0.24);
+}
+
+.cta-pill:focus-visible {
+    outline: none;
+}
+
 .cta-robot {
     /* Larger base size so the icon reads better */
     --cta-robot-size: clamp(80px, 11vw, 160px);

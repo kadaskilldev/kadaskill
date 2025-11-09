@@ -1527,6 +1527,7 @@ function updateUserUI(user, profile) {
         userHandle = `@${userHandle}`;
     }
     const avatarUrl = profile.avatar_url;
+    const nameWithExclamation = userName.endsWith('!') ? userName : `${userName}!`;
 
     const headerAvatar = document.querySelector('.header-right .user-avatar');
     let resolvedAvatar = avatarUrl;
@@ -1568,20 +1569,24 @@ function updateUserUI(user, profile) {
         learnHeroAvatar.style.removeProperty('display');
     }
 
-    const learnGreetingHighlight = document.querySelector('.greeting-text .highlight-name');
-    if (learnGreetingHighlight) {
-        learnGreetingHighlight.textContent = `${userName}!`;
-    }
+    const greetingHighlightSelectors = [
+        '.greeting-text .highlight-name',
+        '.greeting-text .highlight',
+        '.welcome-section .greeting-text .highlight',
+        '.welcome-section .greeting-text .highlight-name',
+        '.text-wrapper-37'
+    ];
+    greetingHighlightSelectors.forEach(selector => {
+        document.querySelectorAll(selector).forEach(element => {
+            element.textContent = nameWithExclamation;
+        });
+    });
 
-    const learnGreetingHighlightAlt = document.querySelector('.greeting-text .highlight');
-    if (learnGreetingHighlightAlt) {
-        learnGreetingHighlightAlt.textContent = `${userName}!`;
-    }
-
-    const learningGreetingName = document.querySelector('[data-placeholder="greeting-name"], .greeting-text .name');
-    if (learningGreetingName) {
-        learningGreetingName.textContent = userName;
-    }
+    document
+        .querySelectorAll('[data-placeholder="greeting-name"], .greeting-text .name')
+        .forEach(element => {
+            element.textContent = userName;
+        });
 
     const learningGreetingAvatar = document.querySelector('.greeting-avatar');
     if (learningGreetingAvatar) {
@@ -1595,10 +1600,13 @@ function updateUserUI(user, profile) {
         certificationAvatar.alt = `${userName} avatar`;
     }
 
-    const certificationGreeting = document.querySelector('.welcome-section .greeting-text .highlight, .welcome-section .greeting-text .highlight-name');
-    if (certificationGreeting) {
-        certificationGreeting.textContent = `${userName}!`;
-    }
+    document
+        .querySelectorAll('input[placeholder="Enter your full name"]')
+        .forEach(input => {
+            if (!input.matches(':focus') && (!input.value || input.value.trim() === '')) {
+                input.value = profile.full_name || '';
+            }
+        });
 
     const profileHeroName = document.querySelector('.profile-hero__name');
     if (profileHeroName) {
