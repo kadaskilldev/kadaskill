@@ -924,8 +924,8 @@ body.has-fixed-header {
 }
 
 .learning-card-course::after {
-    background-image: url('../images/home/Frame 1.svg');
-    opacity: 0.3;
+    background-image: none;
+    opacity: 0;
     background-size: 160%;
     mix-blend-mode: screen;
 }
@@ -940,9 +940,18 @@ body.has-fixed-header {
 }
 
 .learning-card-track::after {
-    background-image: url('../images/home/Group 73-2.svg');
-    opacity: 0.25;
-    background-size: 130%;
+    background-image: url('../images/home/Frame 1.svg');
+    opacity: 0.5;
+    background-size: 120%;
+    background-position: 115% 15%;
+    mix-blend-mode: multiply;
+}
+
+@media (min-width: 1024px) {
+    .learning-card-track::after {
+        background-size: 90%;
+        background-position: 120% 35%;
+    }
 }
 
 .learning-card-label {
@@ -1100,7 +1109,9 @@ body.has-fixed-header {
     transform: translateY(-50%);
     width: 18px;
     height: 18px;
-    background: url('../images/home/next main.svg') no-repeat center / contain;
+    background-color: currentColor;
+    -webkit-mask: url('../images/home/next main.svg') no-repeat center / contain;
+    mask: url('../images/home/next main.svg') no-repeat center / contain;
 }
 
 .learning-action:focus,
