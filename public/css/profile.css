@@ -320,6 +320,21 @@ body {
   width: 100%;
   height: auto;
   display: block;
+  transition: transform 0.3s ease-out;
+  will-change: transform;
+}
+
+.profile-skills-illustration__image.is-animated {
+  animation: robot-gentle-float 3s ease-in-out infinite;
+}
+
+@keyframes robot-gentle-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(2deg);
+  }
 }
 
 .profile-skills-card__title {

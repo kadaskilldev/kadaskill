@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
         initializeLearnPage();
         initializePracticePage();
         initializeProfileCoursesNavigation();
+        initializeProfileRobotAnimation();
 
         const pathname = window.location.pathname;
         if (
@@ -1447,6 +1448,40 @@ function initializePracticePage() {
     if (!document.querySelector('.practice-main-content')) return;
     
     initializePracticeCards();
+}
+
+function initializeProfileRobotAnimation() {
+    const robot = document.querySelector('.profile-skills-illustration__image');
+    if (!robot) return;
+
+    let ticking = false;
+
+    const updateRobotTransform = () => {
+        const rect = robot.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const robotCenter = rect.top + rect.height / 2;
+        const viewportCenter = viewportHeight / 2;
+
+        const distanceFromCenter = (robotCenter - viewportCenter) / viewportHeight;
+
+        const tilt = distanceFromCenter * 3;
+        const float = Math.sin(distanceFromCenter * Math.PI) * 5;
+
+        robot.style.transform = `translateY(${float}px) rotate(${tilt}deg)`;
+        robot.classList.add('is-animated');
+
+        ticking = false;
+    };
+
+    const onScroll = () => {
+        if (!ticking) {
+            window.requestAnimationFrame(updateRobotTransform);
+            ticking = true;
+        }
+    };
+
+    updateRobotTransform();
+    window.addEventListener('scroll', onScroll, { passive: true });
 }
 
 function initializePracticeCards() {
