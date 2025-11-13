@@ -914,20 +914,24 @@ body.has-fixed-header {
     mix-blend-mode: lighten;
 }
 
+
 .learning-card-course {
-    background: linear-gradient(137deg, #041b2a 0%, #07405a 45%, #0e597c 100%);
-    color: #f8f7fc;
+    background: linear-gradient(135deg, #102437 0%, #0e3a4f 50%, #0b5269 100%);
+    color: #f1f6fb;
 }
+
 
 .learning-card-course::before {
-    background: linear-gradient(180deg, rgba(12, 47, 69, 0.65) 0%, rgba(12, 47, 69, 0) 100%);
+    background: linear-gradient(180deg, rgba(7, 28, 42, 0.45) 0%, rgba(7, 28, 42, 0) 100%);
 }
 
+
 .learning-card-course::after {
-    background-image: none;
-    opacity: 0;
-    background-size: 160%;
-    mix-blend-mode: screen;
+    background-image: url('../images/profile/background-circle-card.svg');
+    background-position: 210% 20px;
+    background-size: 75%;
+    opacity: 0.55;
+    mix-blend-mode: normal;
 }
 
 .learning-card-track {
