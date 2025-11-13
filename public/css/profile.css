@@ -514,7 +514,12 @@ body {
 .profile-course-card__background {
   position: absolute;
   inset: 0;
-  background: url('../images/profile/background-circle.svg') no-repeat right -260px center / 320px;
+  background-image: url('../images/home/cta/background-circle-left.svg');
+  background-repeat: no-repeat;
+  background-position: 220% 20px;
+  background-size: 75%;
+  transform: scale(1.22);
+  transform-origin: top right;
 }
 
 .profile-course-card__content {
