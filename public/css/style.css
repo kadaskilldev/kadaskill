@@ -127,7 +127,20 @@ body.has-fixed-header {
     list-style: none;
     gap: 0.75rem;
     align-items: center;
+    position: relative;
+    isolation: isolate;
     margin: 0;
+}
+
+.nav-links::before {
+    content: '';
+    position: absolute;
+    inset: -0.45rem -0.85rem;
+    border-radius: 999px;
+    background: #efeff5;
+    border: 1px solid rgba(167, 169, 207, 0.35);
+    box-shadow: 0 12px 24px rgba(79, 86, 113, 0.12);
+    z-index: -1;
 }
 
 .nav-btn {
