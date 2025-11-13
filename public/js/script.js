@@ -227,7 +227,7 @@ function loadNavigation() {
         `;
 
     const nav = `
-    <header class="header">
+    <header class="header header--no-bg">
         <div class="container">
             <div class="logo">
                 <div class="logo-mark" aria-hidden="true">
@@ -284,6 +284,9 @@ function loadNavigation() {
 
     initializeUserMenu(navigationElement);
     setActiveNavigation();
+    if (headerElement) {
+        initializeHeaderScrollAnimation();
+    }
 }
 
 function loadFooter() {
@@ -1448,6 +1451,7 @@ function initializePracticePage() {
     if (!document.querySelector('.practice-main-content')) return;
     
     initializePracticeCards();
+    initializeHeaderScrollAnimation();
 }
 
 function initializeProfileRobotAnimation() {
@@ -1481,6 +1485,36 @@ function initializeProfileRobotAnimation() {
     };
 
     updateRobotTransform();
+    window.addEventListener('scroll', onScroll, { passive: true });
+}
+
+function initializeHeaderScrollAnimation() {
+    const header = document.querySelector('.header');
+    if (!header) return;
+    if (header.dataset.scrollAnimationInitialized === 'true') return;
+    header.dataset.scrollAnimationInitialized = 'true';
+
+    const SCROLL_THRESHOLD = 20;
+    let lastKnownScrollY = 0;
+    let ticking = false;
+
+    const updateHeaderBackground = () => {
+        const shouldShowBackground = lastKnownScrollY > SCROLL_THRESHOLD;
+        header.classList.toggle('header--has-bg', shouldShowBackground);
+        header.classList.toggle('header--no-bg', !shouldShowBackground);
+        ticking = false;
+    };
+
+    const onScroll = () => {
+        lastKnownScrollY = window.scrollY || window.pageYOffset;
+        if (!ticking) {
+            window.requestAnimationFrame(updateHeaderBackground);
+            ticking = true;
+        }
+    };
+
+    header.classList.add('header--no-bg');
+    updateHeaderBackground();
     window.addEventListener('scroll', onScroll, { passive: true });
 }
 

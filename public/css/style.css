@@ -27,8 +27,8 @@ body {
 /* Header */
 
 .header {
-    background: #ffffff;
-    border-bottom: 1px solid #e2e8f0;
+    background: transparent;
+    border-bottom: 1px solid transparent;
     position: fixed;
     top: 0;
     left: 0;
@@ -36,8 +36,19 @@ body {
     width: 100%;
     z-index: 1000;
     padding: 1rem 0;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    transition: background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.header--has-bg {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.header--no-bg {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
 }
 
 body.has-fixed-header {
