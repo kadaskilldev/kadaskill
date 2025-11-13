@@ -366,8 +366,9 @@ body {
 
 .profile-status {
   display: grid;
-  gap: 0;
-  height: 150px;
+  gap: 0.65rem;
+  height: auto;
+  margin-bottom: 0;
 }
 
 .profile-status__header {
@@ -385,11 +386,11 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: clamp(0.75rem, 2vw, 1.1rem);
-  align-items: end;
+  align-items: stretch;
 }
 
 .profile-status-card {
-  padding: 0.85rem;
+  padding: 0.65rem 0.85rem;
   border-radius: 18px;
   background: linear-gradient(140deg, #0e2735 0%, #0b4655 48%, #0f6370 100%);
   color: #f8f7fc;
@@ -397,8 +398,8 @@ body {
   display: grid;
   align-content: center;
   justify-items: center;
-  gap: 0.35rem;
-  aspect-ratio: 0.85;
+  gap: 0.25rem;
+  min-height: clamp(115px, 13.5vw, 130px);
 }
 
 .profile-status-card__label {
@@ -416,7 +417,7 @@ body {
 }
 
 .profile-courses {
-  margin-top: clamp(3rem, 6vw, 4.5rem);
+  margin-top: 0;
 }
 
 .profile-courses__header {
