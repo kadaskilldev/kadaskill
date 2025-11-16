@@ -1270,15 +1270,6 @@ function initializeContinueButton() {
     }
 }
 
-function updateCourseCount() {
-    const visibleCards = document.querySelectorAll('.course-card:not([style*="display: none"])');
-    const countElement = document.getElementById('course-count');
-    
-    if (countElement) {
-        countElement.textContent = visibleCards.length;
-    }
-}
-
 function initializeProfileCoursesNavigation() {
     const profileCoursesSection = document.querySelector('.profile-courses');
     if (!profileCoursesSection) return;
@@ -1310,8 +1301,33 @@ function initializeProfileCoursesNavigation() {
         }))
     ];
 
+    const certificationPages = [
+        [
+            { title: 'UI/UX Designer', aria: 'UI/UX Designer track', eyebrow: 'Track', cta: 'Continue' },
+            { title: 'Data Analyst', aria: 'Data Analyst track', eyebrow: 'Track', cta: 'Continue' },
+            { title: 'Software Engineer', aria: 'Software Engineer track', eyebrow: 'Track', cta: 'Continue' },
+            { title: 'Project Manager', aria: 'Project Manager track', eyebrow: 'Track', cta: 'Continue' }
+        ],
+        Array.from({ length: 4 }, (_, idx) => ({
+            title: 'Text Here',
+            aria: `Placeholder track ${idx + 1}`,
+            eyebrow: 'Track',
+            cta: 'Continue'
+        }))
+    ];
+
+    let activeCategory = null;
+    let pages = coursePages;
     let currentIndex = 0;
     let isAnimating = false;
+    let activeTransitionHandler = null;
+
+    const cleanupTransitionHandler = () => {
+        if (activeTransitionHandler) {
+            coursesTrack.removeEventListener('transitionend', activeTransitionHandler);
+            activeTransitionHandler = null;
+        }
+    };
 
     const buildCourseSlide = (courses, index) => {
         const slide = document.createElement('div');
@@ -1336,7 +1352,6 @@ function initializeProfileCoursesNavigation() {
             const previousTransition = coursesTrack.style.transition;
             coursesTrack.style.transition = 'none';
             coursesTrack.style.transform = targetTransform;
-            // force reflow so the next frame can animate as expected
             void coursesTrack.offsetWidth;
             coursesTrack.style.transition = previousTransition;
         } else {
@@ -1353,7 +1368,7 @@ function initializeProfileCoursesNavigation() {
 
     const renderSlides = () => {
         coursesTrack.innerHTML = '';
-        coursePages.forEach((page, pageIndex) => {
+        pages.forEach((page, pageIndex) => {
             coursesTrack.appendChild(buildCourseSlide(page, pageIndex));
         });
         syncTrackPosition({ immediate: true });
@@ -1376,7 +1391,7 @@ function initializeProfileCoursesNavigation() {
         }
 
         if (nextChevron) {
-            const shouldHideNext = currentIndex === coursePages.length - 1;
+            const shouldHideNext = currentIndex === pages.length - 1;
             nextChevron.classList.toggle('is-hidden', shouldHideNext);
             nextChevron.setAttribute('aria-hidden', shouldHideNext ? 'true' : 'false');
             nextChevron.setAttribute('aria-disabled', shouldHideNext ? 'true' : 'false');
@@ -1407,7 +1422,7 @@ function initializeProfileCoursesNavigation() {
 
         const delta = direction === 'next' ? 1 : -1;
         const newIndex = currentIndex + delta;
-        if (newIndex < 0 || newIndex >= coursePages.length) return;
+        if (newIndex < 0 || newIndex >= pages.length) return;
 
         const targetChevron = direction === 'next' ? nextChevron : prevChevron;
         flashChevron(targetChevron);
@@ -1418,14 +1433,17 @@ function initializeProfileCoursesNavigation() {
         updateChevronState();
         updateSlideVisibility();
 
+        cleanupTransitionHandler();
+
         const handleTransitionEnd = (event) => {
             if (event.target !== coursesTrack) return;
-            coursesTrack.removeEventListener('transitionend', handleTransitionEnd);
+            cleanupTransitionHandler();
             isAnimating = false;
         };
 
         requestAnimationFrame(() => {
-            coursesTrack.addEventListener('transitionend', handleTransitionEnd);
+            activeTransitionHandler = handleTransitionEnd;
+            coursesTrack.addEventListener('transitionend', activeTransitionHandler);
             syncTrackPosition();
         });
     };
@@ -1441,8 +1459,44 @@ function initializeProfileCoursesNavigation() {
         });
     };
 
-    renderSlides();
-    updateChevronState();
+    const tabs = profileCoursesSection.querySelectorAll('.profile-courses__tab');
+
+    const setActiveTab = (category) => {
+        const normalizedCategory = category === 'certification' ? 'certification' : 'course';
+        if (normalizedCategory === activeCategory && coursesTrack.children.length) {
+            return;
+        }
+
+        activeCategory = normalizedCategory;
+        pages = activeCategory === 'certification' ? certificationPages : coursePages;
+        currentIndex = 0;
+        cleanupTransitionHandler();
+        isAnimating = false;
+
+        tabs.forEach(tab => {
+            const label = tab.textContent.trim().toLowerCase();
+            const tabCategory = label === 'certification' ? 'certification' : 'course';
+            const isActive = tabCategory === activeCategory;
+            tab.classList.toggle('is-active', isActive);
+            tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+
+        renderSlides();
+        updateChevronState();
+    };
+
+    if (tabs.length > 0) {
+        tabs.forEach(tab => {
+            const label = tab.textContent.trim().toLowerCase();
+            const tabCategory = label === 'certification' ? 'certification' : 'course';
+            tab.addEventListener('click', () => setActiveTab(tabCategory));
+        });
+
+        setActiveTab('course');
+    } else {
+        renderSlides();
+        updateChevronState();
+    }
 
     addInteractionListener(nextChevron, 'next');
     addInteractionListener(prevChevron, 'prev');
