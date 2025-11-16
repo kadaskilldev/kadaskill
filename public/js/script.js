@@ -83,6 +83,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (getStartedButton) {
             getStartedButton.addEventListener('click', handleCTAClick);
         }
+
+        // Ensure header scroll background animation is applied on all pages
+        initializeHeaderScrollAnimation();
     }, 100);
 });
 
