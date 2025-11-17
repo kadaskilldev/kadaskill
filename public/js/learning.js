@@ -194,7 +194,7 @@ async function loadCompletedLessons() {
         .from('lesson_progress')
         .select('lesson_id')
         .eq('user_id', currentUser.id)
-        .eq('completed', true);
+        .eq('is_completed', true);
 
     if (error) {
         console.error('Error loading lesson progress:', error);
@@ -385,14 +385,8 @@ function renderLessonContent(lesson) {
         case 'text':
             contentArea.innerHTML = renderTextContent(lesson);
             break;
-        case 'code':
-            contentArea.innerHTML = renderCodeContent(lesson);
-            // Re-apply syntax highlighting
-            setTimeout(() => {
-                if (window.Prism) {
-                    Prism.highlightAll();
-                }
-            }, 100);
+        case 'quiz':
+            contentArea.innerHTML = renderQuizContent(lesson);
             break;
         default:
             contentArea.innerHTML = renderTextContent(lesson);
@@ -420,7 +414,7 @@ function renderVideoContent(lesson) {
                             allowfullscreen>
                     </iframe>
                 </div>
-                ${lesson.content ? `<div class="text-content">${lesson.content}</div>` : ''}
+                ${lesson.text_content ? `<div class="text-content">${lesson.text_content}</div>` : ''}
             </div>
         `;
     } else if (videoUrl.includes('vimeo.com')) {
@@ -434,7 +428,7 @@ function renderVideoContent(lesson) {
                             allowfullscreen>
                     </iframe>
                 </div>
-                ${lesson.content ? `<div class="text-content">${lesson.content}</div>` : ''}
+                ${lesson.text_content ? `<div class="text-content">${lesson.text_content}</div>` : ''}
             </div>
         `;
     } else {
@@ -447,7 +441,7 @@ function renderVideoContent(lesson) {
                         Your browser does not support the video tag.
                     </video>
                 </div>
-                ${lesson.content ? `<div class="text-content">${lesson.content}</div>` : ''}
+                ${lesson.text_content ? `<div class="text-content">${lesson.text_content}</div>` : ''}
             </div>
         `;
     }
@@ -458,31 +452,76 @@ function renderVideoContent(lesson) {
 function renderTextContent(lesson) {
     return `
         <div class="text-content">
-            ${lesson.content || '<p>No content available for this lesson.</p>'}
+            ${lesson.text_content || '<p>No content available for this lesson.</p>'}
         </div>
     `;
 }
 
-function renderCodeContent(lesson) {
-    // Assume lesson.content contains code
-    const code = lesson.content || '// No code available';
-    const language = lesson.code_language || 'python';
+function renderQuizContent(lesson) {
+    // Parse quiz data from text_content (stored as JSON string)
+    let quizData;
+    try {
+        quizData = JSON.parse(lesson.text_content);
+    } catch (e) {
+        return '<p>Error loading quiz data.</p>';
+    }
 
-    return `
-        <div class="code-content">
-            <div class="code-editor">
-                <div class="code-header">
-                    <span class="code-language">${language}</span>
-                    <button class="code-copy-btn" onclick="copyCode(this)">
-                        <i class="fas fa-copy"></i> Copy
-                    </button>
+    const { instructions, questions } = quizData;
+
+    let quizHtml = `
+        <div class="quiz-content">
+            <div class="quiz-header">
+                <i class="fas fa-clipboard-question"></i>
+                <h3>Knowledge Check</h3>
+            </div>
+            ${instructions ? `<p class="quiz-instructions">${instructions}</p>` : ''}
+            <div class="quiz-questions">
+    `;
+
+    questions.forEach((q, index) => {
+        quizHtml += `
+            <div class="quiz-question" data-question-index="${index}">
+                <div class="question-header">
+                    <span class="question-number">Question ${index + 1}</span>
+                    <span class="question-points">${q.points || 1} point${q.points !== 1 ? 's' : ''}</span>
                 </div>
-                <div class="code-body">
-                    <pre><code class="language-${language}">${escapeHtml(code)}</code></pre>
+                <p class="question-text">${q.question}</p>
+                <div class="question-options">
+        `;
+
+        q.options.forEach((option, optIndex) => {
+            quizHtml += `
+                <label class="quiz-option">
+                    <input type="radio" name="question-${index}" value="${optIndex}"
+                           onchange="handleQuizAnswer(${index}, ${optIndex}, ${q.correctAnswer})">
+                    <span class="option-text">${option}</span>
+                    <span class="option-indicator"></span>
+                </label>
+            `;
+        });
+
+        quizHtml += `
                 </div>
+                <div class="question-feedback" style="display: none;"></div>
+            </div>
+        `;
+    });
+
+    quizHtml += `
+            </div>
+            <div class="quiz-summary" style="display: none;">
+                <div class="quiz-score">
+                    <i class="fas fa-trophy"></i>
+                    <span>Score: <strong><span id="quizScore">0</span>/${questions.length}</strong></span>
+                </div>
+                <button class="btn-retry-quiz" onclick="retryQuiz()">
+                    <i class="fas fa-redo"></i> Retry Quiz
+                </button>
             </div>
         </div>
     `;
+
+    return quizHtml;
 }
 
 // ============================================
@@ -541,7 +580,7 @@ async function markLessonComplete() {
                 user_id: currentUser.id,
                 lesson_id: currentLesson.id,
                 enrollment_id: enrollmentId,
-                completed: true,
+                is_completed: true,
                 completed_at: new Date()
             });
 
@@ -714,6 +753,88 @@ function setupEventListeners() {
         });
     });
 }
+
+// ============================================
+// Quiz Interaction Functions
+// ============================================
+
+let quizState = {
+    answers: {},
+    score: 0,
+    totalQuestions: 0
+};
+
+window.handleQuizAnswer = function(questionIndex, selectedAnswer, correctAnswer) {
+    const questionElement = document.querySelector(`[data-question-index="${questionIndex}"]`);
+    const feedbackElement = questionElement.querySelector('.question-feedback');
+    const options = questionElement.querySelectorAll('.quiz-option');
+
+    // Disable all options for this question
+    options.forEach(option => {
+        option.querySelector('input').disabled = true;
+    });
+
+    // Mark correct and incorrect answers
+    const isCorrect = selectedAnswer === correctAnswer;
+    quizState.answers[questionIndex] = isCorrect;
+
+    options.forEach((option, index) => {
+        if (index === correctAnswer) {
+            option.classList.add('correct');
+        } else if (index === selectedAnswer && !isCorrect) {
+            option.classList.add('incorrect');
+        }
+    });
+
+    // Show feedback
+    feedbackElement.style.display = 'block';
+    if (isCorrect) {
+        feedbackElement.innerHTML = '<i class="fas fa-check-circle"></i> Correct! Well done!';
+        feedbackElement.className = 'question-feedback correct';
+    } else {
+        feedbackElement.innerHTML = '<i class="fas fa-times-circle"></i> Incorrect. The correct answer is highlighted above.';
+        feedbackElement.className = 'question-feedback incorrect';
+    }
+
+    // Update quiz summary
+    updateQuizScore();
+};
+
+function updateQuizScore() {
+    const totalAnswered = Object.keys(quizState.answers).length;
+    const correctAnswers = Object.values(quizState.answers).filter(a => a).length;
+    const totalQuestions = document.querySelectorAll('.quiz-question').length;
+
+    quizState.score = correctAnswers;
+    quizState.totalQuestions = totalQuestions;
+
+    // Show summary if all questions answered
+    if (totalAnswered === totalQuestions) {
+        const summaryElement = document.querySelector('.quiz-summary');
+        const scoreElement = document.getElementById('quizScore');
+
+        summaryElement.style.display = 'flex';
+        scoreElement.textContent = correctAnswers;
+
+        // Auto-mark lesson as complete if passed (70% or higher)
+        const percentage = (correctAnswers / totalQuestions) * 100;
+        if (percentage >= 70) {
+            setTimeout(() => {
+                markLessonComplete();
+            }, 1000);
+        }
+    }
+}
+
+window.retryQuiz = function() {
+    // Reset quiz state
+    quizState = { answers: {}, score: 0, totalQuestions: 0 };
+
+    // Re-render the current lesson
+    if (currentLesson) {
+        renderLessonContent(currentLesson);
+    }
+};
 
 // ============================================
 // Notification

@@ -433,6 +433,137 @@ print_info(name="Alice", age=25, city="NYC")</code></pre>',
        'Module 3: Functions'
 FROM courses WHERE slug = 'python-foundation-ai';
 
+-- Lesson 9: Quiz - Python Basics (Quiz)
+INSERT INTO lessons (course_id, title, slug, content_type, order_index, text_content, is_published, module_name)
+SELECT id,
+       'Quiz: Python Basics',
+       'quiz-python-basics',
+       'quiz',
+       8,
+       '{
+         "instructions": "Test your understanding of Python basics! You need to score at least 70% to pass.",
+         "questions": [
+           {
+             "question": "Which of the following is NOT a valid Python data type?",
+             "options": [
+               "int",
+               "float",
+               "char",
+               "str"
+             ],
+             "correctAnswer": 2,
+             "points": 1
+           },
+           {
+             "question": "What will be the output of: print(type(5.0))?",
+             "options": [
+               "<class ''int''>",
+               "<class ''float''>",
+               "<class ''str''>",
+               "<class ''number''>"
+             ],
+             "correctAnswer": 1,
+             "points": 1
+           },
+           {
+             "question": "Which operator is used for exponentiation in Python?",
+             "options": [
+               "^",
+               "**",
+               "pow",
+               "//"
+             ],
+             "correctAnswer": 1,
+             "points": 1
+           },
+           {
+             "question": "What is the result of: ''hello'' * 3?",
+             "options": [
+               "Error",
+               "''hello3''",
+               "''hellohellohello''",
+               "9"
+             ],
+             "correctAnswer": 2,
+             "points": 1
+           },
+           {
+             "question": "How do you create a variable in Python?",
+             "options": [
+               "var x = 5",
+               "int x = 5",
+               "x = 5",
+               "declare x = 5"
+             ],
+             "correctAnswer": 2,
+             "points": 1
+           }
+         ]
+       }',
+       true,
+       'Module 1: Python Basics'
+FROM courses WHERE slug = 'python-foundation-ai';
+
+-- Lesson 10: Quiz - Data Structures (Quiz)
+INSERT INTO lessons (course_id, title, slug, content_type, order_index, text_content, is_published, module_name)
+SELECT id,
+       'Quiz: Lists, Tuples & Dictionaries',
+       'quiz-data-structures',
+       'quiz',
+       9,
+       '{
+         "instructions": "Test your knowledge of Python data structures. Remember, you need 70% to pass!",
+         "questions": [
+           {
+             "question": "Which data structure is immutable in Python?",
+             "options": [
+               "List",
+               "Dictionary",
+               "Tuple",
+               "Set"
+             ],
+             "correctAnswer": 2,
+             "points": 1
+           },
+           {
+             "question": "How do you access the last element of a list called ''numbers''?",
+             "options": [
+               "numbers[last]",
+               "numbers[-1]",
+               "numbers[end]",
+               "numbers.last()"
+             ],
+             "correctAnswer": 1,
+             "points": 1
+           },
+           {
+             "question": "What is the correct way to create an empty dictionary?",
+             "options": [
+               "dict = []",
+               "dict = ()",
+               "dict = {}",
+               "dict = <>"
+             ],
+             "correctAnswer": 2,
+             "points": 1
+           },
+           {
+             "question": "Which method adds an item to the end of a list?",
+             "options": [
+               "add()",
+               "append()",
+               "insert()",
+               "push()"
+             ],
+             "correctAnswer": 1,
+             "points": 1
+           }
+         ]
+       }',
+       true,
+       'Module 2: Data Structures'
+FROM courses WHERE slug = 'python-foundation-ai';
+
 -- ============================================
 -- To use this file:
 -- ============================================
