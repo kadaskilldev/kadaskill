@@ -642,14 +642,9 @@ function handleCTAClick(e) {
 
 // Certification Page Functionality
 function initializeCertificationPage() {
-    // Only run if we're on the certification page
-    if (!document.querySelector('.certifications-grid-section')) return;
-    
-    initializeFiltering();
-    initializeSearch();
-    initializeCertificationCards();
-    initializeContinueCard();
-    updateCertificationCount();
+    // DISABLED - Certification page now uses js/certification.js for database-driven certifications
+    // The old hardcoded certification logic has been replaced with dynamic loading from Supabase
+    return;
 }
 
 function initializeFiltering() {
@@ -1158,14 +1153,9 @@ function getNotificationColor(type) {
 
 // Learn Page Functionality
 function initializeLearnPage() {
-    // Only run if we're on the learn page
-    if (!document.querySelector('.learn-main-content')) return;
-    
-    initializeCourseFiltering();
-    initializeCourseSearch();
-    initializeCourseCards();
-    initializeContinueButton();
-    updateCourseCount();
+    // DISABLED - Learn page now uses js/learn.js for database-driven courses
+    // The old hardcoded course logic has been replaced with dynamic loading from Supabase
+    return;
 }
 
 function initializeCourseFiltering() {
@@ -1504,11 +1494,9 @@ function initializeProfileCoursesNavigation() {
 
 // Practice Page Functionality
 function initializePracticePage() {
-    // Only run if we're on the practice page
-    if (!document.querySelector('.practice-main-content')) return;
-    
-    initializePracticeCards();
-    initializeHeaderScrollAnimation();
+    // DISABLED - Practice page now uses js/practice.js for database-driven exercises
+    // The old hardcoded practice card logic has been replaced with dynamic loading from Supabase
+    return;
 }
 
 function initializeProfileRobotAnimation() {
