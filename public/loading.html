@@ -4,10 +4,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="utf-8" />
     <title>KadaSkill - Loading</title>
+    <link rel="icon" type="image/svg+xml" href="images/loading/favicon.svg" />
+    <link rel="apple-touch-icon" href="images/loading/favicon.svg" />
     <meta name="description" content="KadaSkill application loading screen" />
     <link rel="stylesheet" href="loading/globals.css" />
     <link rel="stylesheet" href="loading/styleguide.css" />
     <link rel="stylesheet" href="loading/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
   <body>
     <main class="loading-screen" role="main">
@@ -45,13 +48,149 @@
       </header>
     </main>
     <script>
-      window.addEventListener('load', () => {
-        // breathing lasts 5000ms, popZoom lasts 500ms and starts at 5000ms
-        // give a small buffer so the exit animation is visible before navigation
-        setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 5600);
-      });
+      const SUPABASE_URL = 'https://kbpbubsnadnhebgdggdy.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImticGJ1YnNuYWRuaGViZ2RnZ2R5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMjA4MTksImV4cCI6MjA3MzU5NjgxOX0.4O8ZLeZ2iR786MZ8JS_55nzhn-5WxqabMtDQuAoZkAA';
+
+      const exitAnimationsComplete = waitForExitAnimations();
+
+      function parseTimeToMs(value) {
+        const trimmed = (value || '').trim();
+        if (!trimmed) return 0;
+        if (trimmed.endsWith('ms')) return Number.parseFloat(trimmed);
+        if (trimmed.endsWith('s')) return Number.parseFloat(trimmed) * 1000;
+        const numeric = Number.parseFloat(trimmed);
+        return Number.isNaN(numeric) ? 0 : numeric;
+      }
+
+      function waitForAnimation(element, animationName) {
+        return new Promise((resolve) => {
+          if (!element) {
+            resolve();
+            return;
+          }
+
+          let resolved = false;
+          let fallbackId = null;
+
+          const cleanup = () => {
+            if (resolved) return;
+            resolved = true;
+            element.removeEventListener('animationend', onEnd);
+            element.removeEventListener('animationcancel', onCancel);
+            if (fallbackId !== null) {
+              clearTimeout(fallbackId);
+            }
+            resolve();
+          };
+
+          const matchesName = (event) => !animationName || event.animationName === animationName;
+
+          const onEnd = (event) => {
+            if (matchesName(event)) {
+              cleanup();
+            }
+          };
+
+          const onCancel = (event) => {
+            if (matchesName(event)) {
+              cleanup();
+            }
+          };
+
+          element.addEventListener('animationend', onEnd);
+          element.addEventListener('animationcancel', onCancel);
+
+          if (element.getAnimations) {
+            const activeAnimation = element
+              .getAnimations()
+              .find((animation) => animation.animationName === animationName);
+
+            if (activeAnimation) {
+              activeAnimation.finished.then(cleanup).catch(cleanup);
+            }
+          }
+
+          const computed = window.getComputedStyle(element);
+          const names = computed.animationName.split(',');
+          const delays = computed.animationDelay.split(',');
+          const durations = computed.animationDuration.split(',');
+          const index = names.findIndex((name) => name.trim() === animationName);
+
+          if (index !== -1) {
+            const totalMs = parseTimeToMs(delays[index]) + parseTimeToMs(durations[index]) + 100;
+            fallbackId = window.setTimeout(() => cleanup(), totalMs);
+          } else {
+            fallbackId = window.setTimeout(() => cleanup(), 6000);
+          }
+        });
+      }
+
+      function waitForExitAnimations() {
+        const icon = document.querySelector('.icon');
+        const text = document.querySelector('.text-wrapper');
+        return Promise.all([
+          waitForAnimation(icon, 'popZoom'),
+          waitForAnimation(text, 'textPopZoom'),
+        ]);
+      }
+
+      async function determineRedirectTarget() {
+        try {
+          if (!window.supabase || !window.supabase.createClient) {
+            console.error('Supabase client library not found. Redirecting to login.');
+            return 'index.html';
+          }
+
+          const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+          const {
+            data: { user },
+            error: userError,
+          } = await supabase.auth.getUser();
+
+          if (userError) {
+            console.error('Failed to fetch user session:', userError);
+            return 'index.html';
+          }
+
+          if (!user) {
+            console.error('No user session found. Redirecting to login.');
+            return 'index.html';
+          }
+
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('full_name, total_xp, bio, avatar_url')
+            .eq('id', user.id)
+            .single();
+
+          if (profileError) {
+            console.error('Failed to fetch profile:', profileError);
+            return 'index.html';
+          }
+
+          sessionStorage.setItem('userProfile', JSON.stringify(profile));
+          sessionStorage.setItem('authUser', JSON.stringify(user));
+
+          return 'home.html';
+        } catch (err) {
+          console.error('Unexpected error during loading:', err);
+          return 'index.html';
+        }
+      }
+
+      async function fetchInitialDataAndRedirect() {
+        const targetUrl = await determineRedirectTarget();
+
+        try {
+          await exitAnimationsComplete;
+        } catch (animationError) {
+          console.warn('Loading animation did not complete as expected:', animationError);
+        }
+
+        window.location.replace(targetUrl);
+      }
+
+      fetchInitialDataAndRedirect();
     </script>
   </body>
 </html>

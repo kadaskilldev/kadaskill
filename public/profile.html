@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>KadaSkill - Profile</title>
+    <link rel="icon" type="image/svg+xml" href="images/loading/favicon.svg" />
+    <link rel="apple-touch-icon" href="images/loading/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -16,6 +18,7 @@
     />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/profile.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
   <body>
     <div id="navigation"></div>
@@ -26,18 +29,18 @@
         </div>
         <div class="profile-hero__content">
           <div class="profile-hero__avatar">
-            <img src="images/profile/profile-avatar.png" alt="Eijay Palpal-latoc" class="profile-hero__avatar-image" />
+            <img src="images/profile/default-avatar.svg" alt="Learner avatar" class="profile-hero__avatar-image" />
           </div>
           <div class="profile-hero__details">
-            <h1 id="profile-heading" class="profile-hero__name">Eijay Palpal-latoc</h1>
-            <p class="profile-hero__handle">@eijay</p>
+            <h1 id="profile-heading" class="profile-hero__name">Learner Name</h1>
+            <p class="profile-hero__handle">@username</p>
             <div class="profile-hero__stats" aria-label="Profile stats">
               <span class="profile-hero__stat">40k followers</span>
               <span class="profile-hero__divider" aria-hidden="true">•</span>
               <span class="profile-hero__stat">4.5k following</span>
             </div>
           </div>
-          <a class="profile-hero__cta" href="edit_profile.html" role="button">Edit Profile</a>
+          <a class="profile-hero__cta cta-pill" href="edit_profile.html" role="button">Edit Profile</a>
         </div>
       </section>
 
@@ -54,9 +57,7 @@
                 </div>
               </div>
               <p class="profile-bio-card__copy">
-                Passionate about continuous learning and skill development, I thrive at the intersection of design,
-                technology, and personal growth. Focused on creating meaningful digital experiences that empower users
-                to learn, practice, and succeed.
+                No bio yet. Add one from your profile settings.
               </p>
             </div>
           </article>
@@ -73,7 +74,7 @@
                 </div>
                 <div class="profile-pinned-card__content">
                   <h3 class="profile-pinned-card__title">AWS Certified Solutions Architect – Associate</h3>
-                  <a class="profile-pinned-card__cta" href="#" role="button">View Certification</a>
+                  <a class="profile-pinned-card__cta cta-pill" href="#" role="button">View Certification</a>
                 </div>
               </article>
 
@@ -84,7 +85,7 @@
                 </div>
                 <div class="profile-pinned-card__content">
                   <h3 class="profile-pinned-card__title">Certified Information Systems Security Professional (CISSP)</h3>
-                  <a class="profile-pinned-card__cta" href="#" role="button">View Certification</a>
+                  <a class="profile-pinned-card__cta cta-pill" href="#" role="button">View Certification</a>
                 </div>
               </article>
             </div>
@@ -141,49 +142,56 @@
             </section>
 
             <section class="profile-courses" aria-label="Courses">
-            <div class="profile-courses__header">
-              <div class="profile-courses__tabs" role="tablist" aria-label="Course categories">
-                <button class="profile-courses__tab is-active" type="button" role="tab" aria-selected="true">Course</button>
-                <button class="profile-courses__tab" type="button" role="tab" aria-selected="false">Certification</button>
+              <div class="profile-courses__header">
+                <div class="profile-courses__tabs" role="tablist" aria-label="Course categories">
+                  <button class="profile-courses__tab is-active" type="button" role="tab" aria-selected="true">Course</button>
+                  <button class="profile-courses__tab" type="button" role="tab" aria-selected="false">Certification</button>
+                </div>
+                <div class="profile-courses__chevrons">
+                  <img src="images/profile/prev main.svg" alt="Previous" class="profile-courses__chevron profile-courses__chevron--prev is-hidden" role="button" tabindex="0">
+                  <img src="images/profile/next main.svg" alt="Next" class="profile-courses__chevron profile-courses__chevron--next" role="button" tabindex="0">
+                </div>
               </div>
-              <img src="images/profile/next main.svg" alt="Next" class="profile-courses__chevron" />
-            </div>
-              <div class="profile-courses__grid">
-                <article class="profile-course-card" aria-label="Intermediate Python course">
-                  <div class="profile-course-card__background"></div>
-                  <div class="profile-course-card__content">
-                    <span class="profile-course-card__eyebrow">Course</span>
-                    <h3 class="profile-course-card__title">Intermediate Python</h3>
-                    <a href="#" class="profile-course-card__cta" role="button">Continue</a>
-                  </div>
-                </article>
+              <div class="profile-courses__viewport">
+                <div class="profile-courses__track">
+                  <div class="profile-courses__grid profile-courses__slide" data-profile-slide-index="0">
+                    <article class="profile-course-card" aria-label="Intermediate Python course">
+                      <div class="profile-course-card__background"></div>
+                      <div class="profile-course-card__content">
+                        <span class="profile-course-card__eyebrow">Course</span>
+                        <h3 class="profile-course-card__title">Intermediate Python</h3>
+                        <a href="#" class="profile-course-card__cta cta-pill" role="button">Continue</a>
+                      </div>
+                    </article>
 
-                <article class="profile-course-card" aria-label="Time Management course">
-                  <div class="profile-course-card__background"></div>
-                  <div class="profile-course-card__content">
-                    <span class="profile-course-card__eyebrow">Course</span>
-                    <h3 class="profile-course-card__title">Time Management</h3>
-                    <a href="#" class="profile-course-card__cta" role="button">Continue</a>
-                  </div>
-                </article>
+                    <article class="profile-course-card" aria-label="Time Management course">
+                      <div class="profile-course-card__background"></div>
+                      <div class="profile-course-card__content">
+                        <span class="profile-course-card__eyebrow">Course</span>
+                        <h3 class="profile-course-card__title">Time Management</h3>
+                        <a href="#" class="profile-course-card__cta cta-pill" role="button">Continue</a>
+                      </div>
+                    </article>
 
-                <article class="profile-course-card" aria-label="Wireframing course">
-                  <div class="profile-course-card__background"></div>
-                  <div class="profile-course-card__content">
-                    <span class="profile-course-card__eyebrow">Course</span>
-                    <h3 class="profile-course-card__title">Wireframing</h3>
-                    <a href="#" class="profile-course-card__cta" role="button">Continue</a>
-                  </div>
-                </article>
+                    <article class="profile-course-card" aria-label="Wireframing course">
+                      <div class="profile-course-card__background"></div>
+                      <div class="profile-course-card__content">
+                        <span class="profile-course-card__eyebrow">Course</span>
+                        <h3 class="profile-course-card__title">Wireframing</h3>
+                        <a href="#" class="profile-course-card__cta cta-pill" role="button">Continue</a>
+                      </div>
+                    </article>
 
-                <article class="profile-course-card" aria-label="Project Scheduling course">
-                  <div class="profile-course-card__background"></div>
-                  <div class="profile-course-card__content">
-                    <span class="profile-course-card__eyebrow">Course</span>
-                    <h3 class="profile-course-card__title">Project Scheduling</h3>
-                    <a href="#" class="profile-course-card__cta" role="button">Continue</a>
+                    <article class="profile-course-card" aria-label="Project Scheduling course">
+                      <div class="profile-course-card__background"></div>
+                      <div class="profile-course-card__content">
+                        <span class="profile-course-card__eyebrow">Course</span>
+                        <h3 class="profile-course-card__title">Project Scheduling</h3>
+                        <a href="#" class="profile-course-card__cta cta-pill" role="button">Continue</a>
+                      </div>
+                    </article>
                   </div>
-                </article>
+                </div>
               </div>
             </section>
           </div>

@@ -222,20 +222,26 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         // Initialize page-specific functionality
         initializeCertificationPage();
+        initializeCertificationDetailPage();
         initializeCalendar();
         initializeLearnPage();
         initializePracticePage();
+        initializeProfileCoursesNavigation();
+        initializeProfileRobotAnimation();
 
         const pathname = window.location.pathname;
-
-        if (pathname.endsWith('learn.html')) {
-            // This is the new "My Courses" page
-            loadMyCourses();
-            
-            // Re-initialize the filtering and searching now that the cards are dynamic
-            initializeLearnPage(); 
+        if (
+            pathname.endsWith('home.html') ||
+            pathname === '/' ||
+            pathname.endsWith('learn.html') ||
+            pathname.endsWith('learning.html') ||
+            pathname.endsWith('certification.html') ||
+            pathname.endsWith('profile.html') ||
+            pathname.endsWith('practice.html')
+        ) {
+            console.log(`On ${pathname}, loading user data...`);
+            loadDashboardData();
         }
-
 
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -256,6 +262,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (getStartedButton) {
             getStartedButton.addEventListener('click', handleCTAClick);
         }
+
+        // Ensure header scroll background animation is applied on all pages
+        initializeHeaderScrollAnimation();
     }, 100);
 });
 
@@ -335,6 +344,32 @@ function initializeUserMenu(scope = document) {
         });
         item.addEventListener('mouseleave', () => item.classList.remove('is-active'));
     });
+
+    const signOutLink = menu.querySelector('.user-menu__item--danger');
+    if (signOutLink && !signOutLink.dataset.signOutBound) {
+        signOutLink.addEventListener('click', async (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (!supabase || !supabase.auth || typeof supabase.auth.signOut !== 'function') {
+                showNotification('Sign out is unavailable right now. Please try again later.', 'error');
+                return;
+            }
+
+            try {
+                showNotification('Signing you out...', 'info');
+                await supabase.auth.signOut();
+                sessionStorage.removeItem('userProfile');
+                sessionStorage.removeItem('authUser');
+                closeMenu();
+                window.location.href = 'index.html';
+            } catch (signOutError) {
+                console.error('Sign-out failed:', signOutError);
+                showNotification('Failed to sign out. Please try again.', 'error');
+            }
+        });
+        signOutLink.dataset.signOutBound = 'true';
+    }
 }
 
 function loadNavigation() {
@@ -374,10 +409,20 @@ function loadNavigation() {
         `;
 
     const nav = `
-    <header class="header">
+    <header class="header header--no-bg">
         <div class="container">
             <div class="logo">
-                <img src="images/logo.png" alt="KadaSkill" class="logo-img" onerror="this.style.display='none';">
+                <div class="logo-mark" aria-hidden="true">
+                    <svg class="vector" width="51" height="40" viewBox="0 0 51 40">
+                        <image href="images/loading/Vector-2.svg" width="51" height="40"></image>
+                    </svg>
+                    <svg class="img" width="30" height="30" viewBox="0 0 44 44">
+                        <image href="images/loading/Vector.svg" width="44" height="44"></image>
+                    </svg>
+                    <svg class="vector-2" width="33" height="32" viewBox="0 0 33 32">
+                        <image href="images/loading/Vector-1.svg" width="33" height="32"></image>
+                    </svg>
+                </div>
                 <span>KadaSkill</span>
             </div>
             <nav class="nav">
@@ -421,6 +466,9 @@ function loadNavigation() {
 
     initializeUserMenu(navigationElement);
     setActiveNavigation();
+    if (headerElement) {
+        initializeHeaderScrollAnimation();
+    }
 }
 
 function loadFooter() {
@@ -505,6 +553,7 @@ function setActiveNavigation() {
         if (href.includes(currentPage) ||
             (currentPage === 'certification.html' && href.includes('certification')) ||
             (currentPage === 'learn.html' && href.includes('learn')) ||
+            (currentPage === 'learning.html' && href.includes('learn')) ||
             (currentPage === 'home.html' && href.includes('home')) ||
             (currentPage === 'practice.html' && href.includes('practice'))) {
             link.classList.add('active');
@@ -580,11 +629,49 @@ async function handleFormSubmit(e) {
 
     if (error) {
         console.error('Auth Error:', error);
+
+        if (!isLogin) {
+            // Supabase returns a recognizable message when the email has an existing account
+            const message = (error.message || '').toLowerCase();
+            const alreadyRegistered = message.includes('already registered') || message.includes('already been registered') || message.includes('already exists');
+
+            if (alreadyRegistered) {
+                showNotification('That email is already registered. Please log in instead.', 'error');
+
+                if (loginForm.getAttribute('data-mode') !== 'login') {
+                    const loginToggle = document.querySelector('.login-link .login-toggle');
+                    if (loginToggle) {
+                        loginToggle.click();
+                    }
+                }
+                return;
+            }
+        }
+
         showNotification(`Authentication failed: ${error.message}`, 'error');
         return;
     }
 
-    if (!data.user && !isLogin) {
+    const user = data?.user ?? null;
+    const session = data?.session ?? null;
+
+    if (!isLogin) {
+        // Supabase returns an empty identities array when the email already exists (even if unconfirmed)
+        const duplicatesSuspected = Array.isArray(user?.identities) && user.identities.length === 0;
+        if (duplicatesSuspected) {
+            showNotification('That email is already registered. Please log in instead.', 'error');
+
+            if (loginForm.getAttribute('data-mode') !== 'login') {
+                const loginToggle = document.querySelector('.login-link .login-toggle');
+                if (loginToggle) {
+                    loginToggle.click();
+                }
+            }
+            return;
+        }
+    }
+
+    if (!user && !isLogin) {
         // Successful sign-up but user needs to confirm email (if Email Confirmation is ON)
         showNotification('Welcome to KadaSkill! Please check your email to verify your account and complete your sign-up.', 'success');
         loginForm.reset();
@@ -595,7 +682,7 @@ async function handleFormSubmit(e) {
         // Successful login OR Sign-up (if email confirmation is OFF)
         showNotification('Authentication successful! Redirecting to dashboard...', 'success');
         // Redirect to home page
-        setTimeout(() => { 
+        setTimeout(() => {
             window.location.href = 'home.html'; 
         }, 1500);
     } else {
@@ -628,7 +715,7 @@ async function handleSocialLogin(e) {
         provider: provider,
         options: {
             // Redirect to the dashboard after successful login
-            redirectTo: window.location.origin + '/home.html', 
+            redirectTo: window.location.origin + '/loading.html',
         },
     });
 
@@ -810,18 +897,44 @@ function initializeSearch() {
 function initializeCertificationCards() {
     const certificationCards = document.querySelectorAll('.certification-card');
     
+    // Map of certification titles to detail page IDs
+    const certIdMap = {
+        'Data Scientist': 'data-scientist',
+        'Security Analyst (SOC)': 'security-analyst',
+        'Cloud Security Engineer': 'cloud-security-engineer',
+        'Cybersecurity Analyst': 'cybersecurity-analyst',
+        'Cloud Solutions Architect': 'cloud-solutions-architect',
+        'AI/ML Engineer': 'ai-ml-engineer',
+        'Cloud DevOps Engineer': 'cloud-devops-engineer',
+        'Data Analyst': 'data-analyst',
+        'Ethical Hacker': 'ethical-hacker'
+    };
+    
     certificationCards.forEach(card => {
         const button = card.querySelector('.card-button');
         
         if (button) {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
                 const title = card.querySelector('.card-title').textContent;
                 const buttonText = this.textContent.trim();
                 
-                if (buttonText === 'Resume') {
-                    showNotification(`Resuming ${title} course...`, 'info');
+                // Get the certification ID from the map
+                const certId = certIdMap[title];
+                
+                if (certId) {
+                    // Redirect to certification detail page with ID
+                    showNotification(`Loading ${title}...`, 'info');
+                    setTimeout(() => {
+                        window.location.href = `certification-detail.html?id=${certId}`;
+                    }, 500);
                 } else {
-                    showNotification(`Starting ${title} certification...`, 'info');
+                    // Fallback for certifications without detail pages yet
+                    if (buttonText === 'Resume') {
+                        showNotification(`Resuming ${title} course...`, 'info');
+                    } else {
+                        showNotification(`Starting ${title} certification...`, 'info');
+                    }
                 }
             });
         }
@@ -864,6 +977,21 @@ function initializeCalendar() {
 
     function daysInMonth(y, m) { return new Date(y, m + 1, 0).getDate(); }
     function weekdayLetter(i) { return ['S','M','T','W','T','F','S'][i]; }
+
+    const activeFlashTimers = new WeakMap();
+
+    function flashNav(button) {
+        if (!button) return;
+        if (activeFlashTimers.has(button)) {
+            clearTimeout(activeFlashTimers.get(button));
+        }
+        button.classList.add('is-active');
+        const timeoutId = setTimeout(() => {
+            button.classList.remove('is-active');
+            activeFlashTimers.delete(button);
+        }, 260);
+        activeFlashTimers.set(button, timeoutId);
+    }
 
     function render(date) {
         const y = date.getFullYear(), m = date.getMonth();
@@ -961,6 +1089,7 @@ function initializeCalendar() {
             event.stopPropagation();
         }
         change(1);
+        flashNav(nextBtn);
     };
 
     const handlePrevClick = (event) => {
@@ -969,6 +1098,7 @@ function initializeCalendar() {
             event.stopPropagation();
         }
         change(-1);
+        flashNav(prevBtn);
     };
 
     function bindNavButtons() {
@@ -984,13 +1114,6 @@ function initializeCalendar() {
             nextBtn.addEventListener('click', handleNextClick);
             nextBtn.dataset.calendarBound = 'true';
         }
-        // visual click feedback: toggle .is-active briefly
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => {
-                nextBtn.classList.add('is-active');
-                setTimeout(() => nextBtn.classList.remove('is-active'), 300);
-            });
-        }
 
         const candidatePrev = document.querySelector('.vector-3[aria-label="Previous month"]');
         if (candidatePrev !== prevBtn) {
@@ -1003,12 +1126,6 @@ function initializeCalendar() {
         if (prevBtn && !prevBtn.dataset.calendarBound) {
             prevBtn.addEventListener('click', handlePrevClick);
             prevBtn.dataset.calendarBound = 'true';
-        }
-        if (prevBtn) {
-            prevBtn.addEventListener('click', () => {
-                prevBtn.classList.add('is-active');
-                setTimeout(() => prevBtn.classList.remove('is-active'), 300);
-            });
         }
     }
 
@@ -1084,7 +1201,7 @@ async function fetchUserData() {
             xp: 19319,
             badges: 32,
             streak: 4,
-            avatar: 'images/user-avatar.jpg'
+            avatar: 'images/profile/default-avatar.svg'
         };
     } catch (error) {
         console.error('Error fetching user data:', error);
@@ -1329,13 +1446,236 @@ function initializeContinueButton() {
     }
 }
 
-function updateCourseCount() {
-    const visibleCards = document.querySelectorAll('.course-card:not([style*="display: none"])');
-    const countElement = document.getElementById('course-count');
-    
-    if (countElement) {
-        countElement.textContent = visibleCards.length;
+function initializeProfileCoursesNavigation() {
+    const profileCoursesSection = document.querySelector('.profile-courses');
+    if (!profileCoursesSection) return;
+
+    const coursesTrack = profileCoursesSection.querySelector('.profile-courses__track');
+    const prevChevron = profileCoursesSection.querySelector('.profile-courses__chevron--prev');
+    const nextChevron = profileCoursesSection.querySelector('.profile-courses__chevron--next');
+
+    if (!coursesTrack || !nextChevron) return;
+
+    const coursePages = [
+        [
+            { title: 'Intermediate Python', aria: 'Intermediate Python course', eyebrow: 'Course', cta: 'Continue' },
+            { title: 'Time Management', aria: 'Time Management course', eyebrow: 'Course', cta: 'Continue' },
+            { title: 'Wireframing', aria: 'Wireframing course', eyebrow: 'Course', cta: 'Continue' },
+            { title: 'Project Scheduling', aria: 'Project Scheduling course', eyebrow: 'Course', cta: 'Continue' }
+        ],
+        Array.from({ length: 4 }, (_, idx) => ({
+            title: 'Text Here',
+            aria: `Placeholder course ${idx + 1}`,
+            eyebrow: 'Course',
+            cta: 'Continue'
+        })),
+        Array.from({ length: 4 }, (_, idx) => ({
+            title: 'Text Here',
+            aria: `Placeholder course ${idx + 5}`,
+            eyebrow: 'Course',
+            cta: 'Continue'
+        }))
+    ];
+
+    const certificationPages = [
+        [
+            { title: 'UI/UX Designer', aria: 'UI/UX Designer track', eyebrow: 'Track', cta: 'Continue' },
+            { title: 'Data Analyst', aria: 'Data Analyst track', eyebrow: 'Track', cta: 'Continue' },
+            { title: 'Software Engineer', aria: 'Software Engineer track', eyebrow: 'Track', cta: 'Continue' },
+            { title: 'Project Manager', aria: 'Project Manager track', eyebrow: 'Track', cta: 'Continue' }
+        ],
+        Array.from({ length: 4 }, (_, idx) => ({
+            title: 'Text Here',
+            aria: `Placeholder track ${idx + 1}`,
+            eyebrow: 'Track',
+            cta: 'Continue'
+        }))
+    ];
+
+    let activeCategory = null;
+    let pages = coursePages;
+    let currentIndex = 0;
+    let isAnimating = false;
+    let activeTransitionHandler = null;
+
+    const cleanupTransitionHandler = () => {
+        if (activeTransitionHandler) {
+            coursesTrack.removeEventListener('transitionend', activeTransitionHandler);
+            activeTransitionHandler = null;
+        }
+    };
+
+    const buildCourseSlide = (courses, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'profile-courses__grid profile-courses__slide';
+        slide.dataset.profileSlideIndex = String(index);
+        slide.innerHTML = courses.map(course => `
+            <article class="profile-course-card" aria-label="${course.aria}">
+              <div class="profile-course-card__background"></div>
+              <div class="profile-course-card__content">
+                <span class="profile-course-card__eyebrow">${course.eyebrow || 'Course'}</span>
+                <h3 class="profile-course-card__title">${course.title}</h3>
+                <a href="#" class="profile-course-card__cta" role="button">${course.cta || 'Continue'}</a>
+              </div>
+            </article>
+        `).join('');
+        return slide;
+    };
+
+    const syncTrackPosition = ({ immediate = false } = {}) => {
+        const targetTransform = `translateX(-${currentIndex * 100}%)`;
+        if (immediate) {
+            const previousTransition = coursesTrack.style.transition;
+            coursesTrack.style.transition = 'none';
+            coursesTrack.style.transform = targetTransform;
+            void coursesTrack.offsetWidth;
+            coursesTrack.style.transition = previousTransition;
+        } else {
+            coursesTrack.style.transform = targetTransform;
+        }
+    };
+
+    const updateSlideVisibility = () => {
+        const slides = coursesTrack.querySelectorAll('.profile-courses__slide');
+        slides.forEach((slide, slideIndex) => {
+            slide.setAttribute('aria-hidden', slideIndex === currentIndex ? 'false' : 'true');
+        });
+    };
+
+    const renderSlides = () => {
+        coursesTrack.innerHTML = '';
+        pages.forEach((page, pageIndex) => {
+            coursesTrack.appendChild(buildCourseSlide(page, pageIndex));
+        });
+        syncTrackPosition({ immediate: true });
+        updateSlideVisibility();
+    };
+
+    const updateChevronState = () => {
+        if (prevChevron) {
+            const shouldHidePrev = currentIndex === 0;
+            prevChevron.classList.toggle('is-hidden', shouldHidePrev);
+            prevChevron.setAttribute('aria-hidden', shouldHidePrev ? 'true' : 'false');
+            prevChevron.setAttribute('aria-disabled', shouldHidePrev ? 'true' : 'false');
+            if (shouldHidePrev) {
+                prevChevron.classList.remove('is-active');
+                if (prevChevron._flashTimeoutId) {
+                    clearTimeout(prevChevron._flashTimeoutId);
+                    prevChevron._flashTimeoutId = null;
+                }
+            }
+        }
+
+        if (nextChevron) {
+            const shouldHideNext = currentIndex === pages.length - 1;
+            nextChevron.classList.toggle('is-hidden', shouldHideNext);
+            nextChevron.setAttribute('aria-hidden', shouldHideNext ? 'true' : 'false');
+            nextChevron.setAttribute('aria-disabled', shouldHideNext ? 'true' : 'false');
+            if (shouldHideNext) {
+                nextChevron.classList.remove('is-active');
+                if (nextChevron._flashTimeoutId) {
+                    clearTimeout(nextChevron._flashTimeoutId);
+                    nextChevron._flashTimeoutId = null;
+                }
+            }
+        }
+    };
+
+    const flashChevron = (icon) => {
+        if (!icon || icon.classList.contains('is-hidden')) return;
+        if (icon._flashTimeoutId) {
+            clearTimeout(icon._flashTimeoutId);
+        }
+        icon.classList.add('is-active');
+        icon._flashTimeoutId = setTimeout(() => {
+            icon.classList.remove('is-active');
+            icon._flashTimeoutId = null;
+        }, 180);
+    };
+
+    const startTransition = (direction) => {
+        if (isAnimating) return;
+
+        const delta = direction === 'next' ? 1 : -1;
+        const newIndex = currentIndex + delta;
+        if (newIndex < 0 || newIndex >= pages.length) return;
+
+        const targetChevron = direction === 'next' ? nextChevron : prevChevron;
+        flashChevron(targetChevron);
+
+        isAnimating = true;
+
+        currentIndex = newIndex;
+        updateChevronState();
+        updateSlideVisibility();
+
+        cleanupTransitionHandler();
+
+        const handleTransitionEnd = (event) => {
+            if (event.target !== coursesTrack) return;
+            cleanupTransitionHandler();
+            isAnimating = false;
+        };
+
+        requestAnimationFrame(() => {
+            activeTransitionHandler = handleTransitionEnd;
+            coursesTrack.addEventListener('transitionend', activeTransitionHandler);
+            syncTrackPosition();
+        });
+    };
+
+    const addInteractionListener = (chevron, direction) => {
+        if (!chevron) return;
+        chevron.addEventListener('click', () => startTransition(direction));
+        chevron.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                startTransition(direction);
+            }
+        });
+    };
+
+    const tabs = profileCoursesSection.querySelectorAll('.profile-courses__tab');
+
+    const setActiveTab = (category) => {
+        const normalizedCategory = category === 'certification' ? 'certification' : 'course';
+        if (normalizedCategory === activeCategory && coursesTrack.children.length) {
+            return;
+        }
+
+        activeCategory = normalizedCategory;
+        pages = activeCategory === 'certification' ? certificationPages : coursePages;
+        currentIndex = 0;
+        cleanupTransitionHandler();
+        isAnimating = false;
+
+        tabs.forEach(tab => {
+            const label = tab.textContent.trim().toLowerCase();
+            const tabCategory = label === 'certification' ? 'certification' : 'course';
+            const isActive = tabCategory === activeCategory;
+            tab.classList.toggle('is-active', isActive);
+            tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+
+        renderSlides();
+        updateChevronState();
+    };
+
+    if (tabs.length > 0) {
+        tabs.forEach(tab => {
+            const label = tab.textContent.trim().toLowerCase();
+            const tabCategory = label === 'certification' ? 'certification' : 'course';
+            tab.addEventListener('click', () => setActiveTab(tabCategory));
+        });
+
+        setActiveTab('course');
+    } else {
+        renderSlides();
+        updateChevronState();
     }
+
+    addInteractionListener(nextChevron, 'next');
+    addInteractionListener(prevChevron, 'prev');
 }
 
 // Practice Page Functionality
@@ -1344,6 +1684,71 @@ function initializePracticePage() {
     if (!document.querySelector('.practice-main-content')) return;
     
     initializePracticeCards();
+    initializeHeaderScrollAnimation();
+}
+
+function initializeProfileRobotAnimation() {
+    const robot = document.querySelector('.profile-skills-illustration__image');
+    if (!robot) return;
+
+    let ticking = false;
+
+    const updateRobotTransform = () => {
+        const rect = robot.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const robotCenter = rect.top + rect.height / 2;
+        const viewportCenter = viewportHeight / 2;
+
+        const distanceFromCenter = (robotCenter - viewportCenter) / viewportHeight;
+
+        const tilt = distanceFromCenter * 3;
+        const float = Math.sin(distanceFromCenter * Math.PI) * 5;
+
+        robot.style.transform = `translateY(${float}px) rotate(${tilt}deg)`;
+        robot.classList.add('is-animated');
+
+        ticking = false;
+    };
+
+    const onScroll = () => {
+        if (!ticking) {
+            window.requestAnimationFrame(updateRobotTransform);
+            ticking = true;
+        }
+    };
+
+    updateRobotTransform();
+    window.addEventListener('scroll', onScroll, { passive: true });
+}
+
+function initializeHeaderScrollAnimation() {
+    const header = document.querySelector('.header');
+    if (!header) return;
+    if (header.dataset.scrollAnimationInitialized === 'true') return;
+    header.dataset.scrollAnimationInitialized = 'true';
+
+    const SCROLL_THRESHOLD = 20;
+    let lastKnownScrollY = 0;
+    let ticking = false;
+
+    const updateHeaderBackground = () => {
+        const shouldShowBackground = lastKnownScrollY > SCROLL_THRESHOLD;
+        header.classList.toggle('header--has-bg', shouldShowBackground);
+        header.classList.toggle('header--no-bg', !shouldShowBackground);
+        ticking = false;
+    };
+
+    const onScroll = () => {
+        lastKnownScrollY = window.scrollY || window.pageYOffset;
+        if (!ticking) {
+            window.requestAnimationFrame(updateHeaderBackground);
+            ticking = true;
+        }
+    };
+
+    header.classList.add('header--no-bg');
+    updateHeaderBackground();
+    window.addEventListener('scroll', onScroll, { passive: true });
 }
 
 function initializePracticeCards() {
@@ -1374,4 +1779,446 @@ function initializePracticeCards() {
             this.style.borderColor = '#f59e0b';
         });
     });
+}
+
+// Supabase dashboard helpers
+function loadDashboardData() {
+    let profile = null;
+    let user = null;
+
+    try {
+        const profileRaw = sessionStorage.getItem('userProfile');
+        if (profileRaw) {
+            profile = JSON.parse(profileRaw);
+        }
+    } catch (error) {
+        console.warn('Failed to parse stored profile data:', error);
+    }
+
+    try {
+        const userRaw = sessionStorage.getItem('authUser');
+        if (userRaw) {
+            user = JSON.parse(userRaw);
+        }
+    } catch (error) {
+        console.warn('Failed to parse stored auth user data:', error);
+    }
+
+    if (!profile || !user) {
+        console.warn('Supabase profile data not found in sessionStorage.');
+        return;
+    }
+
+    updateUserUI(user, profile);
+}
+
+function updateUserUI(user, profile) {
+    if (!user || !profile) return;
+
+    const fallbackAvatar = 'images/profile/default-avatar.svg';
+    const fallbackProfileAvatar = 'images/profile/default-avatar.svg';
+
+    const userName = (profile.full_name && profile.full_name.trim()) || (user.email ? user.email.split('@')[0] : 'Learner');
+    const userInitial = userName.charAt(0).toUpperCase();
+    let userHandle = profile.username && profile.username.trim()
+        ? profile.username.trim()
+        : (user.email
+            ? `@${user.email.split('@')[0]}`
+            : `@${userName.replace(/\s+/g, '').toLowerCase()}`);
+    if (userHandle && !userHandle.startsWith('@')) {
+        userHandle = `@${userHandle}`;
+    }
+    const avatarUrl = profile.avatar_url;
+    const nameWithExclamation = userName.endsWith('!') ? userName : `${userName}!`;
+
+    const headerAvatar = document.querySelector('.header-right .user-avatar');
+    let resolvedAvatar = avatarUrl;
+    if (headerAvatar) {
+        if (avatarUrl) {
+            headerAvatar.innerHTML = '';
+            const avatarImg = document.createElement('img');
+            avatarImg.src = avatarUrl;
+            avatarImg.alt = `${userName} avatar`;
+            avatarImg.className = 'user-avatar-image';
+            avatarImg.style.width = '32px';
+            avatarImg.style.height = '32px';
+            avatarImg.style.borderRadius = '50%';
+            avatarImg.style.objectFit = 'cover';
+            headerAvatar.appendChild(avatarImg);
+        } else {
+            headerAvatar.textContent = userInitial;
+        }
+        const headerAvatarImg = headerAvatar.querySelector('img');
+        if (!resolvedAvatar && headerAvatarImg?.src) {
+            resolvedAvatar = headerAvatarImg.src;
+        }
+    }
+
+    if (!resolvedAvatar) {
+        resolvedAvatar = fallbackAvatar;
+    }
+
+    const navProfilePic = document.querySelector('nav .profile-pic');
+    if (navProfilePic) {
+        navProfilePic.src = resolvedAvatar;
+        navProfilePic.alt = `${userName} avatar`;
+    }
+
+    const learnHeroAvatar = document.querySelector('.profile-avatar-large img');
+    if (learnHeroAvatar) {
+        learnHeroAvatar.src = resolvedAvatar;
+        learnHeroAvatar.alt = `${userName} avatar`;
+        learnHeroAvatar.style.removeProperty('display');
+    }
+
+    const greetingHighlightSelectors = [
+        '.greeting-text .highlight-name',
+        '.greeting-text .highlight',
+        '.welcome-section .greeting-text .highlight',
+        '.welcome-section .greeting-text .highlight-name',
+        '.text-wrapper-37'
+    ];
+    greetingHighlightSelectors.forEach(selector => {
+        document.querySelectorAll(selector).forEach(element => {
+            element.textContent = nameWithExclamation;
+        });
+    });
+
+    document
+        .querySelectorAll('[data-placeholder="greeting-name"], .greeting-text .name')
+        .forEach(element => {
+            element.textContent = userName;
+        });
+
+    const learningGreetingAvatar = document.querySelector('.greeting-avatar');
+    if (learningGreetingAvatar) {
+        learningGreetingAvatar.src = resolvedAvatar;
+        learningGreetingAvatar.alt = `${userName} avatar`;
+    }
+
+    const certificationAvatar = document.querySelector('.welcome-section .profile-avatar-large img, .welcome-section .avatar-img');
+    if (certificationAvatar) {
+        certificationAvatar.src = resolvedAvatar;
+        certificationAvatar.alt = `${userName} avatar`;
+    }
+
+    document
+        .querySelectorAll('input[placeholder="Enter your full name"]')
+        .forEach(input => {
+            if (!input.matches(':focus') && (!input.value || input.value.trim() === '')) {
+                input.value = profile.full_name || '';
+            }
+        });
+
+    const profileHeroName = document.querySelector('.profile-hero__name');
+    if (profileHeroName) {
+        profileHeroName.textContent = userName;
+    }
+
+    const profileHeroHandle = document.querySelector('.profile-hero__handle');
+    if (profileHeroHandle) {
+        profileHeroHandle.textContent = userHandle;
+    }
+
+    const profileHeroAvatar = document.querySelector('.profile-hero__avatar-image');
+    if (profileHeroAvatar) {
+        profileHeroAvatar.src = avatarUrl || fallbackProfileAvatar;
+        profileHeroAvatar.alt = `${userName} avatar`;
+    }
+
+    const profileBio = document.querySelector('.profile-bio-card__copy');
+    if (profileBio) {
+        profileBio.textContent = profile.bio && profile.bio.trim()
+            ? profile.bio
+            : 'No bio yet. Add one from your profile settings.';
+    }
+
+    const homeSidebarHandle = document.querySelector('.profile-section .group-2 .text-wrapper');
+    if (homeSidebarHandle) {
+        homeSidebarHandle.textContent = userHandle;
+    }
+
+    const homeSidebarAvatar = document.querySelector('.profile-section .profile-icon');
+    if (homeSidebarAvatar) {
+        homeSidebarAvatar.src = resolvedAvatar;
+        homeSidebarAvatar.alt = `${userName} avatar`;
+        homeSidebarAvatar.style.objectFit = 'cover';
+        homeSidebarAvatar.style.borderRadius = '50%';
+        homeSidebarAvatar.onerror = () => {
+            homeSidebarAvatar.src = fallbackAvatar;
+            homeSidebarAvatar.onerror = null;
+        };
+    }
+}
+
+
+// Certification details data structure with links, hardcoded (fallback) for now, to be fetched from backend later
+const certificationDataFallback = {
+    'data-scientist': {
+        title: 'Data Scientist',
+        subtitle: 'Extract insights from data using AI and ML techniques to guide business decisions',
+        category: 'Artificial Intelligence',
+        duration: 45,
+        level: 'intermediate',
+        icon: 'fab fa-python',
+        description: 'This comprehensive certification program will equip you with the essential skills to become a successful Data Scientist. You\'ll learn to extract meaningful insights from complex datasets using advanced AI and machine learning techniques, statistical analysis, and data visualization tools.',
+        prerequisites: [
+            'Basic understanding of Python programming',
+            'Fundamental knowledge of statistics and probability',
+            'Familiarity with data structures and algorithms',
+            'Basic SQL knowledge recommended'
+        ],
+        steps: [
+            {
+                title: 'Learn Python Programming',
+                description: 'Master Python fundamentals and data manipulation libraries.',
+                links: [
+                    {
+                        title: 'Python.org Official Tutorial',
+                        url: 'https://docs.python.org/3/tutorial/',
+                        icon: 'fas fa-book',
+                        description: 'Official Python documentation and tutorials'
+                    },
+                    {
+                        title: 'Codecademy Python Course',
+                        url: 'https://www.codecademy.com/learn/learn-python-3',
+                        icon: 'fas fa-code',
+                        description: 'Interactive Python programming course'
+                    },
+                    {
+                        title: 'NumPy & Pandas Tutorial',
+                        url: 'https://numpy.org/doc/stable/user/quickstart.html',
+                        icon: 'fas fa-table',
+                        description: 'Learn data manipulation with NumPy and Pandas'
+                    }
+                ]
+            },
+            {
+                title: 'Study Machine Learning',
+                description: 'Understand ML algorithms and model training.',
+                links: [
+                    {
+                        title: 'Coursera ML Specialization',
+                        url: 'https://www.coursera.org/specializations/machine-learning-introduction',
+                        icon: 'fas fa-graduation-cap',
+                        description: 'Andrew Ng\'s Machine Learning course'
+                    },
+                    {
+                        title: 'Scikit-learn Documentation',
+                        url: 'https://scikit-learn.org/stable/tutorial/index.html',
+                        icon: 'fas fa-flask',
+                        description: 'Official scikit-learn tutorials'
+                    },
+                    {
+                        title: 'Kaggle Learn',
+                        url: 'https://www.kaggle.com/learn',
+                        icon: 'fas fa-chart-line',
+                        description: 'Hands-on ML practice with real datasets'
+                    }
+                ]
+            },
+            {
+                title: 'Practice with Projects',
+                description: 'Build real-world projects to demonstrate your skills.',
+                links: [
+                    {
+                        title: 'Kaggle Competitions',
+                        url: 'https://www.kaggle.com/competitions',
+                        icon: 'fas fa-trophy',
+                        description: 'Compete in data science challenges'
+                    },
+                    {
+                        title: 'GitHub Data Science Projects',
+                        url: 'https://github.com/topics/data-science',
+                        icon: 'fab fa-github',
+                        description: 'Explore open-source projects'
+                    }
+                ]
+            },
+            {
+                title: 'Get Certified',
+                description: 'Take official certification exams.',
+                links: [
+                    {
+                        title: 'Google Data Analytics Certificate',
+                        url: 'https://www.coursera.org/professional-certificates/google-data-analytics',
+                        icon: 'fab fa-google',
+                        description: 'Professional certificate by Google'
+                    },
+                    {
+                        title: 'IBM Data Science Certificate',
+                        url: 'https://www.coursera.org/professional-certificates/ibm-data-science',
+                        icon: 'fas fa-certificate',
+                        description: 'Professional certificate by IBM'
+                    }
+                ]
+            }
+        ]
+    },
+    'security-analyst': {
+        title: 'Security Analyst (SOC)',
+        subtitle: 'Monitor and analyze real-time threats in a Security Operations Center environment',
+        category: 'Cybersecurity',
+        duration: 50,
+        level: 'intermediate',
+        icon: 'fas fa-shield-halved',
+        description: 'Become a proficient Security Operations Center (SOC) Analyst. Learn to monitor, detect, analyze, and respond to cybersecurity incidents in real-time.',
+        prerequisites: [
+            'Basic networking concepts (TCP/IP, DNS, HTTP)',
+            'Understanding of operating systems (Windows, Linux)',
+            'Familiarity with security concepts',
+            'Basic command line experience'
+        ],
+        steps: [
+            {
+                title: 'Learn Security Fundamentals',
+                description: 'Understand core cybersecurity concepts and principles.',
+                links: [
+                    {
+                        title: 'Cybrary Security+ Course',
+                        url: 'https://www.cybrary.it/course/comptia-security-plus',
+                        icon: 'fas fa-shield-alt',
+                        description: 'CompTIA Security+ preparation'
+                    },
+                    {
+                        title: 'SANS Cyber Aces',
+                        url: 'https://www.cyberaces.org/',
+                        icon: 'fas fa-book-open',
+                        description: 'Free security tutorials by SANS'
+                    }
+                ]
+            },
+            {
+                title: 'Master Network Security',
+                description: 'Learn network protocols and security monitoring.',
+                links: [
+                    {
+                        title: 'Wireshark Tutorial',
+                        url: 'https://www.wireshark.org/docs/',
+                        icon: 'fas fa-network-wired',
+                        description: 'Learn packet analysis with Wireshark'
+                    },
+                    {
+                        title: 'TryHackMe Network Security',
+                        url: 'https://tryhackme.com/paths',
+                        icon: 'fas fa-server',
+                        description: 'Hands-on network security training'
+                    }
+                ]
+            },
+            {
+                title: 'Practice Threat Detection',
+                description: 'Develop skills in identifying and responding to threats.',
+                links: [
+                    {
+                        title: 'Blue Team Labs Online',
+                        url: 'https://blueteamlabs.online/',
+                        icon: 'fas fa-search',
+                        description: 'SOC analyst challenges and labs'
+                    },
+                    {
+                        title: 'CyberDefenders',
+                        url: 'https://cyberdefenders.org/',
+                        icon: 'fas fa-user-shield',
+                        description: 'Blue team CTF challenges'
+                    }
+                ]
+            },
+            {
+                title: 'Get Certified',
+                description: 'Obtain professional certifications.',
+                links: [
+                    {
+                        title: 'CompTIA Security+',
+                        url: 'https://www.comptia.org/certifications/security',
+                        icon: 'fas fa-certificate',
+                        description: 'Industry-standard security certification'
+                    },
+                    {
+                        title: 'Certified SOC Analyst',
+                        url: 'https://www.eccouncil.org/programs/certified-soc-analyst-csa/',
+                        icon: 'fas fa-award',
+                        description: 'EC-Council SOC Analyst certification'
+                    }
+                ]
+            }
+        ]
+    }
+};
+
+// Try Supabase first, fallback to hardcoded data
+async function getCertificationData(certId) {
+    try {
+        const { data, error } = await supabase
+            .from('certifications')
+            .select('*')
+            .eq('slug', certId)
+            .single();
+        
+        if (data && !error) {
+            return data;
+        }
+    } catch (error) {
+        console.warn('Supabase fetch failed, using fallback data:', error);
+    }
+    
+    return certificationDataFallback[certId];
+}
+
+async function initializeCertificationDetailPage() {
+    if (!document.querySelector('.cert-header')) return;
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const certId = urlParams.get('id');
+    
+    if (!certId) {
+        window.location.href = 'certification.html';
+        return;
+    }
+    
+    const certData = await getCertificationData(certId);
+    
+    if (certData) {
+        loadCertificationDetails(certData);
+    } else {
+        window.location.href = 'certification.html';
+    }
+}
+
+function loadCertificationDetails(cert) {
+    document.getElementById('cert-icon').innerHTML = `<i class="${cert.icon}"></i>`;
+    document.getElementById('cert-title').textContent = cert.title;
+    document.getElementById('cert-subtitle').textContent = cert.subtitle;
+    document.getElementById('cert-category').textContent = cert.category;
+    document.getElementById('cert-duration').textContent = cert.duration;
+    document.getElementById('cert-level').textContent = cert.level;
+    document.getElementById('cert-description').textContent = cert.description;
+    
+    const prereqList = document.getElementById('prerequisites-list');
+    prereqList.innerHTML = cert.prerequisites.map(prereq => 
+        `<li><i class="fas fa-check-circle"></i> ${prereq}</li>`
+    ).join('');
+    
+    const stepsContainer = document.getElementById('guide-steps');
+    stepsContainer.innerHTML = cert.steps.map((step, index) => `
+        <div class="guide-step">
+            <div class="step-header">
+                <div class="step-number">${index + 1}</div>
+                <h3 class="step-title">${step.title}</h3>
+            </div>
+            <p class="step-description">${step.description}</p>
+            <div class="step-links">
+                ${step.links.map(link => `
+                    <a href="${link.url}" class="step-link" target="_blank" rel="noopener noreferrer">
+                        <i class="${link.icon}"></i>
+                        <div class="step-link-text">
+                            <div class="step-link-title">${link.title}</div>
+                            <div class="step-link-desc">${link.description}</div>
+                        </div>
+                        <i class="fas fa-external-link-alt" style="color: #f59e0b; font-size: 0.875rem;"></i>
+                    </a>
+                `).join('')}
+            </div>
+        </div>
+    `).join('');
 }

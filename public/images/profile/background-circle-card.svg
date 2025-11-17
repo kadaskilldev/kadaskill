@@ -1,0 +1,22 @@
+<svg width="549" height="549" viewBox="0 0 549 549" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="backgroundCircleMask">
+      <circle cx="274.5" cy="274.5" r="274.5" />
+    </clipPath>
+  </defs>
+  <g clip-path="url(#backgroundCircleMask)">
+    <g opacity="0.3">
+      <circle cx="265.904" cy="265.904" r="250.529" stroke="#7A9B9B" stroke-width="27.133" fill="none" />
+      <circle cx="265.904" cy="265.905" r="131.143" stroke="#7A9B9B" stroke-width="27.133" fill="none" />
+      <circle cx="265.904" cy="265.905" r="28.038" stroke="#7A9B9B" stroke-width="27.133" fill="none" />
+      <circle cx="265.904" cy="265.905" r="13.567" fill="#7A9B9B" />
+    </g>
+    <g opacity="0.35">
+      <circle cx="70.546" cy="39.795" r="16.28" fill="#7A9B9B" />
+      <circle cx="253.242" cy="81.399" r="16.28" fill="#7A9B9B" />
+      <circle cx="70.546" cy="314.744" r="16.28" fill="#7A9B9B" />
+      <circle cx="323.788" cy="347.304" r="16.28" fill="#7A9B9B" />
+      <circle cx="452.5" cy="181.5" r="14.2" fill="#7A9B9B" />
+    </g>
+  </g>
+</svg>

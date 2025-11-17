@@ -235,6 +235,7 @@
 }
 
 .certification-callout__cta {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -242,19 +243,36 @@
   padding: 0 2rem;
   font-weight: 600;
   font-size: 0.95rem;
-  color: #1f2937;
+  color: var(--variable-collection-secondary-color);
   text-decoration: none;
-  background: url('../images/home/Group 73-1.svg') no-repeat center / cover;
   border-radius: 12px;
   margin-top: auto;
   align-self: flex-end;
   transition: transform 0.2s ease;
+  background: none;
+  z-index: 0;
+}
+
+.certification-callout__cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: url('../images/home/cta/btn.svg') no-repeat center / 100% 100%;
+  z-index: -1;
+  transition: background-image 0.2s ease;
 }
 
 .certification-callout__cta:hover,
 .certification-callout__cta:focus-visible {
   transform: translateY(-2px);
   outline: none;
+}
+
+.certification-callout__cta:hover::before,
+.certification-callout__cta:focus-visible::before,
+.certification-callout__cta:active::before {
+  background-image: url('../images/home/cta/btn-hover.svg');
 }
 
 .certification-callout__cta span {
@@ -702,13 +720,13 @@
 
 .profile-section .div-wrapper {
   position: absolute;
-  width: 63px;
+  min-width: 63px;
   height: 35px;
   top: 86px;
-  left: 175px;
+  left: 165px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
 }
 
@@ -810,14 +828,15 @@
 
 .profile-section .group-7 {
   position: absolute;
-  width: 32.29%;
-  height: 12.64%;
+  min-width: 63px;
+  height: 35px;
   top: 138px;
-  left: 175px;
+  left: 165px;
   padding: 0;
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
 }
 
 .profile-section .group-8 {
@@ -862,9 +881,11 @@
 
 
 .profile-section .img {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
+  display: block;
+  transform: translateX(-4px);
 }
 
 .profile-section .untitled-design {
@@ -882,54 +903,17 @@
   bottom: 16px;
   left: 50%;
   transform: translateX(-50%);
-  width: 300px;
-  height: 41px;
-  display: flex;
+  text-decoration: none;
+  width: calc(100% - 8px);
+  min-height: 42px;
+  padding: 0 2.4rem;
+  font-size: 1rem;
+  justify-content: center;
 }
-
-/* Keep legacy button child styling */
-.profile-section .group-31 {
-  flex: 1;
-  width: 300px;
-  position: relative;
-}
-
-.profile-section .group-32 {
-  width: 99.13%;
-  position: absolute;
-  height: 100%;
-  top: 0;
-  left: 0;
-}
-
-.profile-section .button-bg {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  height: 100%;
-  width: auto;
-  transform: translateX(-50%);
-  object-fit: contain;
-  object-position: center;
-  display: block;
-  max-width: none;
-  max-height: 100%;
-}
-
-.profile-section .text-wrapper-44 {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  font-family: var(--regular-1-font-family);
-  font-weight: var(--regular-1-font-weight);
-  color: var(--variable-collection-secondary-color);
-  font-size: var(--regular-1-font-size);
-  letter-spacing: var(--regular-1-letter-spacing);
-  line-height: var(--regular-1-line-height);
-  white-space: nowrap;
-  font-style: var(--regular-1-font-style);
-  pointer-events: none;
+.profile-section .button-vie-profile.learning-action-continue::before {
+  transform: scaleX(1.18);
+  transform-origin: center;
+  background-size: 100% 100%;
 }
 
 /* Calendar panel */
@@ -970,12 +954,25 @@
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: #f0f2ff;
+  background: transparent;
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.profile-section-2 .profile-nav button img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  filter: brightness(0) saturate(100%);
+  transition: filter 0.3s ease;
+}
+
+.profile-section-2 .profile-nav button.is-active img {
+  filter: brightness(0) saturate(100%) invert(79%) sepia(91%) saturate(788%) hue-rotate(346deg) brightness(104%) contrast(101%);
 }
 
 .profile-section-2 .group-9.dynamic-calendar {
@@ -1001,7 +998,7 @@
   width: 38px;
   height: 38px;
   border-radius: 12px;
-  background: #f6f7ff;
+  background: transparent;
   font-size: 0.9rem;
   font-weight: 600;
   color: #1a1d3b;
@@ -1013,6 +1010,7 @@
 .profile-section-2 .calendar-cell.is-today {
   background: linear-gradient(135deg, #ffb11b 0%, #ff8200 100%);
   color: #fff;
+  border-radius: 50%;
 }
 
 @media (max-width: 1100px) {

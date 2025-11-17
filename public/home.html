@@ -5,6 +5,8 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
             <title>Learning Dashboard</title>
+            <link rel="icon" type="image/svg+xml" href="images/loading/favicon.svg" />
+            <link rel="apple-touch-icon" href="images/loading/favicon.svg" />
             <link rel="stylesheet" href="css/style.css" />
             <link rel="stylesheet" href="css/home.css" />
             <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -30,7 +32,7 @@
                         <img class="icon" src="images/home/icon.png" alt="Welcome icon" />
                         <div class="greeting-content">
                             <h1 class="welcome-back-eijay">
-                                <span class="span">Welcome Back, </span><span class="text-wrapper-37">Eijay!</span>
+                                <span class="span">Welcome Back, </span><span class="text-wrapper-37">Learner!</span>
                             </h1>
                             <p class="text-wrapper-38">Weekly goal progress tracker:</p>
                             <div class="days" role="list" aria-label="Weekly progress">
@@ -76,7 +78,10 @@
                             <span class="learning-card-label">Course</span>
                             <h2 class="learning-card-title">Python Foundation of AI</h2>
                             <div class="learning-card-actions">
-                                <button class="learning-action learning-action-practice" type="button">Practice</button>
+                                <button class="learning-action learning-action-practice" type="button">
+                                    <img class="learning-action-icon" src="images/home/Vector-5.svg" alt="" aria-hidden="true" />
+                                    <span class="learning-action-label">Practice</span>
+                                </button>
                                 <button class="learning-action learning-action-continue" type="button">Continue</button>
                             </div>
                         </div>
@@ -188,9 +193,9 @@
                     <div class="profile-content">
                         <img class="vector" src="images/home/Vector-6.svg" alt="Badge icon" />
                         <div class="div">
-                            <img class="profile-icon" src="images/home/Profile%20Icon.svg" alt="User profile picture" />
+                            <img class="profile-icon" src="images/profile/default-avatar.svg" alt="Learner avatar" />
                             <div class="group-2">
-                                <span class="text-wrapper">@eijay</span>
+                                <span class="text-wrapper">@username</span>
                                 <span class="text-wrapper-2">Level 143</span>
                             </div>
                         </div>
@@ -225,14 +230,7 @@
                             src="images/home/Untitled%20design%20(19)%201.png"
                             alt="Achievement badge"
                         />
-                        <a href="profile.html" class="button-vie-profile">
-                            <span class="group-31">
-                                <span class="group-32">
-                                <img class="button-bg" src="images/home/Group 73-1.svg" alt="button background" aria-hidden="true" />
-                                </span>
-                                <span class="text-wrapper-44">View Profile</span>
-                            </span>
-                        </a>
+                        <a href="profile.html" class="button-vie-profile learning-action learning-action-continue">View Profile</a>
                     </div>
                 </section>
                 <section class="profile-section-2" aria-label="Calendar">
@@ -306,6 +304,87 @@
                     </div>
                     </div>
                 </section>
+                <section class="leaderboard-card" aria-label="Leaderboard standings">
+                    <div class="leaderboard-card__header">
+                        <div class="leaderboard-card__title">
+                            <img class="leaderboard-card__icon" src="images/home/leaderboard/Logo Placement.svg" alt="Leaderboard icon" />
+                            <h3 class="leaderboard-card__heading">Leaderboard</h3>
+                        </div>
+                    </div>
+                    <span class="leaderboard-card__xp-label">XP</span>
+                    <ol class="leaderboard-card__list">
+                        <li class="leaderboard-entry">
+                            <div class="leaderboard-entry__profile">
+                                <img class="leaderboard-entry__avatar" src="images/home/leaderboard/Roan.svg" alt="Roan avatar" />
+                                <span class="leaderboard-entry__name">@roan</span>
+                            </div>
+                            <span class="leaderboard-entry__score">20000</span>
+                        </li>
+                        <li class="leaderboard-entry">
+                            <div class="leaderboard-entry__profile">
+                                <img class="leaderboard-entry__avatar" src="images/home/leaderboard/Dani.svg" alt="Daniela avatar" />
+                                <span class="leaderboard-entry__name">@daniela</span>
+                            </div>
+                            <span class="leaderboard-entry__score">19897</span>
+                        </li>
+                        <li class="leaderboard-entry">
+                            <div class="leaderboard-entry__profile">
+                                <img class="leaderboard-entry__avatar" src="images/home/leaderboard/Prex.svg" alt="Debby avatar" />
+                                <span class="leaderboard-entry__name">@debby</span>
+                            </div>
+                            <span class="leaderboard-entry__score">19478</span>
+                        </li>
+                        <li class="leaderboard-entry">
+                            <div class="leaderboard-entry__profile">
+                                <img class="leaderboard-entry__avatar" src="images/home/leaderboard/Paul.svg" alt="Sir Paul avatar" />
+                                <span class="leaderboard-entry__name">@sirpaul</span>
+                            </div>
+                            <span class="leaderboard-entry__score">19320</span>
+                        </li>
+                        <li class="leaderboard-entry">
+                            <div class="leaderboard-entry__profile">
+                                <img class="leaderboard-entry__avatar" src="images/home/leaderboard/Alfred.svg" alt="Current user avatar" />
+                                <span class="leaderboard-entry__name">@username</span>
+                            </div>
+                            <span class="leaderboard-entry__score">19319</span>
+                        </li>
+                        <li class="leaderboard-entry">
+                            <div class="leaderboard-entry__profile">
+                                <img class="leaderboard-entry__avatar" src="images/home/leaderboard/Baby.svg" alt="Fecr avatar" />
+                                <span class="leaderboard-entry__name">@fecr</span>
+                            </div>
+                            <span class="leaderboard-entry__score">19310</span>
+                        </li>
+                        <li class="leaderboard-entry">
+                            <div class="leaderboard-entry__profile">
+                                <img class="leaderboard-entry__avatar" src="images/home/leaderboard/RJ.svg" alt="Roljohn avatar" />
+                                <span class="leaderboard-entry__name">@roljohn</span>
+                            </div>
+                            <span class="leaderboard-entry__score">19303</span>
+                        </li>
+                        <li class="leaderboard-entry">
+                            <div class="leaderboard-entry__profile">
+                                <img class="leaderboard-entry__avatar" src="images/home/leaderboard/Daniel.svg" alt="Daniel avatar" />
+                                <span class="leaderboard-entry__name">@daniel</span>
+                            </div>
+                            <span class="leaderboard-entry__score">19295</span>
+                        </li>
+                        <li class="leaderboard-entry">
+                            <div class="leaderboard-entry__profile">
+                                <img class="leaderboard-entry__avatar" src="images/home/leaderboard/Ei.svg" alt="Sir Josh avatar" />
+                                <span class="leaderboard-entry__name">@sirjosh</span>
+                            </div>
+                            <span class="leaderboard-entry__score">19279</span>
+                        </li>
+                        <li class="leaderboard-entry">
+                            <div class="leaderboard-entry__profile">
+                                <img class="leaderboard-entry__avatar" src="images/home/leaderboard/EJ.svg" alt="Sireqs avatar" />
+                                <span class="leaderboard-entry__name">@sireqs</span>
+                            </div>
+                            <span class="leaderboard-entry__score">19260</span>
+                        </li>
+                    </ol>
+                </section>
             </aside>
         </main>
         <section class="cta-section" aria-label="Call to action">
@@ -335,9 +414,7 @@
             </div>
         </section>
         <div id="footer"></div>
-
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
         <script src="js/script.js"></script>
     </body>
 </html>

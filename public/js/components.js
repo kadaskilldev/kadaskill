@@ -7,9 +7,19 @@ function loadNavigation() {
         <nav class="nav">
             <div class="nav-brand">
                 <div class="logo-container">
-                    <div class="logo-icon"></div>
-                </div>
-                <span class="brand-text">KadaSkill</span>
+                        <div class="logo-mark" aria-hidden="true">
+                            <svg class="vector" width="51" height="40" viewBox="0 0 51 40">
+                                <image href="images/loading/Vector-2.svg" width="51" height="40"></image>
+                            </svg>
+                            <svg class="img" width="30" height="30" viewBox="0 0 44 44">
+                                <image href="images/loading/Vector.svg" width="44" height="44"></image>
+                            </svg>
+                            <svg class="vector-2" width="33" height="32" viewBox="0 0 33 32">
+                                <image href="images/loading/Vector-1.svg" width="33" height="32"></image>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="brand-text">KadaSkill</span>
             </div>
             <ul class="nav-menu">
                 <li><a href="/home.html">Home</a></li>
@@ -24,7 +34,7 @@ function loadNavigation() {
                     <i class="fas fa-search search-icon"></i>
                 </div>
                 <div class="user-profile">
-                    <img src="images/user-avatar.jpg" alt="User" class="user-avatar">
+                    <img src="images/profile/default-avatar.svg" alt="User" class="user-avatar">
                     <i class="fas fa-chevron-down"></i>
                 </div>
             </div>

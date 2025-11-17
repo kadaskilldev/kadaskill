@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KadaSkill - Step Into Your Next Skill</title>
+    <link rel="icon" type="image/svg+xml" href="images/loading/favicon.svg">
+    <link rel="apple-touch-icon" href="images/loading/favicon.svg">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,7 +26,17 @@
     <header class="header">
         <div class="container">
             <div class="logo">
-                <img src="images/logo.png" alt="KadaSkill" class="logo-img" onerror="this.style.display='none';">
+                <div class="logo-mark" aria-hidden="true">
+                    <svg class="vector" width="51" height="40" viewBox="0 0 51 40">
+                        <image href="images/loading/Vector-2.svg" width="51" height="40"></image>
+                    </svg>
+                    <svg class="img" width="30" height="30" viewBox="0 0 44 44">
+                        <image href="images/loading/Vector.svg" width="44" height="44"></image>
+                    </svg>
+                    <svg class="vector-2" width="33" height="32" viewBox="0 0 33 32">
+                        <image href="images/loading/Vector-1.svg" width="33" height="32"></image>
+                    </svg>
+                </div>
                 <span>KadaSkill</span>
             </div>
         </div>
@@ -37,7 +49,7 @@
                 <div class="hero-text">
                     <h1>Step Into Your<br>Next Skill</h1>
                     <p>Join now to learn, practice, and earn certifications</p>
-                    <a href="learn.html" class="cta-button">Get Started</a>
+                    <a href="learn.html" class="cta-button"><span>Get Started</span></a>
 
                     <div class="partners">
                         <span class="partners-label">Supported by</span>
@@ -279,7 +291,7 @@
         <div class="container">
             <h2>Ready to Level Up Your Skills?</h2>
             <p>Join KadaSkill today and start your bite-sized journey in cloud, AI & cybersecurity.</p>
-            <button class="cta-button">Register Now</button>
+            <button class="cta-button"><span>Register Now</span></button>
         </div>
     </section>
 
