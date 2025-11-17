@@ -175,18 +175,14 @@ async function startExercise(exerciseId, exerciseSlug) {
             console.error('Error checking previous attempts:', checkError);
         }
 
-        // Redirect to practice exercise page (you'll need to create this)
-        // For now, we'll show an alert
+        // Redirect to practice exercise page
         if (existingAttempt && existingAttempt.passed) {
             const retake = confirm(`You've already passed this exercise with a score of ${existingAttempt.score}%.\n\nDo you want to retake it?`);
             if (!retake) return;
         }
 
-        // TODO: Create practice-exercise.html page to display the actual quiz
-        // For now, just show a message
-        alert(`Starting exercise: ${exerciseSlug}\n\nThis will redirect to the practice exercise page (to be implemented).`);
-
-        // Future: window.location.href = `practice-exercise.html?exercise=${exerciseSlug}`;
+        // Redirect to practice exercise page
+        window.location.href = `practice-exercise.html?exercise=${exerciseSlug}`;
 
     } catch (error) {
         console.error('Unexpected error starting exercise:', error);

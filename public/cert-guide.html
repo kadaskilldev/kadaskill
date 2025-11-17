@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certification Guide - KadaSkill</title>
+    <link rel="icon" type="image/svg+xml" href="images/loading/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .cert-guide-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #f59e0b;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .back-link:hover {
+            color: #ea580c;
+        }
+
+        .cert-header-box {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 2px solid #f59e0b;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .cert-header-box h1 {
+            font-size: 2.5rem;
+            color: #111827;
+            margin-bottom: 12px;
+        }
+
+        .cert-header-box p {
+            font-size: 1.125rem;
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+
+        .cert-badges {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .cert-badge {
+            background: #f59e0b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .section-box {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-box h2 {
+            font-size: 1.875rem;
+            color: #111827;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f59e0b;
+        }
+
+        .section-box p {
+            font-size: 1.125rem;
+            color: #4b5563;
+            line-height: 1.8;
+        }
+
+        .prereq-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .prereq-list li {
+            padding: 12px 16px;
+            background: #f9fafb;
+            border-left: 4px solid #f59e0b;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            color: #4b5563;
+        }
+
+        .prereq-list li i {
+            color: #f59e0b;
+            margin-right: 10px;
+        }
+
+        .guide-step {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            transition: all 0.3s;
+        }
+
+        .guide-step:hover {
+            border-color: #f59e0b;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            font-size: 1.5rem;
+            color: #111827;
+            margin-bottom: 10px;
+        }
+
+        .step-content p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .resource-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f59e0b;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .resource-link:hover {
+            background: #ea580c;
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div id="navigation"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="cert-guide-container">
+            <a href="certification.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Certifications
+            </a>
+
+            <div id="content-area">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 48px; margin-bottom: 16px;"></i>
+                    <p style="font-size: 18px;">Loading certification details...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer"></div>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Simple script to load and display certification
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const certSlug = urlParams.get('cert');
+
+            if (!certSlug) {
+                window.location.href = 'certification.html';
+                return;
+            }
+
+            try {
+                // Load certification
+                const { data: cert, error } = await supabase
+                    .from('certifications')
+                    .select('*')
+                    .eq('slug', certSlug)
+                    .eq('is_active', true)
+                    .single();
+
+                if (error || !cert) {
+                    alert('Certification not found');
+                    window.location.href = 'certification.html';
+                    return;
+                }
+
+                // Display certification
+                displayCertification(cert);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to load certification');
+                window.location.href = 'certification.html';
+            }
+        });
+
+        function displayCertification(cert) {
+            const contentArea = document.getElementById('content-area');
+
+            // Build prerequisites HTML
+            let prereqsHTML = '<li>No specific prerequisites required</li>';
+            if (cert.prerequisites && cert.prerequisites.length > 0) {
+                prereqsHTML = cert.prerequisites.map(p =>
+                    `<li><i class="fas fa-check-circle"></i> ${p}</li>`
+                ).join('');
+            }
+
+            // Build the page content
+            const html = `
+                <div class="cert-header-box">
+                    <h1>${cert.title}</h1>
+                    <p>${cert.subtitle || cert.level}</p>
+                    <div class="cert-badges">
+                        <span class="cert-badge">${cert.category}</span>
+                        <span class="cert-badge">${cert.level}</span>
+                        <span class="cert-badge"><i class="fas fa-clock"></i> ${cert.estimated_duration_hours || 0} hours</span>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <h2>Overview</h2>
+                    <p>${cert.overview || cert.description || 'No description available.'}</p>
+                </div>
+
+                <div class="section-box">
+                    <h2>Prerequisites</h2>
+                    <ul class="prereq-list">
+                        ${prereqsHTML}
+                    </ul>
+                </div>
+
+                <div class="section-box">
+                    <h2>How to Get This Certification</h2>
+                    <p style="margin-bottom: 25px;">Follow these steps to prepare for and obtain this certification:</p>
+
+                    <div class="guide-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Review Official Documentation</h3>
+                            <p>Start with the official documentation from ${cert.provider || 'the certification provider'}.</p>
+                            <p><strong>Exam Code:</strong> ${cert.exam_code || 'N/A'}</p>
+                            ${cert.official_url ? `<a href="${cert.official_url}" target="_blank" rel="noopener noreferrer" class="resource-link">
+                                Visit Official Site <i class="fas fa-external-link-alt"></i>
+                            </a>` : ''}
+                        </div>
+                    </div>
+
+                    <div class="guide-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Practice with Exercises</h3>
+                            <p>Test your knowledge with practice exercises on KadaSkill to reinforce your learning.</p>
+                            <a href="practice.html" class="resource-link">
+                                Go to Practice <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="guide-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Schedule Your Exam</h3>
+                            <p>Once you feel prepared, schedule your certification exam through the official provider.</p>
+                            ${cert.official_url ? `<a href="${cert.official_url}" target="_blank" rel="noopener noreferrer" class="resource-link">
+                                Schedule Now <i class="fas fa-external-link-alt"></i>
+                            </a>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            contentArea.innerHTML = html;
+            document.title = `${cert.title} - KadaSkill`;
+        }
+    </script>
+</body>
+</html>

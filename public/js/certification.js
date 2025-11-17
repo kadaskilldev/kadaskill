@@ -293,8 +293,8 @@ async function startCertification(certId, certSlug) {
 
         // Check if user has already started this certification
         const { data: existingProgress, error: checkError } = await supabase
-            .from('certification_progress')
-            .select('id, status, progress_percentage')
+            .from('user_certifications')
+            .select('id, status')
             .eq('user_id', user.id)
             .eq('certification_id', certId)
             .single();
@@ -304,22 +304,19 @@ async function startCertification(certId, certSlug) {
         }
 
         if (existingProgress) {
-            // Already started, redirect to certification detail page
-            window.location.href = `certification-detail.html?cert=${certSlug}`;
+            // Already started, redirect to certification guide page
+            window.location.href = `cert-guide.html?cert=${certSlug}`;
             return;
         }
 
         // Create new certification progress
-        const { data: progress, error: progressError } = await supabase
-            .from('certification_progress')
+        const { error: progressError } = await supabase
+            .from('user_certifications')
             .insert({
                 user_id: user.id,
                 certification_id: certId,
-                status: 'in_progress',
-                progress_percentage: 0
-            })
-            .select()
-            .single();
+                status: 'in_progress'
+            });
 
         if (progressError) {
             console.error('Error creating certification progress:', progressError);
@@ -327,8 +324,8 @@ async function startCertification(certId, certSlug) {
             return;
         }
 
-        // Redirect to certification detail page
-        window.location.href = `certification-detail.html?cert=${certSlug}`;
+        // Redirect to certification guide page
+        window.location.href = `cert-guide.html?cert=${certSlug}`;
 
     } catch (error) {
         console.error('Unexpected error starting certification:', error);
