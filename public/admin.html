@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - KadaSkill</title>
+    <link rel="icon" type="image/svg+xml" href="images/loading/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Admin Layout -->
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar__header">
+                <div class="admin-sidebar__logo">
+                    <img src="images/loading/icon.png" alt="KadaSkill Logo" class="admin-sidebar__logo-image">
+                    <div class="admin-sidebar__logo-text">
+                        <span class="kada">Kada</span><span class="skill">Skill</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="admin-sidebar__nav">
+                <button class="admin-nav-item active" data-section="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics Dashboard</span>
+                </button>
+                <button class="admin-nav-item" data-section="users">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                </button>
+                <button class="admin-nav-item" data-section="content">
+                    <i class="fas fa-book"></i>
+                    <span>Content Management</span>
+                </button>
+                <button class="admin-nav-item" data-section="learning-paths">
+                    <i class="fas fa-route"></i>
+                    <span>Learning Paths</span>
+                </button>
+                <button class="admin-nav-item" data-section="gamification">
+                    <i class="fas fa-trophy"></i>
+                    <span>Gamification</span>
+                </button>
+            </nav>
+
+            <div class="admin-sidebar__footer">
+                <button class="admin-nav-item" data-section="help">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Help & Support</span>
+                </button>
+                <button class="admin-nav-item" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="admin-header">
+                <h2 class="admin-header__title" id="section-title">Analytics Dashboard</h2>
+                <div class="admin-header__user">
+                    <span id="admin-username">Admin User</span>
+                    <img src="images/profile/default-avatar.svg" alt="Admin" class="admin-header__avatar" id="admin-avatar">
+                </div>
+            </div>
+
+            <div class="admin-content">
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="admin-section active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-card__icon" style="background: #3b82f6;">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-card__content">
+                                <span class="stat-card__label">Total Users</span>
+                                <span class="stat-card__value" id="stat-users">0</span>
+                                <span class="stat-card__change" id="stat-users-change">
+                                    <i class="fas fa-arrow-up"></i> 0% vs last month
+                                </span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__icon" style="background: #10b981;">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="stat-card__content">
+                                <span class="stat-card__label">Total Courses</span>
+                                <span class="stat-card__value" id="stat-courses">0</span>
+                                <span class="stat-card__change positive">
+                                    <i class="fas fa-arrow-up"></i> <span id="stat-courses-published">0</span> published
+                                </span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__icon" style="background: #f59e0b;">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <div class="stat-card__content">
+                                <span class="stat-card__label">Active Enrollments</span>
+                                <span class="stat-card__value" id="stat-enrollments">0</span>
+                                <span class="stat-card__change" id="stat-enrollments-change">
+                                    <i class="fas fa-arrow-up"></i> 0% completion rate
+                                </span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__icon" style="background: #8b5cf6;">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="stat-card__content">
+                                <span class="stat-card__label">Total XP Earned</span>
+                                <span class="stat-card__value" id="stat-total-xp">0</span>
+                                <span class="stat-card__change positive">
+                                    <i class="fas fa-trophy"></i> <span id="stat-avg-xp">0</span> avg per user
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="chart-card__header">
+                                <h3 class="chart-card__title">User Engagement (Last 7 Days)</h3>
+                                <div class="chart-card__legend">
+                                    <span class="legend-item">
+                                        <span class="legend-dot" style="background: #3b82f6;"></span>
+                                        Daily Active Users
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="engagement-chart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card">
+                            <div class="chart-card__header">
+                                <h3 class="chart-card__title">Enrollments by Category</h3>
+                            </div>
+                            <div class="chart-container chart-container--pie">
+                                <canvas id="category-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Performers and Recent Activity -->
+                    <div class="admin-grid">
+                        <div class="admin-card">
+                            <h3 class="admin-card__title">Top Performers</h3>
+                            <div id="top-performers" class="leaderboard-list">
+                                <div class="loading-spinner">Loading...</div>
+                            </div>
+                        </div>
+                        <div class="admin-card">
+                            <h3 class="admin-card__title">Recent Activity</h3>
+                            <div id="recent-activity" class="activity-list">
+                                <div class="loading-spinner">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Performance -->
+                    <div class="admin-card" style="margin-top: 24px;">
+                        <h3 class="admin-card__title">Course Performance</h3>
+                        <div class="table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Course Name</th>
+                                        <th>Enrollments</th>
+                                        <th>Avg. Progress</th>
+                                        <th>Completion Rate</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="course-performance-body">
+                                    <tr>
+                                        <td colspan="5" class="loading-cell">Loading course performance...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Users Section -->
+                <section id="users-section" class="admin-section">
+                    <div class="section-header">
+                        <h3>All Users</h3>
+                        <div class="section-actions">
+                            <input type="text" placeholder="Search users..." class="search-input" id="user-search">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Total XP</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <tr>
+                                    <td colspan="6" class="loading-cell">Loading users...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Content Management Section -->
+                <section id="content-section" class="admin-section">
+                    <div class="content-tabs">
+                        <button class="content-tab active" data-content-tab="courses">Courses</button>
+                        <button class="content-tab" data-content-tab="certifications">Certifications</button>
+                        <button class="content-tab" data-content-tab="exercises">Practice Exercises</button>
+                    </div>
+
+                    <!-- Courses Tab -->
+                    <div id="courses-tab" class="content-tab-panel active">
+                        <div class="section-header">
+                            <h3>Manage Courses</h3>
+                            <button class="btn-primary" id="add-course-btn">
+                                <i class="fas fa-plus"></i> Add New Course
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Level</th>
+                                        <th>Lessons</th>
+                                        <th>Published</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="courses-table-body">
+                                    <tr>
+                                        <td colspan="6" class="loading-cell">Loading courses...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Certifications Tab -->
+                    <div id="certifications-tab" class="content-tab-panel">
+                        <div class="section-header">
+                            <h3>Manage Certifications</h3>
+                            <button class="btn-primary" id="add-cert-btn">
+                                <i class="fas fa-plus"></i> Add New Certification
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Provider</th>
+                                        <th>Category</th>
+                                        <th>Level</th>
+                                        <th>Active</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="certifications-table-body">
+                                    <tr>
+                                        <td colspan="6" class="loading-cell">Loading certifications...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Exercises Tab -->
+                    <div id="exercises-tab" class="content-tab-panel">
+                        <div class="section-header">
+                            <h3>Manage Practice Exercises</h3>
+                            <button class="btn-primary" id="add-exercise-btn">
+                                <i class="fas fa-plus"></i> Add New Exercise
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Difficulty</th>
+                                        <th>Questions</th>
+                                        <th>Published</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="exercises-table-body">
+                                    <tr>
+                                        <td colspan="6" class="loading-cell">Loading exercises...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Learning Paths Section -->
+                <section id="learning-paths-section" class="admin-section">
+                    <div class="section-header">
+                        <h3>Learning Paths</h3>
+                        <button class="btn-primary">
+                            <i class="fas fa-plus"></i> Create Learning Path
+                        </button>
+                    </div>
+                    <div class="empty-state">
+                        <i class="fas fa-route"></i>
+                        <p>Learning paths feature coming soon!</p>
+                    </div>
+                </section>
+
+                <!-- Gamification Section -->
+                <section id="gamification-section" class="admin-section">
+                    <div class="section-header">
+                        <h3>Gamification Settings</h3>
+                    </div>
+                    <div class="admin-card">
+                        <h4>Badges</h4>
+                        <p>Manage achievement badges, XP rewards, and user rankings.</p>
+                        <div class="empty-state">
+                            <i class="fas fa-trophy"></i>
+                            <p>Badge management coming soon!</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Help Section -->
+                <section id="help-section" class="admin-section">
+                    <div class="admin-card">
+                        <h3>Help & Support</h3>
+                        <div class="help-content">
+                            <div class="help-item">
+                                <i class="fas fa-book"></i>
+                                <div>
+                                    <h4>Documentation</h4>
+                                    <p>Learn how to use the admin panel effectively</p>
+                                </div>
+                            </div>
+                            <div class="help-item">
+                                <i class="fas fa-question-circle"></i>
+                                <div>
+                                    <h4>FAQs</h4>
+                                    <p>Find answers to common questions</p>
+                                </div>
+                            </div>
+                            <div class="help-item">
+                                <i class="fas fa-envelope"></i>
+                                <div>
+                                    <h4>Contact Support</h4>
+                                    <p>Get help from our support team</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

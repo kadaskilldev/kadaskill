@@ -159,7 +159,7 @@
 
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
-            .select('full_name, total_xp, bio, avatar_url')
+            .select('full_name, total_xp, bio, avatar_url, role')
             .eq('id', user.id)
             .single();
 
@@ -170,6 +170,11 @@
 
           sessionStorage.setItem('userProfile', JSON.stringify(profile));
           sessionStorage.setItem('authUser', JSON.stringify(user));
+
+          // Redirect admin users to admin panel
+          if (profile.role === 'admin') {
+            return 'admin.html';
+          }
 
           return 'home.html';
         } catch (err) {

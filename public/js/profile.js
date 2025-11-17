@@ -15,8 +15,9 @@ let userProfile = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
     await loadUserProfile();
-    await loadUserCourses();
     await loadUserStats();
+    await loadUserCourses();
+    await loadPinnedCertifications();
 });
 
 // ============================================
@@ -273,4 +274,75 @@ function formatNumber(num) {
         return (num / 1000).toFixed(1) + 'K';
     }
     return num.toString();
+}
+
+// ============================================
+// Load Pinned Certifications
+// ============================================
+
+async function loadPinnedCertifications() {
+    try {
+        if (!currentUser) return;
+
+        const { data: pinnedCerts, error } = await supabase
+            .from('user_certifications')
+            .select(`
+                id,
+                status,
+                is_pinned,
+                certifications (
+                    id,
+                    title,
+                    slug,
+                    icon_url,
+                    badge_url
+                )
+            `)
+            .eq('user_id', currentUser.id)
+            .eq('is_pinned', true)
+            .limit(2);
+
+        if (error) {
+            console.error('Error loading pinned certifications:', error);
+            return;
+        }
+
+        const pinnedContainer = document.querySelector('.profile-pinned__cards');
+        if (!pinnedContainer) return;
+
+        if (pinnedCerts && pinnedCerts.length > 0) {
+            pinnedContainer.innerHTML = pinnedCerts.map(userCert => {
+                const cert = userCert.certifications;
+                if (!cert) return '';
+
+                return `
+                    <article class="profile-pinned-card" aria-label="${cert.title}">
+                        <div class="profile-pinned-card__media">
+                            <img src="${cert.icon_url || cert.badge_url || 'images/profile/default-cert.png'}"
+                                 alt="${cert.title}"
+                                 class="profile-pinned-card__image" />
+                            <span class="profile-pinned-card__tag">Certification</span>
+                        </div>
+                        <div class="profile-pinned-card__content">
+                            <h3 class="profile-pinned-card__title">${cert.title}</h3>
+                            <a class="profile-pinned-card__cta cta-pill"
+                               href="cert-guide.html?cert=${cert.slug}"
+                               role="button">View Certification</a>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        } else {
+            // No pinned certifications
+            pinnedContainer.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
+                    <p style="font-size: 16px; margin-bottom: 16px;">No pinned certifications yet.</p>
+                    <a href="certification.html" class="cta-pill" style="display: inline-block;">Browse Certifications</a>
+                </div>
+            `;
+        }
+
+    } catch (error) {
+        console.error('Unexpected error loading pinned certifications:', error);
+    }
 }
