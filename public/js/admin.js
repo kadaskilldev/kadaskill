@@ -7,6 +7,17 @@ let currentSection = 'dashboard';
 let engagementChart = null;
 let categoryChart = null;
 
+// User management state
+let allUsers = [];
+let filteredUsers = [];
+let currentPage = 1;
+let usersPerPage = 10;
+let currentFilters = {
+    search: '',
+    role: 'all',
+    status: 'all'
+};
+
 // ============================================
 // Initialize Page
 // ============================================
@@ -113,10 +124,66 @@ function setupEventListeners() {
         logoutBtn.addEventListener('click', handleLogout);
     }
 
-    // Search inputs
+    // User management filters
     const userSearch = document.getElementById('user-search');
     if (userSearch) {
-        userSearch.addEventListener('input', (e) => searchUsers(e.target.value));
+        userSearch.addEventListener('input', (e) => {
+            currentFilters.search = e.target.value;
+            currentPage = 1;
+            applyUserFilters();
+        });
+    }
+
+    const roleFilter = document.getElementById('role-filter');
+    if (roleFilter) {
+        roleFilter.addEventListener('change', (e) => {
+            currentFilters.role = e.target.value;
+            currentPage = 1;
+            applyUserFilters();
+        });
+    }
+
+    const statusFilter = document.getElementById('status-filter');
+    if (statusFilter) {
+        statusFilter.addEventListener('change', (e) => {
+            currentFilters.status = e.target.value;
+            currentPage = 1;
+            applyUserFilters();
+        });
+    }
+
+    // Pagination buttons
+    const usersPrevBtn = document.getElementById('users-prev-btn');
+    if (usersPrevBtn) {
+        usersPrevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderUsersTable();
+            }
+        });
+    }
+
+    const usersNextBtn = document.getElementById('users-next-btn');
+    if (usersNextBtn) {
+        usersNextBtn.addEventListener('click', () => {
+            const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderUsersTable();
+            }
+        });
+    }
+
+    // Edit user form
+    const editUserForm = document.getElementById('edit-user-form');
+    if (editUserForm) {
+        editUserForm.addEventListener('submit', handleEditUserSubmit);
+    }
+
+    // Modal overlay click to close
+    const modalOverlay = document.querySelector('.modal-overlay');
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', closeEditUserModal);
     }
 }
 
@@ -640,7 +707,7 @@ async function loadUsers() {
     try {
         const { data: users, error } = await supabase
             .from('profiles')
-            .select('id, username, email, role, total_xp, created_at')
+            .select('id, username, full_name, email, role, total_xp, created_at, updated_at')
             .order('created_at', { ascending: false });
 
         if (error) {
@@ -648,34 +715,116 @@ async function loadUsers() {
             return;
         }
 
-        renderUsersTable(users);
+        allUsers = users || [];
+        applyUserFilters();
 
     } catch (error) {
         console.error('Error loading users:', error);
     }
 }
 
-function renderUsersTable(users) {
+// ============================================
+// User Filters and Search
+// ============================================
+
+function applyUserFilters() {
+    filteredUsers = allUsers.filter(user => {
+        // Search filter
+        const searchLower = currentFilters.search.toLowerCase();
+        const matchesSearch = !searchLower ||
+            (user.username && user.username.toLowerCase().includes(searchLower)) ||
+            (user.full_name && user.full_name.toLowerCase().includes(searchLower)) ||
+            (user.email && user.email.toLowerCase().includes(searchLower));
+
+        // Role filter
+        const matchesRole = currentFilters.role === 'all' || user.role === currentFilters.role;
+
+        // Status filter (based on activity - if updated_at is within last 30 days)
+        let matchesStatus = true;
+        if (currentFilters.status !== 'all') {
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            const lastActive = user.updated_at ? new Date(user.updated_at) : new Date(user.created_at);
+            const isActive = lastActive > thirtyDaysAgo;
+            matchesStatus = currentFilters.status === 'active' ? isActive : !isActive;
+        }
+
+        return matchesSearch && matchesRole && matchesStatus;
+    });
+
+    currentPage = 1; // Reset to first page
+    renderUsersTable();
+}
+
+function renderUsersTable() {
     const tableBody = document.getElementById('users-table-body');
     if (!tableBody) return;
 
-    if (users && users.length > 0) {
-        tableBody.innerHTML = users.map(user => `
-            <tr>
-                <td>${user.username || 'N/A'}</td>
-                <td>${user.email || 'N/A'}</td>
-                <td><span style="text-transform: capitalize; font-weight: 600; color: ${user.role === 'admin' ? '#f59e0b' : '#6b7280'};">${user.role || 'user'}</span></td>
-                <td>${formatNumber(user.total_xp || 0)}</td>
-                <td>${formatDate(user.created_at)}</td>
-                <td>
-                    <button class="btn-edit" onclick="editUser('${user.id}')">Edit</button>
-                    <button class="btn-delete" onclick="deleteUser('${user.id}')">Delete</button>
-                </td>
-            </tr>
-        `).join('');
+    // Calculate pagination
+    const startIndex = (currentPage - 1) * usersPerPage;
+    const endIndex = startIndex + usersPerPage;
+    const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+
+    if (paginatedUsers.length > 0) {
+        tableBody.innerHTML = paginatedUsers.map(user => {
+            // Calculate if user is active (updated in last 30 days)
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            const lastActive = user.updated_at ? new Date(user.updated_at) : new Date(user.created_at);
+            const isActive = lastActive > thirtyDaysAgo;
+
+            return `
+                <tr>
+                    <td>${user.username || 'N/A'}</td>
+                    <td>${user.email || 'N/A'}</td>
+                    <td><span style="text-transform: capitalize; font-weight: 600; color: ${user.role === 'admin' ? '#f59e0b' : '#6b7280'};">${user.role || 'user'}</span></td>
+                    <td>
+                        <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 12px; font-size: 0.8125rem; font-weight: 600; background: ${isActive ? 'rgba(16, 185, 129, 0.1)' : 'rgba(107, 114, 128, 0.1)'}; color: ${isActive ? '#10b981' : '#6b7280'};">
+                            <span style="width: 6px; height: 6px; border-radius: 50%; background: ${isActive ? '#10b981' : '#6b7280'};"></span>
+                            ${isActive ? 'Active' : 'Inactive'}
+                        </span>
+                    </td>
+                    <td>${formatNumber(user.total_xp || 0)}</td>
+                    <td>${formatDate(user.created_at)}</td>
+                    <td>
+                        <button class="btn-edit" onclick="openEditUserModal('${user.id}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn-delete" onclick="confirmDeleteUser('${user.id}', '${user.username || user.email}')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
     } else {
-        tableBody.innerHTML = '<tr><td colspan="6" class="loading-cell">No users found</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="7" class="loading-cell">No users found</td></tr>';
     }
+
+    updatePaginationControls();
+}
+
+function updatePaginationControls() {
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+    const startIndex = (currentPage - 1) * usersPerPage;
+    const endIndex = Math.min(startIndex + usersPerPage, filteredUsers.length);
+
+    // Update info
+    const showingEl = document.getElementById('users-showing');
+    if (showingEl) showingEl.textContent = filteredUsers.length > 0 ? `${startIndex + 1}-${endIndex}` : '0';
+
+    const totalEl = document.getElementById('users-total');
+    if (totalEl) totalEl.textContent = filteredUsers.length;
+
+    const currentPageEl = document.getElementById('users-current-page');
+    if (currentPageEl) currentPageEl.textContent = filteredUsers.length > 0 ? currentPage : '0';
+
+    // Update buttons
+    const prevBtn = document.getElementById('users-prev-btn');
+    if (prevBtn) prevBtn.disabled = currentPage <= 1;
+
+    const nextBtn = document.getElementById('users-next-btn');
+    if (nextBtn) nextBtn.disabled = currentPage >= totalPages || filteredUsers.length === 0;
 }
 
 // ============================================
@@ -851,20 +1000,187 @@ async function searchUsers(searchTerm) {
 }
 
 // ============================================
-// CRUD Functions (Placeholder)
+// User Edit Modal
 // ============================================
 
-function editUser(userId) {
-    alert(`Edit user functionality coming soon! User ID: ${userId}`);
-    // TODO: Implement user editing modal/form
-}
+async function openEditUserModal(userId) {
+    try {
+        const { data: user, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .single();
 
-function deleteUser(userId) {
-    if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
-        alert(`Delete user functionality coming soon! User ID: ${userId}`);
-        // TODO: Implement user deletion with confirmation
+        if (error) {
+            console.error('Error loading user:', error);
+            alert('Failed to load user data');
+            return;
+        }
+
+        // Populate form
+        document.getElementById('edit-user-id').value = user.id;
+        document.getElementById('edit-username').value = user.username || '';
+        document.getElementById('edit-full-name').value = user.full_name || '';
+        document.getElementById('edit-email').value = user.email || '';
+        document.getElementById('edit-role').value = user.role || 'user';
+        document.getElementById('edit-total-xp').value = user.total_xp || 0;
+
+        // Show modal
+        const modal = document.getElementById('edit-user-modal');
+        if (modal) modal.classList.add('active');
+
+    } catch (error) {
+        console.error('Error opening edit modal:', error);
+        alert('Failed to open edit modal');
     }
 }
+
+function closeEditUserModal() {
+    const modal = document.getElementById('edit-user-modal');
+    if (modal) modal.classList.remove('active');
+
+    // Reset form
+    const form = document.getElementById('edit-user-form');
+    if (form) form.reset();
+}
+
+async function handleEditUserSubmit(e) {
+    e.preventDefault();
+
+    const userId = document.getElementById('edit-user-id').value;
+    const username = document.getElementById('edit-username').value;
+    const fullName = document.getElementById('edit-full-name').value;
+    const role = document.getElementById('edit-role').value;
+    const totalXP = parseInt(document.getElementById('edit-total-xp').value) || 0;
+
+    // DEBUG: Log all values being submitted
+    console.log('=== Edit User Debug ===');
+    console.log('User ID:', userId);
+    console.log('Username:', username);
+    console.log('Full Name:', fullName);
+    console.log('Role:', role);
+    console.log('Total XP:', totalXP);
+    console.log('=====================');
+
+    try {
+        const updateData = {
+            username: username,
+            full_name: fullName,
+            role: role,
+            total_xp: totalXP,
+            updated_at: new Date().toISOString()
+        };
+
+        console.log('Update data object:', updateData);
+
+        // First, check current value in database
+        const { data: beforeData } = await supabase
+            .from('profiles')
+            .select('total_xp, username, role')
+            .eq('id', userId)
+            .single();
+
+        console.log('Before update - DB values:', beforeData);
+
+        // Perform the update without select
+        const { error: updateError, count } = await supabase
+            .from('profiles')
+            .update(updateData)
+            .eq('id', userId);
+
+        console.log('Update error:', updateError);
+        console.log('Rows affected:', count);
+
+        if (updateError) {
+            console.error('Error updating user:', updateError);
+            alert('Failed to update user: ' + updateError.message);
+            return;
+        }
+
+        // Wait a moment for database to process
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Verify the update by fetching the user separately
+        const { data: verifyData, error: verifyError } = await supabase
+            .from('profiles')
+            .select('id, username, full_name, role, total_xp, updated_at')
+            .eq('id', userId)
+            .single();
+
+        console.log('Verification data:', verifyData);
+        console.log('Verification error:', verifyError);
+
+        // Check if the value actually changed
+        if (verifyData && verifyData.total_xp !== totalXP) {
+            console.error('WARNING: Value mismatch after update!');
+            console.error(`Expected total_xp: ${totalXP}, Got: ${verifyData.total_xp}`);
+            alert(`Warning: Update may have failed. Expected XP: ${totalXP}, but database shows: ${verifyData.total_xp}.\n\nThis could be due to:\n1. Database triggers resetting the value\n2. RLS policies blocking the update\n3. Database constraints\n\nPlease check your Supabase RLS policies and triggers.`);
+            return;
+        }
+
+        if (verifyError) {
+            console.warn('Could not verify update, but update command succeeded:', verifyError);
+            alert('User updated successfully! (Could not verify changes)');
+        } else {
+            console.log('User updated and verified successfully:', verifyData);
+            alert('User updated successfully!');
+        }
+
+        closeEditUserModal();
+
+        // Reload users to reflect changes
+        await loadUsers();
+
+    } catch (error) {
+        console.error('Unexpected error updating user:', error);
+        alert('An unexpected error occurred: ' + error.message);
+    }
+}
+
+// ============================================
+// User Delete
+// ============================================
+
+async function confirmDeleteUser(userId, username) {
+    const confirmed = confirm(`Are you sure you want to delete user "${username}"?\n\nThis action cannot be undone and will remove all associated data including:\n- Course enrollments\n- Practice attempts\n- Certifications\n- Badges\n\nType the username to confirm deletion.`);
+
+    if (!confirmed) return;
+
+    const typedUsername = prompt(`Type "${username}" to confirm deletion:`);
+
+    if (typedUsername !== username) {
+        alert('Username does not match. Deletion cancelled.');
+        return;
+    }
+
+    try {
+        // Delete user (this will cascade to related tables if foreign keys are set up properly)
+        const { error } = await supabase
+            .from('profiles')
+            .delete()
+            .eq('id', userId);
+
+        if (error) {
+            console.error('Error deleting user:', error);
+            alert('Failed to delete user: ' + error.message);
+            return;
+        }
+
+        alert('User deleted successfully');
+
+        // Reload users
+        await loadUsers();
+
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        alert('An unexpected error occurred');
+    }
+}
+
+// Make functions global
+window.openEditUserModal = openEditUserModal;
+window.closeEditUserModal = closeEditUserModal;
+window.confirmDeleteUser = confirmDeleteUser;
 
 function editCourse(courseId) {
     alert(`Edit course functionality coming soon! Course ID: ${courseId}`);
@@ -950,8 +1266,6 @@ function getTimeAgo(date) {
 }
 
 // Make functions global for onclick handlers
-window.editUser = editUser;
-window.deleteUser = deleteUser;
 window.editCourse = editCourse;
 window.deleteCourse = deleteCourse;
 window.editCertification = editCertification;

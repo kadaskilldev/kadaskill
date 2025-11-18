@@ -550,7 +550,7 @@ body {
     border: 1px solid var(--border-gray);
     border-radius: 8px;
     font-size: 0.9375rem;
-    width: 300px;
+    width: 280px;
     transition: all 0.3s ease;
 }
 
@@ -558,6 +558,28 @@ body {
     outline: none;
     border-color: var(--primary-orange);
     box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.filter-select {
+    padding: 10px 16px;
+    border: 1px solid var(--border-gray);
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    background: var(--white);
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 140px;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-orange);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.filter-select:hover {
+    border-color: #d1d5db;
 }
 
 /* ============================================
@@ -694,6 +716,76 @@ body {
 }
 
 /* ============================================
+   Table Pagination
+   ============================================ */
+
+.table-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background: var(--white);
+    border-top: 1px solid var(--border-gray);
+    border-radius: 0 0 12px 12px;
+}
+
+.pagination-info {
+    font-size: 0.875rem;
+    color: var(--text-gray);
+}
+
+.pagination-info span {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.pagination-page {
+    font-size: 0.875rem;
+    color: var(--text-dark);
+}
+
+.pagination-page span {
+    font-weight: 600;
+    color: var(--primary-orange);
+}
+
+.btn-pagination {
+    padding: 8px 16px;
+    border: 1px solid var(--border-gray);
+    border-radius: 8px;
+    background: var(--white);
+    color: var(--text-dark);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-pagination:hover:not(:disabled) {
+    background: var(--bg-gray);
+    border-color: var(--primary-orange);
+    color: var(--primary-orange);
+}
+
+.btn-pagination:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.btn-pagination i {
+    font-size: 0.75rem;
+}
+
+/* ============================================
    Content Tabs
    ============================================ */
 
@@ -807,6 +899,150 @@ body {
 .help-item p {
     font-size: 0.9375rem;
     color: var(--text-gray);
+}
+
+/* ============================================
+   Modal
+   ============================================ */
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    position: relative;
+    background: var(--white);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    padding: 24px 24px 20px;
+    border-bottom: 1px solid var(--border-gray);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    letter-spacing: -0.01em;
+}
+
+.modal-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: var(--bg-gray);
+    border-radius: 8px;
+    color: var(--text-gray);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+    background: #e5e7eb;
+    color: var(--text-dark);
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
+/* ============================================
+   Form Elements
+   ============================================ */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border-gray);
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    color: var(--text-dark);
+    background: var(--white);
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary-orange);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.form-input:read-only {
+    background: var(--bg-gray);
+    color: var(--text-gray);
+    cursor: not-allowed;
+}
+
+.form-hint {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-gray);
+    margin-top: 6px;
 }
 
 /* ============================================
