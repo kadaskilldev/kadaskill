@@ -1073,13 +1073,24 @@ body.has-fixed-header {
 }
 
 .welcome h2 {
-    font-size: 3rem;
-    margin-bottom: 2rem;
+    color: var(--Light, #F8F7FC);
+    font-size: 63.96px;
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
     font-weight: 700;
+    letter-spacing: 0.32px;
+    word-wrap: break-word;
+    text-shadow: 0px 4px 4px rgba(142, 86, 2, 0.25);
+    margin-bottom: 2rem;
 }
 
 .welcome p {
-    font-size: 1.3rem;
+    color: var(--Light, #F8F7FC);
+    font-size: 20px;
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.10px;
+    word-wrap: break-word;
+    text-shadow: 0px 4px 4px rgba(142, 86, 2, 0.25);
     margin-bottom: 3rem;
     max-width: 800px;
     margin-left: auto;
@@ -1197,6 +1208,7 @@ body.has-fixed-header {
     max-width: 900px;
     margin: 0 auto;
     font-weight: 400;
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
 }
 
 .about-robot {
