@@ -1064,11 +1064,11 @@ body.has-fixed-header {
 }
 
 .welcome-logo-img {
-    width: 60px;
-    height: 60px;
+    width: 120px;
+    height: auto;
     margin-bottom: 2rem;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
+    background: none;
+    border-radius: 0;
     object-fit: contain;
 }
 
@@ -1088,22 +1088,56 @@ body.has-fixed-header {
 }
 
 .learn-more-btn {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    border: 2px solid white;
-    padding: 12px 30px;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 58px;
+    padding: 0 2.8rem;
+    border-radius: 16px;
+    border: none;
+    background: transparent;
+    color: var(--variable-collection-secondary-color, #232f3e);
+    font-family: var(--button-font-family, 'Inter', sans-serif);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    font-size: 1.05rem;
+    text-decoration: none;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: transform 0.2s ease;
+    isolation: isolate;
 }
 
-.learn-more-btn:hover {
-    background: white;
-    color: #FF8C00;
+.learn-more-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-image: url('../images/home/cta/btn.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    transition: background-image 0.2s ease;
+    z-index: -1;
 }
 
+.learn-more-btn:hover,
+.learn-more-btn:focus-visible {
+    transform: translateY(-2px);
+}
+
+.learn-more-btn:hover::before,
+.learn-more-btn:focus-visible::before {
+    background-image: url('../images/home/cta/btn-hover.svg');
+}
+
+.learn-more-btn:active {
+    transform: translateY(0);
+}
+
+.learn-more-btn:focus-visible {
+    outline: none;
+}
 
 /* Responsive Design */
 
