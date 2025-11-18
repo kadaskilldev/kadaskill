@@ -18,6 +18,16 @@ let currentFilters = {
     status: 'all'
 };
 
+function lockBodyScroll() {
+    document.body.classList.add('modal-open');
+}
+
+function unlockBodyScroll() {
+    if (!document.querySelector('.modal.active')) {
+        document.body.classList.remove('modal-open');
+    }
+}
+
 // ============================================
 // Initialize Page
 // ============================================
@@ -181,10 +191,21 @@ function setupEventListeners() {
     }
 
     // Modal overlay click to close
-    const modalOverlay = document.querySelector('.modal-overlay');
-    if (modalOverlay) {
-        modalOverlay.addEventListener('click', closeEditUserModal);
-    }
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', () => {
+            const parentModal = overlay.closest('.modal');
+            if (!parentModal) return;
+
+            if (parentModal.id === 'edit-user-modal') {
+                closeEditUserModal();
+            } else if (parentModal.id === 'exercise-modal') {
+                closeExerciseModal();
+            } else {
+                parentModal.classList.remove('active');
+                unlockBodyScroll();
+            }
+        });
+    });
 }
 
 // ============================================
@@ -904,21 +925,48 @@ function renderCertificationsTable(certifications) {
     if (!tableBody) return;
 
     if (certifications && certifications.length > 0) {
-        tableBody.innerHTML = certifications.map(cert => `
+        tableBody.innerHTML = certifications.map(cert => {
+            const badgeCategory = (cert.category || 'General').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            const statusClass = cert.is_active ? 'status-active' : 'status-inactive';
+            const statusLabel = cert.is_active ? 'Active' : 'Inactive';
+
+            return `
+                <tr>
+                    <td>
+                        <div class="table-title">${cert.title}</div>
+                        <div class="table-subtitle">${cert.provider || 'Unknown provider'}</div>
+                    </td>
+                    <td>
+                        <span class="category-badge category-${badgeCategory}">${cert.category || 'General'}</span>
+                    </td>
+                    <td><span style="text-transform: capitalize;">${cert.level || 'N/A'}</span></td>
+                    <td>
+                        <span class="status-badge ${statusClass}">${statusLabel}</span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon" onclick="editCertification('${cert.id}')" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon btn-danger" onclick="deleteCertification('${cert.id}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } else {
+        tableBody.innerHTML = `
             <tr>
-                <td>${cert.title}</td>
-                <td>${cert.provider || 'N/A'}</td>
-                <td><span style="text-transform: capitalize;">${cert.category || 'N/A'}</span></td>
-                <td><span style="text-transform: capitalize;">${cert.level || 'N/A'}</span></td>
-                <td><span style="color: ${cert.is_active ? '#10b981' : '#ef4444'}; font-weight: 600;">${cert.is_active ? 'Yes' : 'No'}</span></td>
-                <td>
-                    <button class="btn-edit" onclick="editCertification('${cert.id}')">Edit</button>
-                    <button class="btn-delete" onclick="deleteCertification('${cert.id}')">Delete</button>
+                <td colspan="5" class="loading-cell">
+                    <div class="empty-state">
+                        <i class="fas fa-certificate"></i>
+                        <p>No certifications found. Add your first certification to get started.</p>
+                    </div>
                 </td>
             </tr>
-        `).join('');
-    } else {
-        tableBody.innerHTML = '<tr><td colspan="6" class="loading-cell">No certifications found</td></tr>';
+        `;
     }
 }
 
@@ -930,7 +978,7 @@ async function loadExercises() {
     try {
         const { data: exercises, error } = await supabase
             .from('practice_exercises')
-            .select('id, title, category, difficulty, questions, is_published')
+            .select('id, title, slug, category, difficulty, questions, is_published')
             .order('created_at', { ascending: false });
 
         if (error) {
@@ -951,23 +999,48 @@ function renderExercisesTable(exercises) {
 
     if (exercises && exercises.length > 0) {
         tableBody.innerHTML = exercises.map(exercise => {
-            const questionCount = exercise.questions?.length || 0;
+            const questionCount = Array.isArray(exercise.questions) ? exercise.questions.length : 0;
+            const badgeCategory = (exercise.category || 'General').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            const publishedBadge = exercise.is_published
+                ? '<span class="status-badge status-active">Published</span>'
+                : '<span class="status-badge status-inactive">Draft</span>';
+
             return `
                 <tr>
-                    <td>${exercise.title}</td>
-                    <td><span style="text-transform: capitalize;">${exercise.category || 'N/A'}</span></td>
-                    <td><span style="text-transform: capitalize;">${exercise.difficulty || 'N/A'}</span></td>
-                    <td>${questionCount}</td>
-                    <td><span style="color: ${exercise.is_published ? '#10b981' : '#ef4444'}; font-weight: 600;">${exercise.is_published ? 'Yes' : 'No'}</span></td>
                     <td>
-                        <button class="btn-edit" onclick="editExercise('${exercise.id}')">Edit</button>
-                        <button class="btn-delete" onclick="deleteExercise('${exercise.id}')">Delete</button>
+                        <div class="table-title">${exercise.title}</div>
+                        <div class="table-subtitle">${exercise.slug || ''}</div>
+                    </td>
+                    <td>
+                        <span class="category-badge category-${badgeCategory}">${exercise.category || 'General'}</span>
+                    </td>
+                    <td><span style="text-transform: capitalize;">${exercise.difficulty || 'N/A'}</span></td>
+                    <td><strong>${questionCount}</strong> questions</td>
+                    <td>${publishedBadge}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon" onclick="editExercise('${exercise.id}')" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon btn-danger" onclick="deleteExercise('${exercise.id}', '${exercise.title.replace(/'/g, "&apos;")}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `;
         }).join('');
     } else {
-        tableBody.innerHTML = '<tr><td colspan="6" class="loading-cell">No exercises found</td></tr>';
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" class="loading-cell">
+                    <div class="empty-state">
+                        <i class="fas fa-dumbbell"></i>
+                        <p>No practice exercises yet. Create your first one!</p>
+                    </div>
+                </td>
+            </tr>
+        `;
     }
 }
 
@@ -1027,7 +1100,10 @@ async function openEditUserModal(userId) {
 
         // Show modal
         const modal = document.getElementById('edit-user-modal');
-        if (modal) modal.classList.add('active');
+        if (modal) {
+            lockBodyScroll();
+            modal.classList.add('active');
+        }
 
     } catch (error) {
         console.error('Error opening edit modal:', error);
@@ -1038,6 +1114,7 @@ async function openEditUserModal(userId) {
 function closeEditUserModal() {
     const modal = document.getElementById('edit-user-modal');
     if (modal) modal.classList.remove('active');
+    unlockBodyScroll();
 
     // Reset form
     const form = document.getElementById('edit-user-form');
@@ -1206,18 +1283,6 @@ function deleteCertification(certId) {
     }
 }
 
-function editExercise(exerciseId) {
-    alert(`Edit exercise functionality coming soon! Exercise ID: ${exerciseId}`);
-    // TODO: Implement exercise editing modal/form
-}
-
-function deleteExercise(exerciseId) {
-    if (confirm('Are you sure you want to delete this exercise? This action cannot be undone.')) {
-        alert(`Delete exercise functionality coming soon! Exercise ID: ${exerciseId}`);
-        // TODO: Implement exercise deletion
-    }
-}
-
 // ============================================
 // Logout
 // ============================================
@@ -1265,6 +1330,415 @@ function getTimeAgo(date) {
     return formatDate(date);
 }
 
+// ============================================
+// Practice Exercise Management
+// ============================================
+
+let exerciseQuestions = [];
+let editingQuestionIndex = null;
+
+// Load practice exercises on page load
+if (document.getElementById('exercises-tab')) {
+    loadExercises();
+}
+
+// Open add exercise modal
+document.getElementById('add-exercise-btn')?.addEventListener('click', () => {
+    document.getElementById('exercise-modal-title').textContent = 'Add New Practice Exercise';
+    document.getElementById('exercise-form').reset();
+    document.getElementById('exercise-id').value = '';
+    exerciseQuestions = [];
+    renderQuestions();
+    document.getElementById('exercise-modal').classList.add('active');
+    lockBodyScroll();
+});
+
+// Edit exercise
+async function editExercise(exerciseId) {
+    try {
+        const { data: exercise, error } = await supabase
+            .from('practice_exercises')
+            .select('*')
+            .eq('id', exerciseId)
+            .single();
+
+        if (error) {
+            console.error('Error loading exercise:', error);
+            alert('Failed to load exercise');
+            return;
+        }
+
+        // Populate form
+        document.getElementById('exercise-modal-title').textContent = 'Edit Practice Exercise';
+        document.getElementById('exercise-id').value = exercise.id;
+        document.getElementById('exercise-title').value = exercise.title;
+        document.getElementById('exercise-slug').value = exercise.slug;
+        document.getElementById('exercise-description').value = exercise.description || '';
+        document.getElementById('exercise-category').value = exercise.category;
+        document.getElementById('exercise-difficulty').value = exercise.difficulty || '';
+        document.getElementById('exercise-published').checked = exercise.is_published;
+        document.getElementById('exercise-passing-score').value = exercise.passing_score || 70;
+        document.getElementById('exercise-time-limit').value = exercise.time_limit_minutes || '';
+        document.getElementById('exercise-xp-reward').value = exercise.xp_reward || 15;
+        document.getElementById('exercise-tags').value = exercise.tags ? exercise.tags.join(', ') : '';
+
+        // Load questions
+        exerciseQuestions = Array.isArray(exercise.questions) ? exercise.questions : [];
+        renderQuestions();
+
+        // Open modal
+        document.getElementById('exercise-modal').classList.add('active');
+        lockBodyScroll();
+
+    } catch (error) {
+        console.error('Unexpected error editing exercise:', error);
+        alert('Failed to load exercise');
+    }
+}
+
+// Delete exercise
+async function deleteExercise(exerciseId, exerciseTitle) {
+    const confirmed = confirm(`Are you sure you want to delete the exercise "${exerciseTitle}"?\n\nThis action cannot be undone.`);
+    if (!confirmed) return;
+
+    try {
+        const { error } = await supabase
+            .from('practice_exercises')
+            .delete()
+            .eq('id', exerciseId);
+
+        if (error) {
+            console.error('Error deleting exercise:', error);
+            alert('Failed to delete exercise: ' + error.message);
+            return;
+        }
+
+        alert('Exercise deleted successfully!');
+        loadExercises();
+
+    } catch (error) {
+        console.error('Unexpected error deleting exercise:', error);
+        alert('Failed to delete exercise');
+    }
+}
+
+// Close exercise modal
+function closeExerciseModal() {
+    document.getElementById('exercise-modal').classList.remove('active');
+    unlockBodyScroll();
+    document.getElementById('exercise-form').reset();
+    exerciseQuestions = [];
+    editingQuestionIndex = null;
+}
+
+// Handle exercise form submission
+document.getElementById('exercise-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const exerciseId = document.getElementById('exercise-id').value;
+    const title = document.getElementById('exercise-title').value.trim();
+    const slug = document.getElementById('exercise-slug').value.trim();
+    const description = document.getElementById('exercise-description').value.trim();
+    const category = document.getElementById('exercise-category').value;
+    const difficulty = document.getElementById('exercise-difficulty').value;
+    const isPublished = document.getElementById('exercise-published').checked;
+    const passingScore = parseInt(document.getElementById('exercise-passing-score').value) || 70;
+    const timeLimit = parseInt(document.getElementById('exercise-time-limit').value) || null;
+    const xpReward = parseInt(document.getElementById('exercise-xp-reward').value) || 15;
+    const tags = document.getElementById('exercise-tags').value
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag.length > 0);
+
+    // Validation
+    if (!title || !slug || !category) {
+        alert('Please fill in all required fields (Title, Slug, Category)');
+        return;
+    }
+
+    if (exerciseQuestions.length === 0) {
+        alert('Please add at least one question to the exercise');
+        return;
+    }
+
+    const exerciseData = {
+        title,
+        slug,
+        description,
+        category,
+        difficulty,
+        is_published: isPublished,
+        passing_score: passingScore,
+        time_limit_minutes: timeLimit,
+        xp_reward: xpReward,
+        tags,
+        questions: exerciseQuestions,
+        updated_at: new Date().toISOString()
+    };
+
+    try {
+        let result;
+
+        if (exerciseId) {
+            // Update existing exercise
+            result = await supabase
+                .from('practice_exercises')
+                .update(exerciseData)
+                .eq('id', exerciseId);
+        } else {
+            // Create new exercise
+            const { data: { user } } = await supabase.auth.getUser();
+            exerciseData.created_by = user?.id;
+
+            result = await supabase
+                .from('practice_exercises')
+                .insert([exerciseData]);
+        }
+
+        if (result.error) {
+            console.error('Error saving exercise:', result.error);
+            alert('Failed to save exercise: ' + result.error.message);
+            return;
+        }
+
+        alert(exerciseId ? 'Exercise updated successfully!' : 'Exercise created successfully!');
+        closeExerciseModal();
+        loadExercises();
+
+    } catch (error) {
+        console.error('Unexpected error saving exercise:', error);
+        alert('Failed to save exercise');
+    }
+});
+
+// ============================================
+// Question Management
+// ============================================
+
+function addQuestion() {
+    const newQuestion = {
+        question: '',
+        options: ['', '', '', ''],
+        correct_answer: 0,
+        explanation: ''
+    };
+
+    exerciseQuestions.push(newQuestion);
+    editingQuestionIndex = exerciseQuestions.length - 1;
+    renderQuestions();
+}
+
+function renderQuestions() {
+    const container = document.getElementById('questions-container');
+    if (!container) return;
+
+    if (exerciseQuestions.length === 0) {
+        container.innerHTML = `
+            <div class="empty-questions">
+                <i class="fas fa-question-circle"></i>
+                <p>No questions yet. Click "Add Question" to create your first question.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = exerciseQuestions.map((q, index) => {
+        if (editingQuestionIndex === index) {
+            return renderQuestionEditForm(q, index);
+        } else {
+            return renderQuestionCard(q, index);
+        }
+    }).join('');
+}
+
+function renderQuestionCard(question, index) {
+    const optionLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+    return `
+        <div class="question-card">
+            <div class="question-card-header">
+                <div class="question-number">
+                    <div class="question-badge">${index + 1}</div>
+                </div>
+                <div class="question-card-actions">
+                    <button type="button" class="btn-icon" onclick="startEditQuestion(${index})" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button type="button" class="btn-icon btn-danger" onclick="deleteQuestion(${index})" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="question-text">${question.question || '<em>Question text not set</em>'}</div>
+            <div class="question-options">
+                ${question.options.map((option, optIndex) => `
+                    <div class="option-item ${optIndex === question.correct_answer ? 'correct' : ''}">
+                        <div class="option-letter">${optionLetters[optIndex]}</div>
+                        <div class="option-text">${option || '<em>Empty option</em>'}</div>
+                    </div>
+                `).join('')}
+            </div>
+            ${question.explanation ? `
+                <div class="question-explanation">
+                    <span class="explanation-label">Explanation:</span>
+                    ${question.explanation}
+                </div>
+            ` : ''}
+        </div>
+    `;
+}
+
+function renderQuestionEditForm(question, index) {
+    const optionLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+    return `
+        <div class="question-edit-form">
+            <div class="question-edit-header">
+                <div class="question-edit-title">
+                    <span>Question ${index + 1}</span>
+                    <span class="edit-badge">EDITING</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Question Text <span class="required">*</span></label>
+                <textarea class="form-input" id="q-text-${index}" rows="3" required>${question.question}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Answer Options <span class="required">*</span></label>
+                <small class="form-hint">Select the correct answer using the radio button</small>
+                <div id="options-container-${index}">
+                    ${question.options.map((option, optIndex) => `
+                        <div class="option-edit-item">
+                            <div class="radio-wrapper">
+                                <input type="radio" name="correct-${index}" value="${optIndex}"
+                                    ${optIndex === question.correct_answer ? 'checked' : ''}>
+                            </div>
+                            <input type="text" class="form-input" placeholder="Option ${optionLetters[optIndex]}"
+                                   value="${option}" data-option-index="${optIndex}">
+                            ${question.options.length > 2 ? `
+                                <button type="button" class="btn-remove-option" onclick="removeOption(${index}, ${optIndex})">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            ` : '<div style="width: 32px;"></div>'}
+                        </div>
+                    `).join('')}
+                </div>
+                ${question.options.length < 6 ? `
+                    <button type="button" class="btn-add-option" onclick="addOption(${index})">
+                        <i class="fas fa-plus"></i> Add Option
+                    </button>
+                ` : ''}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Explanation</label>
+                <textarea class="form-input" id="q-explanation-${index}" rows="2"
+                          placeholder="Explain why this is the correct answer...">${question.explanation || ''}</textarea>
+            </div>
+
+            <div class="question-edit-actions">
+                <button type="button" class="btn-secondary" onclick="cancelEditQuestion()">Cancel</button>
+                <button type="button" class="btn-primary" onclick="saveQuestion(${index})">
+                    <i class="fas fa-check"></i> Save Question
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function startEditQuestion(index) {
+    editingQuestionIndex = index;
+    renderQuestions();
+}
+
+function cancelEditQuestion() {
+    // If question is incomplete, remove it
+    const question = exerciseQuestions[editingQuestionIndex];
+    if (!question.question && question.options.every(opt => !opt)) {
+        exerciseQuestions.splice(editingQuestionIndex, 1);
+    }
+    editingQuestionIndex = null;
+    renderQuestions();
+}
+
+function saveQuestion(index) {
+    const questionText = document.getElementById(`q-text-${index}`).value.trim();
+    const explanation = document.getElementById(`q-explanation-${index}`).value.trim();
+
+    // Get options
+    const optionInputs = document.querySelectorAll(`#options-container-${index} input[type="text"]`);
+    const options = Array.from(optionInputs).map(input => input.value.trim());
+
+    // Get correct answer
+    const correctRadio = document.querySelector(`input[name="correct-${index}"]:checked`);
+    const correctAnswer = correctRadio ? parseInt(correctRadio.value) : 0;
+
+    // Validation
+    if (!questionText) {
+        alert('Please enter the question text');
+        return;
+    }
+
+    if (options.some(opt => !opt)) {
+        alert('Please fill in all answer options');
+        return;
+    }
+
+    // Update question
+    exerciseQuestions[index] = {
+        question: questionText,
+        options: options,
+        correct_answer: correctAnswer,
+        explanation: explanation
+    };
+
+    editingQuestionIndex = null;
+    renderQuestions();
+}
+
+function deleteQuestion(index) {
+    if (!confirm('Are you sure you want to delete this question?')) return;
+
+    exerciseQuestions.splice(index, 1);
+    if (editingQuestionIndex === index) {
+        editingQuestionIndex = null;
+    } else if (editingQuestionIndex > index) {
+        editingQuestionIndex--;
+    }
+    renderQuestions();
+}
+
+function addOption(questionIndex) {
+    const question = exerciseQuestions[questionIndex];
+    if (question.options.length >= 6) {
+        alert('Maximum 6 options allowed');
+        return;
+    }
+    question.options.push('');
+    renderQuestions();
+}
+
+function removeOption(questionIndex, optionIndex) {
+    const question = exerciseQuestions[questionIndex];
+    if (question.options.length <= 2) {
+        alert('Minimum 2 options required');
+        return;
+    }
+
+    question.options.splice(optionIndex, 1);
+
+    // Adjust correct_answer if needed
+    if (question.correct_answer === optionIndex) {
+        question.correct_answer = 0;
+    } else if (question.correct_answer > optionIndex) {
+        question.correct_answer--;
+    }
+
+    renderQuestions();
+}
+
 // Make functions global for onclick handlers
 window.editCourse = editCourse;
 window.deleteCourse = deleteCourse;
@@ -1272,3 +1746,11 @@ window.editCertification = editCertification;
 window.deleteCertification = deleteCertification;
 window.editExercise = editExercise;
 window.deleteExercise = deleteExercise;
+window.closeExerciseModal = closeExerciseModal;
+window.addQuestion = addQuestion;
+window.startEditQuestion = startEditQuestion;
+window.cancelEditQuestion = cancelEditQuestion;
+window.saveQuestion = saveQuestion;
+window.deleteQuestion = deleteQuestion;
+window.addOption = addOption;
+window.removeOption = removeOption;

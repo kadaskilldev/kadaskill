@@ -297,16 +297,15 @@
                                 <thead>
                                     <tr>
                                         <th>Title</th>
-                                        <th>Provider</th>
                                         <th>Category</th>
                                         <th>Level</th>
-                                        <th>Active</th>
+                                        <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="certifications-table-body">
                                     <tr>
-                                        <td colspan="6" class="loading-cell">Loading certifications...</td>
+                                        <td colspan="5" class="loading-cell">Loading certifications...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -451,6 +450,135 @@
                     <div class="modal-actions">
                         <button type="button" class="btn-secondary" onclick="closeEditUserModal()">Cancel</button>
                         <button type="submit" class="btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Practice Exercise Modal -->
+    <div class="modal modal-large" id="exercise-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="exercise-modal-title">Add New Practice Exercise</h3>
+                <button class="modal-close" onclick="closeExerciseModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="exercise-form">
+                    <input type="hidden" id="exercise-id">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Title <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="exercise-title" required
+                                   placeholder="e.g., Python Basics: Variables and Data Types">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Slug <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="exercise-slug" required
+                                   placeholder="e.g., python-basics-variables">
+                            <small class="form-hint">URL-friendly identifier (lowercase, hyphens)</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-input" id="exercise-description" rows="3"
+                                      placeholder="Brief description of what this exercise covers..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row form-row-3">
+                        <div class="form-group">
+                            <label class="form-label">Category <span class="required">*</span></label>
+                            <select class="form-input" id="exercise-category" required>
+                                <option value="">Select category</option>
+                                <option value="AI">AI</option>
+                                <option value="Cybersecurity">Cybersecurity</option>
+                                <option value="Cloud">Cloud</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Difficulty <span class="required">*</span></label>
+                            <select class="form-input" id="exercise-difficulty" required>
+                                <option value="">Select difficulty</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                                <option value="Expert">Expert</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Published</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="exercise-published" checked>
+                                <label for="exercise-published" class="toggle-label">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row form-row-3">
+                        <div class="form-group">
+                            <label class="form-label">Passing Score (%)</label>
+                            <input type="number" class="form-input" id="exercise-passing-score"
+                                   min="0" max="100" value="70" placeholder="70">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Time Limit (min)</label>
+                            <input type="number" class="form-input" id="exercise-time-limit"
+                                   min="0" placeholder="15">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">XP Reward</label>
+                            <input type="number" class="form-input" id="exercise-xp-reward"
+                                   min="0" value="15" placeholder="15">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Tags (comma-separated)</label>
+                            <input type="text" class="form-input" id="exercise-tags"
+                                   placeholder="python, basics, variables, data-types">
+                        </div>
+                    </div>
+
+                    <div class="form-divider"></div>
+
+                    <!-- Questions Section -->
+                    <div class="questions-section">
+                        <div class="questions-header">
+                            <h4>Questions</h4>
+                            <button type="button" class="btn-secondary btn-sm" onclick="addQuestion()">
+                                <i class="fas fa-plus"></i> Add Question
+                            </button>
+                        </div>
+                        <div id="questions-container">
+                            <div class="empty-questions">
+                                <i class="fas fa-question-circle"></i>
+                                <p>No questions yet. Click "Add Question" to create your first question.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeExerciseModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Save Exercise
+                        </button>
                     </div>
                 </form>
             </div>
