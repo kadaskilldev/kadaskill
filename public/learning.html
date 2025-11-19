@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,6 +21,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
 </head>
+
 <body>
     <!-- Navigation Placeholder -->
     <div id="navigation"></div>
@@ -49,18 +51,19 @@
                 <div class="course-header-right">
                     <div class="course-progress-widget">
                         <div class="progress-circle" id="progressCircle">
-                            <svg width="120" height="120">
-                                <circle cx="60" cy="60" r="54" fill="none" stroke="#e0e0e0" stroke-width="8"></circle>
-                                <circle cx="60" cy="60" r="54" fill="none" stroke="#ff9500" stroke-width="8"
-                                        stroke-dasharray="339.292" stroke-dashoffset="339.292"
-                                        transform="rotate(-90 60 60)" id="progressCircleFill"></circle>
-                            </svg>
+                            <svg width="160" height="160">
+                <circle cx="80" cy="80" r="70" fill="none" stroke="#e0e0e0" stroke-width="8"></circle>
+                <circle cx="80" cy="80" r="70" fill="none" stroke="#ff9500" stroke-width="8"
+                        stroke-dasharray="439.823" stroke-dashoffset="439.823"
+                        transform="rotate(-90 80 80)" id="progressCircleFill"></circle>
+            </svg>
                             <div class="progress-text" id="progressText">0%</div>
                         </div>
                         <p class="progress-label">Course Progress</p>
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </header>
 
@@ -90,9 +93,6 @@
                 <div class="lesson-header" id="lessonHeader">
                     <h2 class="lesson-title" id="lessonTitle">Select a lesson to begin</h2>
                     <div class="lesson-actions">
-                        <button class="btn-mark-complete" id="markCompleteBtn" style="display: none;">
-                            <i class="fas fa-check-circle"></i> Mark as Complete
-                        </button>
                     </div>
                 </div>
 
@@ -124,4 +124,5 @@
     <script src="js/script.js"></script>
     <script src="js/learning.js"></script>
 </body>
+
 </html>
