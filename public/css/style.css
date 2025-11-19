@@ -1827,27 +1827,34 @@ body.has-fixed-header {
 /* Final CTA Section */
 
 .final-cta {
-    padding: 5rem 0;
-    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    padding-top: 312px;
+    padding-bottom: 154.92px;
+    background: #efeff5;
     text-align: center;
 }
 
 .final-cta h2 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    color: #FF8C00;
+    color: var(--Primary-Color, #FF9900);
+    font-size: 63.96px;
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
     font-weight: 700;
+    letter-spacing: 0.32px;
+    word-wrap: break-word;
+    margin-bottom: 1rem;
 }
 
 .final-cta p {
-    font-size: 1.2rem;
+    color: var(--Text, #1D192B);
+    font-size: 20px;
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.10px;
+    word-wrap: break-word;
+    white-space: nowrap;
     margin-bottom: 2rem;
-    max-width: 600px;
     margin-left: auto;
     margin-right: auto;
-    color: #666;
 }
-
 
 /* Footer */
 
@@ -2004,6 +2011,9 @@ body.has-fixed-header {
         grid-template-columns: 1fr;
         gap: 2rem;
         text-align: center;
+    }
+    .final-cta p {
+        white-space: normal;
     }
 }
 
