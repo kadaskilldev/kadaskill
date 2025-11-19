@@ -977,6 +977,20 @@ body.has-fixed-header {
     }
 }
 
+@keyframes contactRobotGlow {
+    0% {
+        filter: drop-shadow(0 0 18px rgba(0, 247, 255, 0.25));
+        transform: translateY(0);
+    }
+    50% {
+        filter: drop-shadow(0 0 30px rgba(0, 247, 255, 0.6));
+        transform: translateY(-4px);
+    }
+    100% {
+        filter: drop-shadow(0 0 18px rgba(0, 247, 255, 0.25));
+        transform: translateY(0);
+    }
+}
 
 /* Responsive Design */
 
@@ -1613,7 +1627,7 @@ body.has-fixed-header {
 }
 
 .contact {
-    background: linear-gradient(135deg, #2c3e50, #3498db);
+    background: linear-gradient(180deg, #232f3e 13%, #007f7f 100%);
     padding: 7rem 0;
     color: white;
     text-align: center;
@@ -1624,15 +1638,20 @@ body.has-fixed-header {
 }
 
 .contact h2 {
-    font-size: 3.5rem;
-    margin-bottom: 4rem;
+    color: var(--Light, #F8F7FC);
+    font-size: 45.23px;
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
     font-weight: 700;
+    letter-spacing: 0.23px;
+    word-wrap: break-word;
+    text-shadow: 0px 0px 10px rgba(248, 247, 252, 1);
+    margin-bottom: 4rem;
 }
 
 .contact-content {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     gap: 3rem;
     max-width: 1400px;
     margin: 0 auto;
@@ -1640,21 +1659,30 @@ body.has-fixed-header {
     min-height: 500px;
     /* Reserve space for larger image */
     box-sizing: border-box;
+    transform: translateX(60px);
+}
+
+.contact-robot {
+    flex: 0 0 auto;
+    transform: translateX(-320px);
+    position: relative;
+    z-index: 1;
 }
 
 .contact-robot-img {
-    width: 500px;
-    /* Increased size */
-    height: 500px;
+    width: 560px;
+    /* 25% smaller than previous desktop size */
+    height: 560px;
     object-fit: contain;
     flex-shrink: 0;
     order: 2;
     /* Places image on the right in flex layout */
     opacity: 0;
     /* Start hidden to prevent flash */
-    animation: fadeIn 0.5s ease-in forwards;
-    /* Fade in smoothly */
+    animation: fadeIn 0.5s ease-in forwards, contactRobotGlow 6s ease-in-out infinite;
+    /* Fade in smoothly, plus subtle breathing glow */
     display: block;
+    margin-left: 0;
 }
 
 @keyframes fadeIn {
@@ -1663,37 +1691,78 @@ body.has-fixed-header {
     }
 }
 
+@keyframes contactRobotGlow {
+    0% {
+        filter: drop-shadow(0 0 18px rgba(0, 247, 255, 0.25));
+        transform: translateY(0);
+    }
+    50% {
+        filter: drop-shadow(0 0 30px rgba(0, 247, 255, 0.6));
+        transform: translateY(-4px);
+    }
+    100% {
+        filter: drop-shadow(0 0 18px rgba(0, 247, 255, 0.25));
+        transform: translateY(0);
+    }
+}
+
 .contact-info {
     flex: 1;
     text-align: left;
     order: 1;
     /* Places text on the left */
+    transform: translateX(-100px);
+    position: relative;
+    z-index: 2;
 }
 
 .contact-info p {
-    font-size: 1.5rem;
-    margin-bottom: 2.5rem;
+    color: #ffffff;
+    font-size: 28px;
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.14px;
+    word-wrap: break-word;
+    white-space: nowrap;
+    margin-bottom: 3rem;
+    display: inline-block;
+    padding: 1.1rem 2.5rem;
+    border-radius: 25px;
+    background: rgba(248, 247, 252, 0.25);
+    box-shadow: 0px 0px 25px rgba(248, 247, 252, 0.25);
 }
 
 .contact-details {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.75rem;
 }
 
 .contact-item {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    font-size: 1.3rem;
+    gap: 1.9rem;
+    font-size: 1rem;
 }
 
 .contact-item i {
-    width: 40px;
-    color: #FFD700;
-    font-size: 1.5rem;
+    width: 33px;
+    height: 33px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #F8F7FC;
+    font-size: 20px;
 }
 
+.contact-item span {
+    color: var(--Light, #F8F7FC);
+    font-size: 20px;
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.10px;
+    word-wrap: break-word;
+}
 
 /* Responsive Design for Contact Section */
 
@@ -1702,9 +1771,14 @@ body.has-fixed-header {
         flex-direction: column;
         gap: 3rem;
         min-height: auto;
+        transform: none;
+    }
+    .contact-robot {
+        transform: translateX(0);
     }
     .contact-info {
         text-align: center;
+        transform: none;
     }
     .contact-details {
         align-items: center;
@@ -1716,7 +1790,7 @@ body.has-fixed-header {
         order: 2;
         /* Keep image below text in column layout */
         opacity: 1;
-        animation: none;
+        margin-left: 0;
     }
 }
 
@@ -1744,6 +1818,11 @@ body.has-fixed-header {
     }
 }
 
+@media (prefers-reduced-motion: reduce) {
+    .contact-robot-img {
+        animation: fadeIn 0.5s ease-in forwards;
+    }
+}
 
 /* Final CTA Section */
 
