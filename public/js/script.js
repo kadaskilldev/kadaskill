@@ -51,16 +51,17 @@ document.addEventListener('DOMContentLoaded', function() {
         initializeProfileRobotAnimation();
 
         const pathname = window.location.pathname;
-        if (
-            pathname.endsWith('home.html') ||
-            pathname === '/' ||
-            pathname.endsWith('learn.html') ||
-            pathname.endsWith('learning.html') ||
-            pathname.endsWith('certification.html') ||
-            pathname.endsWith('profile.html') ||
-            pathname.endsWith('practice.html')
-        ) {
-            console.log(`On ${pathname}, loading user data...`);
+        let hasStoredProfile = false;
+        let hasStoredUser = false;
+        try {
+            hasStoredProfile = !!sessionStorage.getItem('userProfile');
+            hasStoredUser = !!sessionStorage.getItem('authUser');
+        } catch (storageError) {
+            console.warn('Unable to access sessionStorage for user data:', storageError);
+        }
+
+        if (hasStoredProfile && hasStoredUser) {
+            console.log(`Loading user data for ${pathname}...`);
             loadDashboardData();
         }
 
