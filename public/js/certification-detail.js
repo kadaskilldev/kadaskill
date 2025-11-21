@@ -62,118 +62,92 @@ async function loadCertification(slug) {
 
 function renderCertification() {
     const cert = currentCertification;
+    const contentArea = document.getElementById('content-area');
 
     // Update page title
     document.title = `${cert.title} - KadaSkill`;
 
-    // Header
-    document.getElementById('cert-title').textContent = cert.title;
-    document.getElementById('cert-subtitle').textContent = cert.subtitle || cert.level;
-    document.getElementById('cert-category').textContent = cert.category;
-    document.getElementById('cert-duration').textContent = cert.estimated_duration_hours || 0;
-    document.getElementById('cert-level').textContent = cert.level;
-
-    // Overview/Description
-    document.getElementById('cert-description').textContent = cert.overview || cert.description || 'No description available.';
-
-    // Prerequisites
-    renderPrerequisites(cert.prerequisites);
-
-    // Study Guide Steps
-    renderGuideSteps(cert.study_resources);
-}
-
-// ============================================
-// Render Prerequisites
-// ============================================
-
-function renderPrerequisites(prerequisites) {
-    const listContainer = document.getElementById('prerequisites-list');
-
-    if (!prerequisites || prerequisites.length === 0) {
-        listContainer.innerHTML = '<li>No specific prerequisites required</li>';
-        return;
+    // Build prerequisites HTML
+    let prereqsHTML = '<li>No specific prerequisites required</li>';
+    if (cert.prerequisites && cert.prerequisites.length > 0) {
+        prereqsHTML = cert.prerequisites.map(p =>
+            `<li><i class="fas fa-check-circle"></i> ${p}</li>`
+        ).join('');
     }
 
-    listContainer.innerHTML = prerequisites.map(prereq =>
-        `<li><i class="fas fa-check-circle"></i> ${prereq}</li>`
-    ).join('');
-}
+    // Use image_url from database
+    const imageUrl = cert.image_url || 'images/certifications/placeholder.png';
 
-// ============================================
-// Render Guide Steps
-// ============================================
-
-function renderGuideSteps(studyResources) {
-    const stepsContainer = document.getElementById('guide-steps');
-    const cert = currentCertification;
-
-    // Simple default guide
-    let stepsHTML = `
-        <div class="guide-step">
-            <div class="step-number">1</div>
-            <div class="step-content">
-                <h3 class="step-title">Review Official Documentation</h3>
-                <p class="step-description">Start with the official documentation from ${cert.provider || 'the certification provider'}.</p>
-                <div class="resources-list">
-                    <div class="resource-item">
-                        <div class="resource-info">
-                            <i class="fas fa-book"></i>
-                            <div class="resource-details">
-                                <h4 class="resource-title">Official ${cert.provider || 'Provider'} Documentation</h4>
-                                <p class="resource-desc">Exam Code: ${cert.exam_code || 'N/A'}</p>
-                            </div>
-                        </div>
-                        ${cert.official_url ? `<a href="${cert.official_url}" target="_blank" rel="noopener noreferrer" class="resource-link">
-                            Visit Resource <i class="fas fa-external-link-alt"></i>
-                        </a>` : ''}
-                    </div>
+    // Build the page content
+    const html = `
+        <div class="cert-header-box">
+            <div class="cert-header-image">
+                <img src="${imageUrl}" 
+                     alt="${cert.title}" 
+                     onerror="this.src='images/certifications/placeholder.png'; this.onerror=null;">
+            </div>
+            <div class="cert-header-content">
+                <h1>${cert.title}</h1>
+                <p>${cert.subtitle || cert.level}</p>
+                <div class="cert-badges">
+                    <span class="cert-badge">${cert.category}</span>
+                    <span class="cert-badge">${cert.level}</span>
+                    <span class="cert-badge"><i class="fas fa-clock"></i> ${cert.estimated_duration_hours || 0} hours</span>
                 </div>
             </div>
         </div>
-        <div class="guide-step">
-            <div class="step-number">2</div>
-            <div class="step-content">
-                <h3 class="step-title">Practice with Exercises</h3>
-                <p class="step-description">Test your knowledge with practice exercises on KadaSkill.</p>
-                <div class="resources-list">
-                    <div class="resource-item">
-                        <div class="resource-info">
-                            <i class="fas fa-dumbbell"></i>
-                            <div class="resource-details">
-                                <h4 class="resource-title">Practice Exercises</h4>
-                                <p class="resource-desc">Complete practice questions to test your understanding</p>
-                            </div>
-                        </div>
-                        <a href="practice.html" class="resource-link">
-                            Go to Practice <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
+
+        <div class="section-box">
+            <h2>Overview</h2>
+            <p>${cert.overview || cert.description || 'No description available.'}</p>
+        </div>
+
+        <div class="section-box">
+            <h2>Prerequisites</h2>
+            <ul class="prereq-list">
+                ${prereqsHTML}
+            </ul>
+        </div>
+
+        <div class="section-box">
+            <h2>How to Get This Certification</h2>
+            <p style="margin-bottom: 25px;">Follow these steps to prepare for and obtain this certification:</p>
+
+            <div class="guide-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Review Official Documentation</h3>
+                    <p>Start with the official documentation from ${cert.provider || 'the certification provider'}.</p>
+                    <p><strong>Exam Code:</strong> ${cert.exam_code || 'N/A'}</p>
+                    ${cert.official_url ? `<a href="${cert.official_url}" target="_blank" rel="noopener noreferrer" class="resource-link">
+                        Visit Official Site <i class="fas fa-external-link-alt"></i>
+                    </a>` : ''}
                 </div>
             </div>
-        </div>
-        <div class="guide-step">
-            <div class="step-number">3</div>
-            <div class="step-content">
-                <h3 class="step-title">Schedule Your Exam</h3>
-                <p class="step-description">Once you feel prepared, schedule your certification exam.</p>
-                <div class="resources-list">
-                    <div class="resource-item">
-                        <div class="resource-info">
-                            <i class="fas fa-calendar-check"></i>
-                            <div class="resource-details">
-                                <h4 class="resource-title">Schedule Exam</h4>
-                                <p class="resource-desc">Book your exam through the official provider</p>
-                            </div>
-                        </div>
-                        ${cert.official_url ? `<a href="${cert.official_url}" target="_blank" rel="noopener noreferrer" class="resource-link">
-                            Schedule Now <i class="fas fa-external-link-alt"></i>
-                        </a>` : ''}
-                    </div>
+
+            <div class="guide-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Practice with Exercises</h3>
+                    <p>Test your knowledge with practice exercises on KadaSkill to reinforce your learning.</p>
+                    <a href="practice.html" class="resource-link">
+                        Go to Practice <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Schedule Your Exam</h3>
+                    <p>Once you feel prepared, schedule your certification exam through the official provider.</p>
+                    ${cert.official_url ? `<a href="${cert.official_url}" target="_blank" rel="noopener noreferrer" class="resource-link">
+                        Schedule Now <i class="fas fa-external-link-alt"></i>
+                    </a>` : ''}
                 </div>
             </div>
         </div>
     `;
 
-    stepsContainer.innerHTML = stepsHTML;
+    contentArea.innerHTML = html;
 }

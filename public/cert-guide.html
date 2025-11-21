@@ -39,6 +39,28 @@
             margin-bottom: 30px;
             border: 2px solid #f59e0b;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .cert-header-image {
+            flex-shrink: 0;
+            width: 200px;
+            height: 200px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 3px solid #f59e0b;
+        }
+
+        .cert-header-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cert-header-content {
+            flex: 1;
         }
 
         .cert-header-box h1 {
@@ -200,120 +222,6 @@
     <div id="footer"></div>
 
     <script src="js/script.js"></script>
-    <script>
-        // Simple script to load and display certification
-        document.addEventListener('DOMContentLoaded', async () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const certSlug = urlParams.get('cert');
-
-            if (!certSlug) {
-                window.location.href = 'certification.html';
-                return;
-            }
-
-            try {
-                // Load certification
-                const { data: cert, error } = await supabase
-                    .from('certifications')
-                    .select('*')
-                    .eq('slug', certSlug)
-                    .eq('is_active', true)
-                    .single();
-
-                if (error || !cert) {
-                    alert('Certification not found');
-                    window.location.href = 'certification.html';
-                    return;
-                }
-
-                // Display certification
-                displayCertification(cert);
-
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Failed to load certification');
-                window.location.href = 'certification.html';
-            }
-        });
-
-        function displayCertification(cert) {
-            const contentArea = document.getElementById('content-area');
-
-            // Build prerequisites HTML
-            let prereqsHTML = '<li>No specific prerequisites required</li>';
-            if (cert.prerequisites && cert.prerequisites.length > 0) {
-                prereqsHTML = cert.prerequisites.map(p =>
-                    `<li><i class="fas fa-check-circle"></i> ${p}</li>`
-                ).join('');
-            }
-
-            // Build the page content
-            const html = `
-                <div class="cert-header-box">
-                    <h1>${cert.title}</h1>
-                    <p>${cert.subtitle || cert.level}</p>
-                    <div class="cert-badges">
-                        <span class="cert-badge">${cert.category}</span>
-                        <span class="cert-badge">${cert.level}</span>
-                        <span class="cert-badge"><i class="fas fa-clock"></i> ${cert.estimated_duration_hours || 0} hours</span>
-                    </div>
-                </div>
-
-                <div class="section-box">
-                    <h2>Overview</h2>
-                    <p>${cert.overview || cert.description || 'No description available.'}</p>
-                </div>
-
-                <div class="section-box">
-                    <h2>Prerequisites</h2>
-                    <ul class="prereq-list">
-                        ${prereqsHTML}
-                    </ul>
-                </div>
-
-                <div class="section-box">
-                    <h2>How to Get This Certification</h2>
-                    <p style="margin-bottom: 25px;">Follow these steps to prepare for and obtain this certification:</p>
-
-                    <div class="guide-step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h3>Review Official Documentation</h3>
-                            <p>Start with the official documentation from ${cert.provider || 'the certification provider'}.</p>
-                            <p><strong>Exam Code:</strong> ${cert.exam_code || 'N/A'}</p>
-                            ${cert.official_url ? `<a href="${cert.official_url}" target="_blank" rel="noopener noreferrer" class="resource-link">
-                                Visit Official Site <i class="fas fa-external-link-alt"></i>
-                            </a>` : ''}
-                        </div>
-                    </div>
-
-                    <div class="guide-step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h3>Practice with Exercises</h3>
-                            <p>Test your knowledge with practice exercises on KadaSkill to reinforce your learning.</p>
-                            <a href="practice.html" class="resource-link">
-                                Go to Practice <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="guide-step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h3>Schedule Your Exam</h3>
-                            <p>Once you feel prepared, schedule your certification exam through the official provider.</p>
-                            ${cert.official_url ? `<a href="${cert.official_url}" target="_blank" rel="noopener noreferrer" class="resource-link">
-                                Schedule Now <i class="fas fa-external-link-alt"></i>
-                            </a>` : ''}
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            contentArea.innerHTML = html;
-            document.title = `${cert.title} - KadaSkill`;
-        }
-    </script>
+    <script src="js/certification-detail.js"></script>
 </body>
 </html>

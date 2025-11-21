@@ -250,248 +250,95 @@ body {
     margin-bottom: 4rem;
 }
 
+/* Certification Card - Uniform Height */
 .certification-card {
     background: white;
-    border-radius: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    border: 1px solid #e5e7eb;
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .certification-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
+/* Card Image */
 .card-image {
+    width: 100%;
     height: 200px;
-    position: relative;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
-/* Certificate Graphics - Unified System */
-.cert-graphic {
+.cert-image {
     width: 100%;
     height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.certification-card:hover .cert-image {
+    transform: scale(1.05);
+}
+
+/* Loading state for images */
+.cert-image[src*="placeholder"] {
+    opacity: 0.6;
+}
+
+/* Card Content - Flex Layout */
+.card-content {
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: white;
-    font-weight: 600;
-    position: relative;
-}
-
-/* Card Types - Only background colors differ */
-.cert-graphic.python-graphic {
-    background: linear-gradient(135deg, #306998 0%, #ffd43b 100%);
-}
-
-.cert-graphic.security-graphic {
-    background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
-}
-
-.cert-graphic.cloud-graphic {
-    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-}
-
-.cert-graphic.cyber-analyst-graphic {
-    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-}
-
-.cert-graphic.aws-graphic {
-    background: white;
-    color: #1f2937;
-    padding: 1.5rem;
-}
-
-.cert-graphic.ai-graphic {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    color: #0ea5e9;
-}
-
-.cert-graphic.devops-graphic {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%);
-}
-
-.cert-graphic.data-graphic {
-    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
-}
-
-.cert-graphic.ethical-graphic {
-    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
-}
-
-/* Unified Text Elements - Use these classes in HTML */
-.cert-logo {
-    font-size: 4rem;
-    margin-bottom: 0.5rem;
-}
-
-.cert-title-large {
-    font-size: 1.8rem;
-    font-weight: 800;
-    margin-bottom: 0.5rem;
-}
-
-.cert-title-medium {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-
-.cert-subtitle {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-
-.cert-text {
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-.cert-badge {
-    background: #f59e0b;
-    color: #1f2937;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    margin-top: 1rem;
-}
-
-.cert-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-}
-
-.cert-circular-logo {
-    font-size: 3rem;
-    font-weight: 800;
-    margin-bottom: 0.5rem;
-    border: 3px solid currentColor;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* AWS Specific Elements */
-.aws-header {
-    font-size: 0.9rem;
-    color: #6b7280;
-    margin-bottom: 1rem;
-}
-
-.aws-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-}
-
-.aws-badges {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-}
-
-.aws-badge {
-    background: linear-gradient(135deg, #0ea5e9, #3b82f6);
-    color: white;
-    padding: 0.75rem;
-    border-radius: 8px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-align: center;
-}
-
-/* AI Card */
-.ai-graphic {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    color: #0ea5e9;
-}
-
-.ai-logo {
-    font-size: 3rem;
-    font-weight: 800;
-    margin-bottom: 0.5rem;
-    border: 3px solid #0ea5e9;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.ai-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-/* Other graphics */
-.devops-graphic {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%);
-}
-
-.devops-title {
-    font-size: 2rem;
-    font-weight: 700;
-}
-
-.devops-subtitle {
-    font-size: 1.2rem;
-    font-weight: 500;
-}
-
-/* Card Content */
-.card-content {
-    padding: 2rem;
+    flex: 1;
 }
 
 .card-title {
-    font-size: 1.375rem;
+    font-size: 1.25rem;
     font-weight: 700;
-    margin-bottom: 1rem;
     color: #111827;
-    line-height: 1.3;
+    margin-bottom: 12px;
+    line-height: 1.4;
+    min-height: 2.8em; /* Ensures 2 lines of space */
 }
 
 .card-description {
+    font-size: 0.9375rem;
     color: #6b7280;
     line-height: 1.6;
-    margin-bottom: 2rem;
-    font-size: 0.95rem;
+    margin-bottom: 20px;
+    flex: 1; /* Takes up remaining space */
 }
 
 .card-button {
-    background: #f59e0b;
+    width: 100%;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
     color: white;
     border: none;
-    padding: 0.875rem 2rem;
     border-radius: 8px;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 1rem;
     cursor: pointer;
-    transition: all 0.3s ease;
-    width: 100%;
+    transition: all 0.3s;
+    margin-top: auto; /* Pushes button to bottom */
 }
 
 .card-button:hover {
-    background: #ea580c;
-    transform: translateY(-1px);
-}
-
-.card-button.resume {
-    background: #0ea5e9;
-}
-
-.card-button.resume:hover {
-    background: #0284c7;
+    background: linear-gradient(135deg, #f59e0b, #ea580c);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
 }
 
 /* Responsive Design */

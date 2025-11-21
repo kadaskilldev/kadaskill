@@ -119,16 +119,19 @@ function renderCertifications(certifications) {
 // ============================================
 
 function createCertificationCard(cert) {
-    const category = getCategoryFromProvider(cert.provider, cert.title);
-    const graphicClass = getGraphicClass(cert.provider, cert.title);
-    const graphic = createGraphic(cert.provider, cert.title);
-
+    // Use category from database
+    const category = cert.category || 'cloud';
+    
+    // Use image_url from database, fallback to placeholder
+    const imageUrl = cert.image_url || 'images/certifications/placeholder.png';
+    
     return `
         <div class="certification-card" data-category="${category}">
             <div class="card-image">
-                <div class="cert-graphic ${graphicClass}">
-                    ${graphic}
-                </div>
+                <img src="${imageUrl}" 
+                     alt="${cert.title}" 
+                     class="cert-image"
+                     onerror="this.src='images/certifications/placeholder.png'; this.onerror=null;">
             </div>
             <div class="card-content">
                 <h3 class="card-title">${cert.title}</h3>
@@ -144,110 +147,6 @@ function createCertificationCard(cert) {
 // ============================================
 // Helper Functions
 // ============================================
-
-function getCategoryFromProvider(provider, title) {
-    const lowerTitle = title.toLowerCase();
-    const lowerProvider = provider.toLowerCase();
-
-    // Check title for keywords
-    if (lowerTitle.includes('ai') || lowerTitle.includes('ml') ||
-        lowerTitle.includes('data') || lowerTitle.includes('python')) {
-        return 'ai';
-    }
-    if (lowerTitle.includes('security') || lowerTitle.includes('cissp') ||
-        lowerTitle.includes('comptia')) {
-        return 'cybersecurity';
-    }
-    if (lowerTitle.includes('cloud') || lowerTitle.includes('aws') ||
-        lowerTitle.includes('azure') || lowerTitle.includes('gcp') ||
-        lowerProvider.includes('aws') || lowerProvider.includes('azure') ||
-        lowerProvider.includes('google cloud')) {
-        return 'cloud';
-    }
-
-    // Default to cloud if provider is a cloud provider
-    if (lowerProvider.includes('aws') || lowerProvider.includes('microsoft') ||
-        lowerProvider.includes('google')) {
-        return 'cloud';
-    }
-
-    return 'ai'; // Default fallback
-}
-
-function getGraphicClass(provider, title) {
-    const lowerProvider = provider.toLowerCase();
-    const lowerTitle = title.toLowerCase();
-
-    if (lowerProvider.includes('aws')) return 'aws-graphic';
-    if (lowerProvider.includes('azure')) return 'cloud-graphic';
-    if (lowerProvider.includes('google')) return 'cloud-graphic';
-    if (lowerTitle.includes('python')) return 'python-graphic';
-    if (lowerTitle.includes('security') || lowerTitle.includes('cissp')) return 'security-graphic';
-    if (lowerTitle.includes('data')) return 'data-graphic';
-    if (lowerTitle.includes('ai') || lowerTitle.includes('ml')) return 'ai-graphic';
-    if (lowerTitle.includes('devops')) return 'devops-graphic';
-
-    return 'cloud-graphic'; // Default
-}
-
-function createGraphic(provider, title) {
-    const lowerProvider = provider.toLowerCase();
-    const lowerTitle = title.toLowerCase();
-
-    // AWS specific
-    if (lowerProvider.includes('aws')) {
-        return `
-            <div class="aws-header">aws certification</div>
-            <div class="aws-title">${title}</div>
-            <div class="aws-badges">
-                <div class="aws-badge">${provider}</div>
-            </div>
-        `;
-    }
-
-    // Python
-    if (lowerTitle.includes('python')) {
-        return `
-            <div class="cert-logo">
-                <i class="fab fa-python"></i>
-            </div>
-            <div class="cert-title-medium">python</div>
-        `;
-    }
-
-    // Security
-    if (lowerTitle.includes('security') || lowerTitle.includes('cissp')) {
-        return `
-            <div class="cert-title-large">Cybersecurity</div>
-            <div class="cert-subtitle">Certification</div>
-            <div class="cert-badge">OFFICIAL</div>
-        `;
-    }
-
-    // AI/ML
-    if (lowerTitle.includes('ai') || lowerTitle.includes('ml')) {
-        return `
-            <div class="ai-logo">AI</div>
-            <div class="ai-title">Artificial Intelligence</div>
-        `;
-    }
-
-    // Data
-    if (lowerTitle.includes('data')) {
-        return `
-            <div class="data-title">Data Analyst</div>
-            <div class="data-subtitle">Certification</div>
-        `;
-    }
-
-    // Generic cloud
-    return `
-        <div class="cert-icon">
-            <i class="fas fa-cloud"></i>
-        </div>
-        <div class="cert-title-medium">${provider}</div>
-    `;
-}
 
 function truncateText(text, maxLength) {
     if (!text) return '';
@@ -375,7 +274,8 @@ function filterCertifications(filter) {
 
     if (filter !== 'all') {
         filteredCerts = allCertifications.filter(cert => {
-            const category = getCategoryFromProvider(cert.provider, cert.title);
+            // Use category from database
+            const category = (cert.category || '').toLowerCase();
             return category === filter;
         });
     }
@@ -395,7 +295,7 @@ function searchCertifications(searchTerm) {
     // Apply category filter first if not 'all'
     if (currentFilter !== 'all') {
         certsToSearch = allCertifications.filter(cert => {
-            const category = getCategoryFromProvider(cert.provider, cert.title);
+            const category = (cert.category || '').toLowerCase();
             return category === currentFilter;
         });
     }
