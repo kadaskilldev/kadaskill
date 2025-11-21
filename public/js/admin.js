@@ -29,6 +29,178 @@ function unlockBodyScroll() {
 }
 
 // ============================================
+// Certification Modal Helpers & Form Handling
+// ============================================
+
+function openCertModal(cert) {
+    const modal = document.getElementById('cert-modal');
+    if (!modal) return;
+
+    const titleEl = document.getElementById('cert-modal-title');
+    const idInput = document.getElementById('cert-id');
+    const titleInput = document.getElementById('cert-title');
+    const slugInput = document.getElementById('cert-slug');
+    const providerInput = document.getElementById('cert-provider');
+    const categoryInput = document.getElementById('cert-category');
+    const levelInput = document.getElementById('cert-level');
+    const descInput = document.getElementById('cert-description');
+    const overviewInput = document.getElementById('cert-overview');
+    const durationInput = document.getElementById('cert-duration');
+    const examCodeInput = document.getElementById('cert-exam-code');
+    const imageUrlInput = document.getElementById('cert-image-url');
+    const officialUrlInput = document.getElementById('cert-official-url');
+    const prereqInput = document.getElementById('cert-prerequisites');
+    const activeCheckbox = document.getElementById('cert-active');
+
+    if (cert) {
+        titleEl.textContent = 'Edit Certification';
+        idInput.value = cert.id;
+        titleInput.value = cert.title || '';
+        slugInput.value = cert.slug || '';
+        providerInput.value = cert.provider || '';
+        categoryInput.value = cert.category || '';
+        levelInput.value = cert.level || '';
+        descInput.value = cert.description || '';
+        overviewInput.value = cert.overview || '';
+        durationInput.value = cert.estimated_duration_hours || '';
+        examCodeInput.value = cert.exam_code || '';
+        imageUrlInput.value = cert.icon_url || '';
+        officialUrlInput.value = cert.official_url || '';
+        if (Array.isArray(cert.prerequisites)) {
+            prereqInput.value = cert.prerequisites.join('\n');
+        } else {
+            prereqInput.value = '';
+        }
+        activeCheckbox.checked = cert.is_active !== false;
+    } else {
+        titleEl.textContent = 'Add New Certification';
+        idInput.value = '';
+        titleInput.value = '';
+        slugInput.value = '';
+        providerInput.value = '';
+        categoryInput.value = '';
+        levelInput.value = '';
+        descInput.value = '';
+        overviewInput.value = '';
+        durationInput.value = '';
+        examCodeInput.value = '';
+        imageUrlInput.value = '';
+        officialUrlInput.value = '';
+        prereqInput.value = '';
+        activeCheckbox.checked = true;
+    }
+
+    modal.classList.add('active');
+    lockBodyScroll();
+}
+
+function closeCertModal() {
+    const modal = document.getElementById('cert-modal');
+    if (!modal) return;
+    modal.classList.remove('active');
+    unlockBodyScroll();
+
+    const form = document.getElementById('cert-form');
+    if (form) form.reset();
+
+    const idInput = document.getElementById('cert-id');
+    if (idInput) idInput.value = '';
+}
+
+async function handleCertFormSubmit(e) {
+    e.preventDefault();
+
+    const idInput = document.getElementById('cert-id');
+    const titleInput = document.getElementById('cert-title');
+    const slugInput = document.getElementById('cert-slug');
+    const providerInput = document.getElementById('cert-provider');
+    const categoryInput = document.getElementById('cert-category');
+    const levelInput = document.getElementById('cert-level');
+    const descInput = document.getElementById('cert-description');
+    const overviewInput = document.getElementById('cert-overview');
+    const durationInput = document.getElementById('cert-duration');
+    const examCodeInput = document.getElementById('cert-exam-code');
+    const imageUrlInput = document.getElementById('cert-image-url');
+    const officialUrlInput = document.getElementById('cert-official-url');
+    const prereqInput = document.getElementById('cert-prerequisites');
+    const activeCheckbox = document.getElementById('cert-active');
+
+    const certId = idInput.value;
+    const title = titleInput.value.trim();
+    const slug = slugInput.value.trim();
+    const provider = providerInput.value.trim();
+    const category = categoryInput.value;
+    const level = levelInput.value;
+    const description = descInput.value.trim();
+    const overview = overviewInput.value.trim();
+    const durationVal = parseInt(durationInput.value, 10);
+    const examCode = examCodeInput.value.trim();
+    const imageUrl = imageUrlInput.value.trim();
+    const officialUrl = officialUrlInput.value.trim();
+    const prereqText = prereqInput.value;
+    const isActive = !!activeCheckbox.checked;
+
+    if (!title || !slug || !category) {
+        alert('Please fill in all required fields (Title, Slug, Category).');
+        return;
+    }
+
+    const estimatedDuration = Number.isNaN(durationVal) ? null : durationVal;
+    const prerequisites = prereqText
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
+
+    const certData = {
+        title,
+        slug,
+        provider: provider || null,
+        category,
+        level: level || null,
+        description: description || null,
+        overview: overview || null,
+        estimated_duration_hours: estimatedDuration,
+        exam_code: examCode || null,
+        icon_url: imageUrl || null,
+        official_url: officialUrl || null,
+        prerequisites: prerequisites.length > 0 ? prerequisites : null,
+        is_active: isActive,
+        updated_at: new Date().toISOString()
+    };
+
+    try {
+        let error = null;
+
+        if (certId) {
+            const { error: updateError } = await supabase
+                .from('certifications')
+                .update(certData)
+                .eq('id', certId);
+            error = updateError;
+        } else {
+            const { error: insertError } = await supabase
+                .from('certifications')
+                .insert([certData]);
+            error = insertError;
+        }
+
+        if (error) {
+            console.error('Error saving certification:', error);
+            alert('Failed to save certification: ' + error.message);
+            return;
+        }
+
+        alert(certId ? 'Certification updated successfully!' : 'Certification created successfully!');
+        closeCertModal();
+        loadCertifications();
+
+    } catch (err) {
+        console.error('Unexpected error saving certification:', err);
+        alert('Failed to save certification');
+    }
+}
+
+// ============================================
 // Initialize Page
 // ============================================
 
@@ -200,6 +372,8 @@ function setupEventListeners() {
                 closeEditUserModal();
             } else if (parentModal.id === 'exercise-modal') {
                 closeExerciseModal();
+            } else if (parentModal.id === 'cert-modal') {
+                closeCertModal();
             } else {
                 parentModal.classList.remove('active');
                 unlockBodyScroll();
@@ -383,11 +557,11 @@ async function loadRecentActivity() {
             .from('enrollments')
             .select(`
                 id,
-                created_at,
+                enrolled_at,
                 profiles (username, full_name),
                 courses (title)
             `)
-            .order('created_at', { ascending: false })
+            .order('enrolled_at', { ascending: false })
             .limit(5);
 
         if (error) {
@@ -402,7 +576,7 @@ async function loadRecentActivity() {
             activityContainer.innerHTML = recentEnrollments.map(enrollment => {
                 const username = enrollment.profiles?.full_name || enrollment.profiles?.username || 'Unknown User';
                 const courseTitle = enrollment.courses?.title || 'Unknown Course';
-                const timeAgo = getTimeAgo(new Date(enrollment.created_at));
+                const timeAgo = getTimeAgo(new Date(enrollment.enrolled_at));
 
                 return `
                     <div class="activity-item">
@@ -446,8 +620,8 @@ async function loadEngagementChart() {
             const { count } = await supabase
                 .from('enrollments')
                 .select('*', { count: 'exact', head: true })
-                .gte('created_at', date.toISOString())
-                .lt('created_at', nextDate.toISOString());
+                .gte('enrolled_at', date.toISOString())
+                .lt('enrolled_at', nextDate.toISOString());
 
             days.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
             enrollmentCounts.push(count || 0);
@@ -856,7 +1030,7 @@ async function loadCourses() {
     try {
         const { data: courses, error } = await supabase
             .from('courses')
-            .select('id, title, category, level, is_published, lessons (count)')
+            .select('id, title, category, difficulty, is_published, lessons (count)')
             .order('created_at', { ascending: false });
 
         if (error) {
@@ -882,7 +1056,7 @@ function renderCoursesTable(courses) {
                 <tr>
                     <td>${course.title}</td>
                     <td><span style="text-transform: capitalize;">${course.category || 'N/A'}</span></td>
-                    <td><span style="text-transform: capitalize;">${course.level || 'N/A'}</span></td>
+                    <td><span style="text-transform: capitalize;">${course.difficulty || 'N/A'}</span></td>
                     <td>${lessonCount}</td>
                     <td><span style="color: ${course.is_published ? '#10b981' : '#ef4444'}; font-weight: 600;">${course.is_published ? 'Yes' : 'No'}</span></td>
                     <td>
@@ -1271,15 +1445,50 @@ function deleteCourse(courseId) {
     }
 }
 
-function editCertification(certId) {
-    alert(`Edit certification functionality coming soon! Certification ID: ${certId}`);
-    // TODO: Implement certification editing modal/form
+async function editCertification(certId) {
+    try {
+        const { data: cert, error } = await supabase
+            .from('certifications')
+            .select('*')
+            .eq('id', certId)
+            .single();
+
+        if (error) {
+            console.error('Error loading certification:', error);
+            alert('Failed to load certification');
+            return;
+        }
+
+        openCertModal(cert);
+
+    } catch (err) {
+        console.error('Unexpected error loading certification:', err);
+        alert('Failed to load certification');
+    }
 }
 
-function deleteCertification(certId) {
-    if (confirm('Are you sure you want to delete this certification? This action cannot be undone.')) {
-        alert(`Delete certification functionality coming soon! Certification ID: ${certId}`);
-        // TODO: Implement certification deletion
+async function deleteCertification(certId) {
+    const confirmed = confirm('Are you sure you want to delete this certification? This action cannot be undone.');
+    if (!confirmed) return;
+
+    try {
+        const { error } = await supabase
+            .from('certifications')
+            .delete()
+            .eq('id', certId);
+
+        if (error) {
+            console.error('Error deleting certification:', error);
+            alert('Failed to delete certification: ' + error.message);
+            return;
+        }
+
+        alert('Certification deleted successfully!');
+        loadCertifications();
+
+    } catch (err) {
+        console.error('Unexpected error deleting certification:', err);
+        alert('Failed to delete certification');
     }
 }
 
@@ -1337,10 +1546,19 @@ function getTimeAgo(date) {
 let exerciseQuestions = [];
 let editingQuestionIndex = null;
 
-// Load practice exercises on page load
+// Load certifications and practice exercises on page load
+if (document.getElementById('certifications-tab')) {
+    loadCertifications();
+}
+
 if (document.getElementById('exercises-tab')) {
     loadExercises();
 }
+
+// Open add certification modal
+document.getElementById('add-cert-btn')?.addEventListener('click', () => {
+    openCertModal(null);
+});
 
 // Open add exercise modal
 document.getElementById('add-exercise-btn')?.addEventListener('click', () => {
@@ -1430,6 +1648,9 @@ function closeExerciseModal() {
     exerciseQuestions = [];
     editingQuestionIndex = null;
 }
+
+// Handle certification form submission
+document.getElementById('cert-form')?.addEventListener('submit', handleCertFormSubmit);
 
 // Handle exercise form submission
 document.getElementById('exercise-form')?.addEventListener('submit', async (e) => {
@@ -1747,6 +1968,7 @@ window.deleteCertification = deleteCertification;
 window.editExercise = editExercise;
 window.deleteExercise = deleteExercise;
 window.closeExerciseModal = closeExerciseModal;
+window.closeCertModal = closeCertModal;
 window.addQuestion = addQuestion;
 window.startEditQuestion = startEditQuestion;
 window.cancelEditQuestion = cancelEditQuestion;

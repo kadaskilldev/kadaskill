@@ -122,8 +122,8 @@ function createCertificationCard(cert) {
     // Use category from database
     const category = cert.category || 'cloud';
     
-    // Use image_url from database, fallback to placeholder
-    const imageUrl = cert.image_url || 'images/certifications/placeholder.png';
+    // Use icon_url from database, fallback to placeholder
+    const imageUrl = cert.icon_url || 'images/certifications/placeholder.png';
     
     return `
         <div class="certification-card" data-category="${category}">

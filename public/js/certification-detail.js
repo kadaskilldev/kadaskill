@@ -75,8 +75,8 @@ function renderCertification() {
         ).join('');
     }
 
-    // Use image_url from database
-    const imageUrl = cert.image_url || 'images/certifications/placeholder.png';
+    // Use icon_url from database
+    const imageUrl = cert.icon_url || 'images/certifications/placeholder.png';
 
     // Build the page content
     const html = `

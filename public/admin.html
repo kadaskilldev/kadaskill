@@ -585,6 +585,139 @@
         </div>
     </div>
 
+    <!-- Add/Edit Certification Modal -->
+    <div class="modal" id="cert-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="cert-modal-title">Add New Certification</h3>
+                <button class="modal-close" onclick="closeCertModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="cert-form">
+                    <input type="hidden" id="cert-id">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Title <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="cert-title" required
+                                   placeholder="e.g., AWS Certified Solutions Architect – Associate">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Slug <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="cert-slug" required
+                                   placeholder="e.g., aws-solutions-architect-associate">
+                            <small class="form-hint">URL-friendly identifier (lowercase, hyphens)</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row form-row-3">
+                        <div class="form-group">
+                            <label class="form-label">Provider</label>
+                            <input type="text" class="form-input" id="cert-provider"
+                                   placeholder="e.g., AWS, Microsoft, CompTIA">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Category <span class="required">*</span></label>
+                            <select class="form-input" id="cert-category" required>
+                                <option value="">Select category</option>
+                                <option value="AI">AI</option>
+                                <option value="Cybersecurity">Cybersecurity</option>
+                                <option value="Cloud">Cloud</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Level</label>
+                            <select class="form-input" id="cert-level">
+                                <option value="">Select level</option>
+                                <option value="Foundation">Foundation</option>
+                                <option value="Associate">Associate</option>
+                                <option value="Professional">Professional</option>
+                                <option value="Expert">Expert</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Short Description</label>
+                            <textarea class="form-input" id="cert-description" rows="3"
+                                      placeholder="Brief description shown on the certification card..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Overview</label>
+                            <textarea class="form-input" id="cert-overview" rows="3"
+                                      placeholder="Longer overview shown on the certification guide page..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row form-row-3">
+                        <div class="form-group">
+                            <label class="form-label">Estimated Duration (hours)</label>
+                            <input type="number" class="form-input" id="cert-duration" min="0" placeholder="40">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Exam Code</label>
+                            <input type="text" class="form-input" id="cert-exam-code" placeholder="e.g., SAA-C03">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Active</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="cert-active" checked>
+                                <label for="cert-active" class="toggle-label">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Image URL</label>
+                            <input type="text" class="form-input" id="cert-image-url"
+                                   placeholder="https://.../your-cert-image.png">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Official URL</label>
+                            <input type="text" class="form-input" id="cert-official-url"
+                                   placeholder="https://... official certification page">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Prerequisites</label>
+                            <textarea class="form-input" id="cert-prerequisites" rows="3"
+                                      placeholder="Enter one prerequisite per line..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeCertModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Save Certification
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="js/script.js"></script>
     <script src="js/admin.js"></script>
 </body>
