@@ -1628,6 +1628,33 @@ function loadDashboardData() {
     updateUserUI(user, profile);
 }
 
+function getProviderAvatarUrl(user) {
+    if (!user || !user.app_metadata || user.app_metadata.provider !== 'google') {
+        return null;
+    }
+    const metadata = user.user_metadata || {};
+    if (typeof metadata.avatar_url === 'string' && metadata.avatar_url) {
+        return metadata.avatar_url;
+    }
+    if (typeof metadata.picture === 'string' && metadata.picture) {
+        return metadata.picture;
+    }
+    const identities = Array.isArray(user.identities) ? user.identities : [];
+    for (let i = 0; i < identities.length; i++) {
+        const identity = identities[i];
+        if (identity && identity.provider === 'google' && identity.identity_data) {
+            const data = identity.identity_data;
+            if (typeof data.avatar_url === 'string' && data.avatar_url) {
+                return data.avatar_url;
+            }
+            if (typeof data.picture === 'string' && data.picture) {
+                return data.picture;
+            }
+        }
+    }
+    return null;
+}
+
 function updateUserUI(user, profile) {
     if (!user || !profile) return;
 
@@ -1644,7 +1671,8 @@ function updateUserUI(user, profile) {
     if (userHandle && !userHandle.startsWith('@')) {
         userHandle = `@${userHandle}`;
     }
-    const avatarUrl = profile.avatar_url;
+    const providerAvatarUrl = getProviderAvatarUrl(user);
+    const avatarUrl = profile.avatar_url || providerAvatarUrl || null;
     const nameWithExclamation = userName.endsWith('!') ? userName : `${userName}!`;
 
     const headerAvatar = document.querySelector('.header-right .user-avatar');

@@ -725,10 +725,12 @@
             }
 
             if (profile) {
-                // If they have an avatar_url, use it. Otherwise, keep the default.
-                if (profile.avatar_url) {
-                    document.getElementById('profileImagePreview').src = profile.avatar_url;
+                const providerAvatarUrl = typeof getProviderAvatarUrl === 'function' ? getProviderAvatarUrl(user) : null;
+                const finalAvatar = profile.avatar_url || providerAvatarUrl || null;
+                if (finalAvatar) {
+                    document.getElementById('profileImagePreview').src = finalAvatar;
                 }
+
                 // Use more specific selectors like IDs for reliability
                 // Example:
                 // <input type="text" id="fullNameInput" ...>
@@ -822,6 +824,7 @@
         const fileInput = document.getElementById('avatarUpload');
         const statusMsg = document.getElementById('uploadStatus');
         const imgPreview = document.getElementById('profileImagePreview');
+        const removeBtn = document.querySelector('.btn-remove');
 
         uploadBtn.addEventListener('click', () => {
             fileInput.click(); // Opens the file selection dialog
@@ -876,7 +879,7 @@
 
                 if (updateError) throw updateError;
 
-                 // 6. Call the global UI update function from script.js
+                // 6. Call the global UI update function from script.js
                 if (window.updateUserUI && updatedProfile) {
                     window.updateUserUI(user, updatedProfile);
                 }
@@ -900,6 +903,53 @@
                 fileInput.value = ''; // Clear input for next time
             }
         });
+
+        if (removeBtn) {
+            removeBtn.addEventListener('click', async () => {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    alert("Your session has expired. Please log in again.");
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                try {
+                    removeBtn.disabled = true;
+                    removeBtn.textContent = "Removing...";
+
+                    const { data: updatedProfile, error: updateError } = await supabase
+                        .from('profiles')
+                        .update({ avatar_url: null, updated_at: new Date() })
+                        .eq('id', user.id)
+                        .select()
+                        .single();
+
+                    if (updateError) {
+                        console.error('Error removing profile picture:', updateError);
+                        alert('There was an error removing your profile picture. Please try again.');
+                        return;
+                    }
+
+                    const providerAvatarUrl = typeof getProviderAvatarUrl === 'function' ? getProviderAvatarUrl(user) : null;
+                    const finalAvatar = (updatedProfile && updatedProfile.avatar_url) || providerAvatarUrl || 'images/profile/default-avatar.svg';
+                    imgPreview.src = finalAvatar;
+
+                    if (window.updateUserUI && updatedProfile) {
+                        window.updateUserUI(user, updatedProfile);
+                    }
+
+                    sessionStorage.setItem('userProfile', JSON.stringify(updatedProfile));
+
+                    alert('Profile picture removed.');
+                } catch (error) {
+                    console.error('Unexpected error removing profile picture:', error);
+                    alert('Unexpected error removing profile picture. Please try again.');
+                } finally {
+                    removeBtn.disabled = false;
+                    removeBtn.textContent = "Remove";
+                }
+            });
+        }
     </script>
 </body>
 
