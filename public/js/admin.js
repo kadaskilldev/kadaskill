@@ -18,6 +18,9 @@ let currentFilters = {
     status: 'all'
 };
 
+// Certification study resources state
+let studyResources = [];
+
 function lockBodyScroll() {
     document.body.classList.add('modal-open');
 }
@@ -72,6 +75,9 @@ function openCertModal(cert) {
             prereqInput.value = '';
         }
         activeCheckbox.checked = cert.is_active !== false;
+
+        // Load study resources
+        studyResources = Array.isArray(cert.study_resources) ? cert.study_resources : [];
     } else {
         titleEl.textContent = 'Add New Certification';
         idInput.value = '';
@@ -88,7 +94,13 @@ function openCertModal(cert) {
         officialUrlInput.value = '';
         prereqInput.value = '';
         activeCheckbox.checked = true;
+
+        // Reset study resources
+        studyResources = [];
     }
+
+    // Render study resources UI
+    renderStudyResources();
 
     modal.classList.add('active');
     lockBodyScroll();
@@ -105,6 +117,10 @@ function closeCertModal() {
 
     const idInput = document.getElementById('cert-id');
     if (idInput) idInput.value = '';
+
+    // Reset study resources and UI
+    studyResources = [];
+    renderStudyResources();
 }
 
 async function handleCertFormSubmit(e) {
@@ -151,6 +167,23 @@ async function handleCertFormSubmit(e) {
         .map(line => line.trim())
         .filter(line => line.length > 0);
 
+    // Normalize study resources
+    const resources = Array.isArray(studyResources)
+        ? studyResources
+            .map(r => {
+                const title = (r.title || '').trim();
+                const url = (r.url || '').trim();
+                const type = (r.type || 'documentation').trim() || 'documentation';
+                return {
+                    title,
+                    url,
+                    type,
+                    is_completed: !!r.is_completed
+                };
+            })
+            .filter(r => r.title || r.url)
+        : [];
+
     const certData = {
         title,
         slug,
@@ -163,6 +196,7 @@ async function handleCertFormSubmit(e) {
         exam_code: examCode || null,
         icon_url: imageUrl || null,
         official_url: officialUrl || null,
+        study_resources: resources.length > 0 ? resources : null,
         prerequisites: prerequisites.length > 0 ? prerequisites : null,
         is_active: isActive,
         updated_at: new Date().toISOString()
@@ -213,7 +247,113 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadTopPerformers();
     await loadRecentActivity();
     await loadCoursePerformance();
+
+    // Slug auto-generation for certifications
+    const certTitleInput = document.getElementById('cert-title');
+    const certSlugInput = document.getElementById('cert-slug');
+    if (certTitleInput && certSlugInput) {
+        certTitleInput.addEventListener('input', () => {
+            // Only auto-generate when slug is empty
+            if (certSlugInput.value.trim()) return;
+            certSlugInput.value = generateSlugFromTitle(certTitleInput.value);
+        });
+
+        certSlugInput.addEventListener('input', () => {
+            // If user clears slug, allow auto-generation again
+            if (!certSlugInput.value.trim()) {
+                certSlugInput.dataset.userEdited = 'false';
+            } else {
+                certSlugInput.dataset.userEdited = 'true';
+            }
+        });
+    }
 });
+
+// ============================================
+// Study Resources Management (Certifications)
+// ============================================
+
+function renderStudyResources() {
+    const container = document.getElementById('study-resources-container');
+    if (!container) return;
+
+    if (!studyResources || studyResources.length === 0) {
+        container.innerHTML = `
+            <div class="empty-questions">
+                <i class="fas fa-link"></i>
+                <p>No study resources yet. Click "Add Resource" to add one.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = studyResources.map((res, index) => {
+        const type = res.type || 'documentation';
+        return `
+            <div class="study-resource-row">
+                <div class="form-row form-row-3">
+                    <div class="form-group">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-input" value="${res.title || ''}"
+                               oninput="updateStudyResourceTitle(${index}, this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">URL</label>
+                        <input type="text" class="form-input" value="${res.url || ''}"
+                               placeholder="https://..."
+                               oninput="updateStudyResourceUrl(${index}, this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <select class="form-input" onchange="updateStudyResourceType(${index}, this.value)">
+                                <option value="documentation" ${type === 'documentation' ? 'selected' : ''}>Documentation</option>
+                                <option value="video" ${type === 'video' ? 'selected' : ''}>Video</option>
+                                <option value="practice" ${type === 'practice' ? 'selected' : ''}>Practice</option>
+                                <option value="article" ${type === 'article' ? 'selected' : ''}>Article</option>
+                                <option value="course" ${type === 'course' ? 'selected' : ''}>Course</option>
+                            </select>
+                            <button type="button" class="btn-icon btn-danger" onclick="removeStudyResource(${index})" title="Remove resource">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function addStudyResource() {
+    studyResources.push({
+        title: '',
+        url: '',
+        type: 'documentation',
+        is_completed: false
+    });
+    renderStudyResources();
+}
+
+function removeStudyResource(index) {
+    if (!Array.isArray(studyResources)) return;
+    studyResources.splice(index, 1);
+    renderStudyResources();
+}
+
+function updateStudyResourceTitle(index, value) {
+    if (!studyResources[index]) return;
+    studyResources[index].title = value;
+}
+
+function updateStudyResourceUrl(index, value) {
+    if (!studyResources[index]) return;
+    studyResources[index].url = value;
+}
+
+function updateStudyResourceType(index, value) {
+    if (!studyResources[index]) return;
+    studyResources[index].type = value;
+}
 
 // ============================================
 // Check Admin Access
@@ -1539,6 +1679,15 @@ function getTimeAgo(date) {
     return formatDate(date);
 }
 
+function generateSlugFromTitle(title) {
+    if (!title) return '';
+    return title
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
 // ============================================
 // Practice Exercise Management
 // ============================================
@@ -1976,3 +2125,8 @@ window.saveQuestion = saveQuestion;
 window.deleteQuestion = deleteQuestion;
 window.addOption = addOption;
 window.removeOption = removeOption;
+window.addStudyResource = addStudyResource;
+window.removeStudyResource = removeStudyResource;
+window.updateStudyResourceTitle = updateStudyResourceTitle;
+window.updateStudyResourceUrl = updateStudyResourceUrl;
+window.updateStudyResourceType = updateStudyResourceType;

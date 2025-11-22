@@ -75,6 +75,39 @@ function renderCertification() {
         ).join('');
     }
 
+    // Build study resources HTML (if any)
+    let resourcesHTML = '';
+    if (Array.isArray(cert.study_resources) && cert.study_resources.length > 0) {
+        const resourceItems = cert.study_resources.map((res, index) => {
+            const type = (res.type || 'documentation').toLowerCase();
+            const icon = type === 'video' ? 'fa-video'
+                : type === 'practice' ? 'fa-dumbbell'
+                : type === 'article' ? 'fa-file-alt'
+                : type === 'course' ? 'fa-graduation-cap'
+                : 'fa-book';
+
+            const title = res.title || res.url || `Resource ${index + 1}`;
+            const url = res.url || '#';
+
+            return `
+                <li>
+                    <i class="fas ${icon}"></i>
+                    ${url !== '#' ? `<a href="${url}" target="_blank" rel="noopener noreferrer">${title}</a>` : `<span>${title}</span>`}
+                    <span style="margin-left: 8px; font-size: 0.875rem; color: #6b7280; text-transform: capitalize;">(${type})</span>
+                </li>
+            `;
+        }).join('');
+
+        resourcesHTML = `
+            <div class="section-box">
+                <h2>Study Resources</h2>
+                <ul class="prereq-list">
+                    ${resourceItems}
+                </ul>
+            </div>
+        `;
+    }
+
     // Use icon_url from database
     const imageUrl = cert.icon_url || 'images/certifications/placeholder.png';
 
@@ -108,6 +141,8 @@ function renderCertification() {
                 ${prereqsHTML}
             </ul>
         </div>
+
+        ${resourcesHTML}
 
         <div class="section-box">
             <h2>How to Get This Certification</h2>
