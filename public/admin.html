@@ -292,10 +292,22 @@
                                 <i class="fas fa-plus"></i> Add New Certification
                             </button>
                         </div>
+                        <div class="section-actions">
+                            <div class="bulk-actions">
+                                <label class="bulk-select">
+                                    <input type="checkbox" id="cert-select-all" onclick="handleCertHeaderCheckboxChange(this.checked)">
+                                    <span>Select all</span>
+                                </label>
+                                <button class="btn-secondary btn-sm" id="cert-bulk-activate" disabled>Activate</button>
+                                <button class="btn-secondary btn-sm" id="cert-bulk-deactivate" disabled>Deactivate</button>
+                                <button class="btn-danger btn-sm" id="cert-bulk-delete" disabled>Delete</button>
+                            </div>
+                        </div>
                         <div class="table-container">
                             <table class="admin-table">
                                 <thead>
                                     <tr>
+                                        <th style="width: 40px;"></th>
                                         <th>Title</th>
                                         <th>Category</th>
                                         <th>Level</th>
@@ -305,7 +317,7 @@
                                 </thead>
                                 <tbody id="certifications-table-body">
                                     <tr>
-                                        <td colspan="5" class="loading-cell">Loading certifications...</td>
+                                        <td colspan="6" class="loading-cell">Loading certifications...</td>
                                     </tr>
                                 </tbody>
                             </table>

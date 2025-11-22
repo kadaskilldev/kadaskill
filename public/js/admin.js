@@ -21,6 +21,9 @@ let currentFilters = {
 // Certification study resources state
 let studyResources = [];
 
+// Certification bulk selection state
+let selectedCertIds = new Set();
+
 const CERT_ICON_BUCKET = 'certification-icons';
 const CERT_ICON_PLACEHOLDER = 'images/certifications/placeholder.png';
 
@@ -389,6 +392,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                 imageFileInput.value = '';
             }
         });
+    }
+
+    const bulkActivateBtn = document.getElementById('cert-bulk-activate');
+    const bulkDeactivateBtn = document.getElementById('cert-bulk-deactivate');
+    const bulkDeleteBtn = document.getElementById('cert-bulk-delete');
+
+    if (bulkActivateBtn) {
+        bulkActivateBtn.addEventListener('click', () => bulkUpdateCertStatus(true));
+    }
+    if (bulkDeactivateBtn) {
+        bulkDeactivateBtn.addEventListener('click', () => bulkUpdateCertStatus(false));
+    }
+    if (bulkDeleteBtn) {
+        bulkDeleteBtn.addEventListener('click', () => bulkDeleteCertifications());
     }
 });
 
@@ -1361,6 +1378,14 @@ function renderCertificationsTable(certifications) {
     const tableBody = document.getElementById('certifications-table-body');
     if (!tableBody) return;
 
+    // Reset selection whenever we re-render the table
+    selectedCertIds = new Set();
+    const headerCheckbox = document.getElementById('cert-select-all');
+    if (headerCheckbox) {
+        headerCheckbox.checked = false;
+    }
+    updateCertBulkActionsState();
+
     if (certifications && certifications.length > 0) {
         tableBody.innerHTML = certifications.map(cert => {
             const badgeCategory = (cert.category || 'General').toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -1369,6 +1394,10 @@ function renderCertificationsTable(certifications) {
 
             return `
                 <tr>
+                    <td>
+                        <input type="checkbox" class="cert-select-checkbox" data-cert-id="${cert.id}"
+                               onchange="handleCertRowCheckboxChange('${cert.id}', this.checked)">
+                    </td>
                     <td>
                         <div class="table-title">${cert.title}</div>
                         <div class="table-subtitle">${cert.provider || 'Unknown provider'}</div>
@@ -1396,7 +1425,7 @@ function renderCertificationsTable(certifications) {
     } else {
         tableBody.innerHTML = `
             <tr>
-                <td colspan="5" class="loading-cell">
+                <td colspan="6" class="loading-cell">
                     <div class="empty-state">
                         <i class="fas fa-certificate"></i>
                         <p>No certifications found. Add your first certification to get started.</p>
@@ -1404,6 +1433,125 @@ function renderCertificationsTable(certifications) {
                 </td>
             </tr>
         `;
+    }
+}
+
+// ============================================
+// Certification Bulk Actions
+// ============================================
+
+function handleCertHeaderCheckboxChange(checked) {
+    const checkboxes = document.querySelectorAll('.cert-select-checkbox');
+    selectedCertIds = new Set();
+
+    checkboxes.forEach(cb => {
+        cb.checked = checked;
+        if (checked) {
+            const id = cb.getAttribute('data-cert-id');
+            if (id) selectedCertIds.add(id);
+        }
+    });
+
+    updateCertBulkActionsState();
+}
+
+function handleCertRowCheckboxChange(certId, checked) {
+    if (!certId) return;
+
+    if (checked) {
+        selectedCertIds.add(certId);
+    } else {
+        selectedCertIds.delete(certId);
+    }
+
+    const headerCheckbox = document.getElementById('cert-select-all');
+    if (headerCheckbox) {
+        const checkboxes = document.querySelectorAll('.cert-select-checkbox');
+        const allChecked = checkboxes.length > 0 && Array.from(checkboxes).every(cb => cb.checked);
+        headerCheckbox.checked = allChecked;
+    }
+
+    updateCertBulkActionsState();
+}
+
+function updateCertBulkActionsState() {
+    const bulkActivateBtn = document.getElementById('cert-bulk-activate');
+    const bulkDeactivateBtn = document.getElementById('cert-bulk-deactivate');
+    const bulkDeleteBtn = document.getElementById('cert-bulk-delete');
+
+    const hasSelection = selectedCertIds && selectedCertIds.size > 0;
+
+    [bulkActivateBtn, bulkDeactivateBtn, bulkDeleteBtn].forEach(btn => {
+        if (!btn) return;
+        btn.disabled = !hasSelection;
+    });
+}
+
+async function bulkUpdateCertStatus(isActive) {
+    if (!selectedCertIds || selectedCertIds.size === 0) {
+        alert('Please select at least one certification.');
+        return;
+    }
+
+    const actionLabel = isActive ? 'activate' : 'deactivate';
+    const confirmed = confirm(`Are you sure you want to ${actionLabel} ${selectedCertIds.size} certification(s)?`);
+    if (!confirmed) return;
+
+    const ids = Array.from(selectedCertIds);
+
+    try {
+        const { error } = await supabase
+            .from('certifications')
+            .update({
+                is_active: isActive,
+                updated_at: new Date().toISOString()
+            })
+            .in('id', ids);
+
+        if (error) {
+            console.error('Error updating certifications:', error);
+            alert('Failed to update certifications: ' + error.message);
+            return;
+        }
+
+        alert(isActive ? 'Selected certifications activated.' : 'Selected certifications deactivated.');
+        await loadCertifications();
+
+    } catch (err) {
+        console.error('Unexpected error updating certifications:', err);
+        alert('Failed to update certifications');
+    }
+}
+
+async function bulkDeleteCertifications() {
+    if (!selectedCertIds || selectedCertIds.size === 0) {
+        alert('Please select at least one certification to delete.');
+        return;
+    }
+
+    const confirmed = confirm(`Are you sure you want to delete ${selectedCertIds.size} certification(s)?\n\nThis action cannot be undone.`);
+    if (!confirmed) return;
+
+    const ids = Array.from(selectedCertIds);
+
+    try {
+        const { error } = await supabase
+            .from('certifications')
+            .delete()
+            .in('id', ids);
+
+        if (error) {
+            console.error('Error deleting certifications:', error);
+            alert('Failed to delete certifications: ' + error.message);
+            return;
+        }
+
+        alert('Selected certifications deleted successfully.');
+        await loadCertifications();
+
+    } catch (err) {
+        console.error('Unexpected error deleting certifications:', err);
+        alert('Failed to delete certifications');
     }
 }
 
@@ -2237,6 +2385,8 @@ window.editCourse = editCourse;
 window.deleteCourse = deleteCourse;
 window.editCertification = editCertification;
 window.deleteCertification = deleteCertification;
+window.handleCertHeaderCheckboxChange = handleCertHeaderCheckboxChange;
+window.handleCertRowCheckboxChange = handleCertRowCheckboxChange;
 window.editExercise = editExercise;
 window.deleteExercise = deleteExercise;
 window.closeExerciseModal = closeExerciseModal;
