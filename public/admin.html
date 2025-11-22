@@ -685,9 +685,21 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">Image URL</label>
-                            <input type="text" class="form-input" id="cert-image-url"
-                                   placeholder="https://.../your-cert-image.png">
+                            <label class="form-label">Image</label>
+                            <small class="form-hint">Upload an image or paste a direct image URL. This maps to the certification icon.</small>
+                            <div class="cert-image-input-row" style="display: flex; gap: 8px; align-items: center;">
+                                <input type="text" class="form-input" id="cert-image-url"
+                                       placeholder="https://.../your-cert-image.png">
+                                <button type="button" class="btn-secondary btn-sm" id="cert-image-upload-btn">
+                                    <i class="fas fa-upload"></i> Upload
+                                </button>
+                                <input type="file" id="cert-image-file" accept="image/*" style="display: none;">
+                            </div>
+                            <div class="form-hint" id="cert-image-status" style="margin-top: 4px; display: none;"></div>
+                            <div class="cert-image-preview-wrapper" style="margin-top: 8px;">
+                                <img id="cert-image-preview" src="images/certifications/placeholder.png" alt="Certification image preview"
+                                     style="max-height: 64px; border-radius: 6px; background: #f3f4f6; padding: 4px;">
+                            </div>
                         </div>
                     </div>
 

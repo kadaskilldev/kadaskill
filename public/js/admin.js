@@ -21,6 +21,9 @@ let currentFilters = {
 // Certification study resources state
 let studyResources = [];
 
+const CERT_ICON_BUCKET = 'certification-icons';
+const CERT_ICON_PLACEHOLDER = 'images/certifications/placeholder.png';
+
 function lockBodyScroll() {
     document.body.classList.add('modal-open');
 }
@@ -54,6 +57,7 @@ function openCertModal(cert) {
     const officialUrlInput = document.getElementById('cert-official-url');
     const prereqInput = document.getElementById('cert-prerequisites');
     const activeCheckbox = document.getElementById('cert-active');
+    const imagePreview = document.getElementById('cert-image-preview');
 
     if (cert) {
         titleEl.textContent = 'Edit Certification';
@@ -99,6 +103,11 @@ function openCertModal(cert) {
         studyResources = [];
     }
 
+    if (imagePreview && imageUrlInput) {
+        const url = imageUrlInput.value.trim();
+        imagePreview.src = url || CERT_ICON_PLACEHOLDER;
+    }
+
     // Render study resources UI
     renderStudyResources();
 
@@ -121,6 +130,20 @@ function closeCertModal() {
     // Reset study resources and UI
     studyResources = [];
     renderStudyResources();
+
+    const imagePreview = document.getElementById('cert-image-preview');
+    if (imagePreview) {
+        imagePreview.src = CERT_ICON_PLACEHOLDER;
+    }
+    const imageStatus = document.getElementById('cert-image-status');
+    if (imageStatus) {
+        imageStatus.style.display = 'none';
+        imageStatus.textContent = '';
+    }
+    const imageFileInput = document.getElementById('cert-image-file');
+    if (imageFileInput) {
+        imageFileInput.value = '';
+    }
 }
 
 async function handleCertFormSubmit(e) {
@@ -264,6 +287,106 @@ document.addEventListener('DOMContentLoaded', async () => {
                 certSlugInput.dataset.userEdited = 'false';
             } else {
                 certSlugInput.dataset.userEdited = 'true';
+            }
+        });
+    }
+
+    const imageUrlInput = document.getElementById('cert-image-url');
+    const imagePreview = document.getElementById('cert-image-preview');
+    const imageUploadBtn = document.getElementById('cert-image-upload-btn');
+    const imageFileInput = document.getElementById('cert-image-file');
+    const imageStatus = document.getElementById('cert-image-status');
+
+    if (imageUrlInput && imagePreview) {
+        const updatePreviewFromInput = () => {
+            const url = imageUrlInput.value.trim();
+            imagePreview.src = url || CERT_ICON_PLACEHOLDER;
+        };
+        imageUrlInput.addEventListener('input', updatePreviewFromInput);
+    }
+
+    if (imageUploadBtn && imageFileInput) {
+        imageUploadBtn.addEventListener('click', () => {
+            imageFileInput.click();
+        });
+
+        imageFileInput.addEventListener('change', async (event) => {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File is too big! Please upload an image smaller than 5MB.');
+                imageFileInput.value = '';
+                return;
+            }
+
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                alert('Your session has expired. Please log in again.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const originalLabel = imageUploadBtn.textContent;
+            imageUploadBtn.disabled = true;
+            imageUploadBtn.textContent = 'Uploading...';
+            if (imageStatus) {
+                imageStatus.style.display = 'block';
+                imageStatus.textContent = 'Uploading image...';
+            }
+
+            try {
+                const fileExt = file.name.split('.').pop();
+                const titleInput = document.getElementById('cert-title');
+                const slugInputEl = document.getElementById('cert-slug');
+                let slugValue = slugInputEl && slugInputEl.value ? slugInputEl.value.trim() : '';
+                if (!slugValue && titleInput && titleInput.value) {
+                    slugValue = generateSlugFromTitle(titleInput.value);
+                }
+                const safeSlug = slugValue || 'certification';
+                const filePath = `${safeSlug}/${Date.now()}.${fileExt}`;
+
+                const { error: uploadError } = await supabase.storage
+                    .from(CERT_ICON_BUCKET)
+                    .upload(filePath, file);
+
+                if (uploadError) throw uploadError;
+
+                const { data: publicData } = supabase.storage
+                    .from(CERT_ICON_BUCKET)
+                    .getPublicUrl(filePath);
+
+                const publicUrl = publicData && publicData.publicUrl ? publicData.publicUrl : null;
+                if (!publicUrl) {
+                    throw new Error('Could not get public URL for uploaded image.');
+                }
+
+                if (imageUrlInput) {
+                    imageUrlInput.value = publicUrl;
+                    const inputEvent = new Event('input', { bubbles: true });
+                    imageUrlInput.dispatchEvent(inputEvent);
+                }
+
+                if (imageStatus) {
+                    imageStatus.textContent = 'Image uploaded successfully.';
+                }
+
+            } catch (error) {
+                console.error('Error uploading certification image:', error);
+                alert('Error uploading image: ' + (error.message || 'Unknown error'));
+                if (imageStatus) {
+                    imageStatus.textContent = 'Failed to upload image.';
+                }
+            } finally {
+                imageUploadBtn.disabled = false;
+                imageUploadBtn.textContent = originalLabel;
+                if (imageStatus) {
+                    setTimeout(() => {
+                        imageStatus.style.display = 'none';
+                        imageStatus.textContent = '';
+                    }, 2000);
+                }
+                imageFileInput.value = '';
             }
         });
     }
