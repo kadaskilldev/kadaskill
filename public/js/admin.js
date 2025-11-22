@@ -182,9 +182,39 @@ async function handleCertFormSubmit(e) {
     const prereqText = prereqInput.value;
     const isActive = !!activeCheckbox.checked;
 
-    if (!title || !slug || !category) {
-        alert('Please fill in all required fields (Title, Slug, Category).');
+    // Clear previous validation state
+    const requiredInputs = [titleInput, slugInput, categoryInput];
+    requiredInputs.forEach(input => {
+        if (!input) return;
+        input.classList.remove('input-error');
+        const group = input.closest('.form-group');
+        const label = group ? group.querySelector('.form-label') : null;
+        if (label) label.classList.remove('label-error');
+    });
+
+    // Validate required fields
+    const missingInputs = [];
+    if (!title) missingInputs.push(titleInput);
+    if (!slug) missingInputs.push(slugInput);
+    if (!category) missingInputs.push(categoryInput);
+
+    if (missingInputs.length > 0) {
+        missingInputs.forEach(input => {
+            if (!input) return;
+            input.classList.add('input-error');
+            const group = input.closest('.form-group');
+            const label = group ? group.querySelector('.form-label') : null;
+            if (label) label.classList.add('label-error');
+        });
+        showToast('Please fill in all required fields (Title, Slug, Category).', 'error');
         return;
+    }
+
+    const saveButton = document.querySelector('#cert-form button[type="submit"]');
+    const originalButtonHtml = saveButton ? saveButton.innerHTML : null;
+    if (saveButton) {
+        saveButton.disabled = true;
+        saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
     }
 
     const estimatedDuration = Number.isNaN(durationVal) ? null : durationVal;
@@ -246,17 +276,22 @@ async function handleCertFormSubmit(e) {
 
         if (error) {
             console.error('Error saving certification:', error);
-            alert('Failed to save certification: ' + error.message);
+            showToast('Failed to save certification: ' + error.message, 'error');
             return;
         }
 
-        alert(certId ? 'Certification updated successfully!' : 'Certification created successfully!');
+        showToast(certId ? 'Certification updated successfully.' : 'Certification created successfully.', 'success');
         closeCertModal();
         loadCertifications();
 
     } catch (err) {
         console.error('Unexpected error saving certification:', err);
-        alert('Failed to save certification');
+        showToast('Failed to save certification', 'error');
+    } finally {
+        if (saveButton) {
+            saveButton.disabled = false;
+            saveButton.innerHTML = originalButtonHtml;
+        }
     }
 }
 
@@ -318,14 +353,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!file) return;
 
             if (file.size > 5 * 1024 * 1024) {
-                alert('File is too big! Please upload an image smaller than 5MB.');
+                showToast('File is too big! Please upload an image smaller than 5MB.', 'error');
                 imageFileInput.value = '';
                 return;
             }
 
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) {
-                alert('Your session has expired. Please log in again.');
+                showToast('Your session has expired. Please log in again.', 'error');
                 window.location.href = 'index.html';
                 return;
             }
@@ -376,7 +411,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             } catch (error) {
                 console.error('Error uploading certification image:', error);
-                alert('Error uploading image: ' + (error.message || 'Unknown error'));
+                showToast('Error uploading image: ' + (error.message || 'Unknown error'), 'error');
                 if (imageStatus) {
                     imageStatus.textContent = 'Failed to upload image.';
                 }
@@ -1489,7 +1524,7 @@ function updateCertBulkActionsState() {
 
 async function bulkUpdateCertStatus(isActive) {
     if (!selectedCertIds || selectedCertIds.size === 0) {
-        alert('Please select at least one certification.');
+        showToast('Please select at least one certification.', 'error');
         return;
     }
 
@@ -1510,22 +1545,22 @@ async function bulkUpdateCertStatus(isActive) {
 
         if (error) {
             console.error('Error updating certifications:', error);
-            alert('Failed to update certifications: ' + error.message);
+            showToast('Failed to update certifications: ' + error.message, 'error');
             return;
         }
 
-        alert(isActive ? 'Selected certifications activated.' : 'Selected certifications deactivated.');
+        showToast(isActive ? 'Selected certifications activated.' : 'Selected certifications deactivated.', 'success');
         await loadCertifications();
 
     } catch (err) {
         console.error('Unexpected error updating certifications:', err);
-        alert('Failed to update certifications');
+        showToast('Failed to update certifications', 'error');
     }
 }
 
 async function bulkDeleteCertifications() {
     if (!selectedCertIds || selectedCertIds.size === 0) {
-        alert('Please select at least one certification to delete.');
+        showToast('Please select at least one certification to delete.', 'error');
         return;
     }
 
@@ -1542,16 +1577,16 @@ async function bulkDeleteCertifications() {
 
         if (error) {
             console.error('Error deleting certifications:', error);
-            alert('Failed to delete certifications: ' + error.message);
+            showToast('Failed to delete certifications: ' + error.message, 'error');
             return;
         }
 
-        alert('Selected certifications deleted successfully.');
+        showToast('Selected certifications deleted successfully.', 'success');
         await loadCertifications();
 
     } catch (err) {
         console.error('Unexpected error deleting certifications:', err);
-        alert('Failed to delete certifications');
+        showToast('Failed to delete certifications', 'error');
     }
 }
 
@@ -1866,7 +1901,7 @@ async function editCertification(certId) {
 
         if (error) {
             console.error('Error loading certification:', error);
-            alert('Failed to load certification');
+            showToast('Failed to load certification', 'error');
             return;
         }
 
@@ -1874,7 +1909,7 @@ async function editCertification(certId) {
 
     } catch (err) {
         console.error('Unexpected error loading certification:', err);
-        alert('Failed to load certification');
+        showToast('Failed to load certification', 'error');
     }
 }
 
@@ -1890,16 +1925,16 @@ async function deleteCertification(certId) {
 
         if (error) {
             console.error('Error deleting certification:', error);
-            alert('Failed to delete certification: ' + error.message);
+            showToast('Failed to delete certification: ' + error.message, 'error');
             return;
         }
 
-        alert('Certification deleted successfully!');
+        showToast('Certification deleted successfully.', 'success');
         loadCertifications();
 
     } catch (err) {
         console.error('Unexpected error deleting certification:', err);
-        alert('Failed to delete certification');
+        showToast('Failed to delete certification', 'error');
     }
 }
 
@@ -1948,6 +1983,41 @@ function getTimeAgo(date) {
     if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
     if (seconds < 604800) return `${Math.floor(seconds / 86400)} days ago`;
     return formatDate(date);
+}
+
+// ============================================
+// Toast Notifications (Admin UI)
+// ============================================
+
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    if (!container) {
+        // Fallback to alert if container is missing
+        alert(message);
+        return;
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    // Trigger fade-in
+    requestAnimationFrame(() => {
+        toast.classList.add('toast-visible');
+    });
+
+    // Auto-dismiss
+    setTimeout(() => {
+        toast.classList.remove('toast-visible');
+    }, 2800);
+
+    setTimeout(() => {
+        if (toast.parentElement === container) {
+            container.removeChild(toast);
+        }
+    }, 3400);
 }
 
 function generateSlugFromTitle(title) {

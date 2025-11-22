@@ -33,6 +33,54 @@ body {
 }
 
 /* ============================================
+   Toast Notifications
+   ============================================ */
+
+.toast-container {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 2000;
+    pointer-events: none;
+}
+
+.toast {
+    min-width: 260px;
+    max-width: 360px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #111827;
+    background: #f3f4f6;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+    pointer-events: auto;
+}
+
+.toast-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast-info {
+    border-left: 4px solid #3b82f6;
+}
+
+.toast-success {
+    border-left: 4px solid var(--success);
+}
+
+.toast-error {
+    border-left: 4px solid var(--danger);
+}
+
+/* ============================================
    Admin Layout
    ============================================ */
 
@@ -1056,6 +1104,15 @@ body {
     border-color: var(--primary-orange);
     box-shadow: 0 6px 18px rgba(245, 158, 11, 0.12);
     transform: translateY(-1px);
+}
+
+.form-input.input-error {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.18);
+}
+
+.form-label.label-error {
+    color: var(--danger);
 }
 
 .form-input[readonly] {
