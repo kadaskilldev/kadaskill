@@ -675,7 +675,7 @@ body {
     background: rgba(245, 158, 11, 0.08);
     border-radius: 8px;
     padding: 10px 14px;
-    margin: -10px -14px;
+    margin-bottom: 12px;
     transition: background 0.2s ease;
 }
 
@@ -888,6 +888,33 @@ body {
     background: var(--bg-gray);
     border-color: var(--primary-orange);
     color: var(--primary-orange);
+}
+
+.btn-danger {
+    background: rgba(239, 68, 68, 0.06);
+    color: var(--danger);
+    padding: 10px 20px;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:disabled {
+    background: rgba(239, 68, 68, 0.03);
+    color: rgba(185, 28, 28, 0.6);
+    border-color: rgba(239, 68, 68, 0.18);
+    cursor: not-allowed;
+    opacity: 0.85;
+}
+
+.btn-danger:not(:disabled):hover {
+    background: var(--danger);
+    color: var(--white);
+    border-color: var(--danger);
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
 }
 
 .btn-edit {
