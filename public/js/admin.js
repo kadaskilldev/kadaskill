@@ -24,6 +24,19 @@ let studyResources = [];
 // Certification bulk selection state
 let selectedCertIds = new Set();
 
+// Certification filter state
+let allCertifications = [];
+let filteredCertifications = [];
+let certFilters = {
+    search: '',
+    category: '',
+    status: ''
+};
+
+// Certification pagination state
+let certCurrentPage = 1;
+let certPerPage = 10;
+
 const CERT_ICON_BUCKET = 'certification-icons';
 const CERT_ICON_PLACEHOLDER = 'images/certifications/placeholder.png';
 
@@ -1402,10 +1415,136 @@ async function loadCertifications() {
             return;
         }
 
-        renderCertificationsTable(certifications);
+        allCertifications = certifications || [];
+        applyCertFilters();
 
     } catch (error) {
         console.error('Error loading certifications:', error);
+    }
+}
+
+function applyCertFilters(resetPage = true) {
+    let filtered = [...allCertifications];
+
+    // Search filter (title or provider)
+    if (certFilters.search) {
+        const searchLower = certFilters.search.toLowerCase();
+        filtered = filtered.filter(cert =>
+            (cert.title || '').toLowerCase().includes(searchLower) ||
+            (cert.provider || '').toLowerCase().includes(searchLower)
+        );
+    }
+
+    // Category filter
+    if (certFilters.category) {
+        filtered = filtered.filter(cert => cert.category === certFilters.category);
+    }
+
+    // Status filter
+    if (certFilters.status) {
+        const isActive = certFilters.status === 'active';
+        filtered = filtered.filter(cert => cert.is_active === isActive);
+    }
+
+    filteredCertifications = filtered;
+
+    // Reset to page 1 when filters change
+    if (resetPage) {
+        certCurrentPage = 1;
+    }
+
+    // Paginate results
+    const totalPages = Math.ceil(filtered.length / certPerPage);
+    const startIndex = (certCurrentPage - 1) * certPerPage;
+    const endIndex = startIndex + certPerPage;
+    const paginatedCerts = filtered.slice(startIndex, endIndex);
+
+    renderCertificationsTable(paginatedCerts);
+    updateCertCount(filtered.length, allCertifications.length);
+    renderCertPagination(filtered.length, totalPages);
+}
+
+function updateCertCount(filteredCount, totalCount) {
+    const countEl = document.getElementById('cert-count');
+    if (!countEl) return;
+
+    if (filteredCount === totalCount) {
+        countEl.textContent = `${totalCount} certification${totalCount !== 1 ? 's' : ''}`;
+    } else {
+        countEl.textContent = `${filteredCount} of ${totalCount} certification${totalCount !== 1 ? 's' : ''}`;
+    }
+}
+
+function renderCertPagination(totalItems, totalPages) {
+    const pageInfoEl = document.getElementById('cert-page-info');
+    const pageNumbersEl = document.getElementById('cert-page-numbers');
+    const prevBtn = document.getElementById('cert-prev-btn');
+    const nextBtn = document.getElementById('cert-next-btn');
+
+    if (!pageInfoEl || !pageNumbersEl || !prevBtn || !nextBtn) return;
+
+    // Update page info
+    const startItem = totalItems === 0 ? 0 : (certCurrentPage - 1) * certPerPage + 1;
+    const endItem = Math.min(certCurrentPage * certPerPage, totalItems);
+    pageInfoEl.textContent = `Showing ${startItem}-${endItem} of ${totalItems}`;
+
+    // Update prev/next buttons
+    prevBtn.disabled = certCurrentPage <= 1;
+    nextBtn.disabled = certCurrentPage >= totalPages;
+
+    // Generate page numbers
+    pageNumbersEl.innerHTML = '';
+
+    if (totalPages <= 1) return;
+
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, certCurrentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    // First page + ellipsis
+    if (startPage > 1) {
+        pageNumbersEl.innerHTML += `<button class="page-number" onclick="goToCertPage(1)">1</button>`;
+        if (startPage > 2) {
+            pageNumbersEl.innerHTML += `<span class="page-ellipsis">...</span>`;
+        }
+    }
+
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
+        const activeClass = i === certCurrentPage ? 'active' : '';
+        pageNumbersEl.innerHTML += `<button class="page-number ${activeClass}" onclick="goToCertPage(${i})">${i}</button>`;
+    }
+
+    // Ellipsis + last page
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            pageNumbersEl.innerHTML += `<span class="page-ellipsis">...</span>`;
+        }
+        pageNumbersEl.innerHTML += `<button class="page-number" onclick="goToCertPage(${totalPages})">${totalPages}</button>`;
+    }
+}
+
+function goToCertPage(page) {
+    certCurrentPage = page;
+    applyCertFilters(false);
+}
+
+function certPrevPage() {
+    if (certCurrentPage > 1) {
+        certCurrentPage--;
+        applyCertFilters(false);
+    }
+}
+
+function certNextPage() {
+    const totalPages = Math.ceil(filteredCertifications.length / certPerPage);
+    if (certCurrentPage < totalPages) {
+        certCurrentPage++;
+        applyCertFilters(false);
     }
 }
 
@@ -1458,12 +1597,17 @@ function renderCertificationsTable(certifications) {
             `;
         }).join('');
     } else {
+        const hasFilters = certFilters.search || certFilters.category || certFilters.status;
+        const message = hasFilters
+            ? 'No certifications match your filters.'
+            : 'No certifications found. Add your first certification to get started.';
+
         tableBody.innerHTML = `
             <tr>
                 <td colspan="6" class="loading-cell">
                     <div class="empty-state">
                         <i class="fas fa-certificate"></i>
-                        <p>No certifications found. Add your first certification to get started.</p>
+                        <p>${message}</p>
                     </div>
                 </td>
             </tr>
@@ -1513,13 +1657,36 @@ function updateCertBulkActionsState() {
     const bulkActivateBtn = document.getElementById('cert-bulk-activate');
     const bulkDeactivateBtn = document.getElementById('cert-bulk-deactivate');
     const bulkDeleteBtn = document.getElementById('cert-bulk-delete');
+    const bulkBar = document.getElementById('cert-bulk-bar');
+    const selectionCountEl = document.getElementById('cert-selection-count');
 
     const hasSelection = selectedCertIds && selectedCertIds.size > 0;
+    const count = selectedCertIds ? selectedCertIds.size : 0;
 
     [bulkActivateBtn, bulkDeactivateBtn, bulkDeleteBtn].forEach(btn => {
         if (!btn) return;
         btn.disabled = !hasSelection;
     });
+
+    // Update selection count display
+    if (selectionCountEl) {
+        if (hasSelection) {
+            selectionCountEl.textContent = `${count} selected`;
+            selectionCountEl.classList.add('visible');
+        } else {
+            selectionCountEl.textContent = '';
+            selectionCountEl.classList.remove('visible');
+        }
+    }
+
+    // Highlight bulk bar when items are selected
+    if (bulkBar) {
+        if (hasSelection) {
+            bulkBar.classList.add('has-selection');
+        } else {
+            bulkBar.classList.remove('has-selection');
+        }
+    }
 }
 
 async function bulkUpdateCertStatus(isActive) {
@@ -2039,6 +2206,53 @@ let editingQuestionIndex = null;
 // Load certifications and practice exercises on page load
 if (document.getElementById('certifications-tab')) {
     loadCertifications();
+
+    // Certification filter event listeners
+    const certSearchInput = document.getElementById('cert-search');
+    const certCategoryFilter = document.getElementById('cert-category-filter');
+    const certStatusFilter = document.getElementById('cert-status-filter');
+
+    if (certSearchInput) {
+        certSearchInput.addEventListener('input', (e) => {
+            certFilters.search = e.target.value;
+            applyCertFilters();
+        });
+    }
+
+    if (certCategoryFilter) {
+        certCategoryFilter.addEventListener('change', (e) => {
+            certFilters.category = e.target.value;
+            applyCertFilters();
+        });
+    }
+
+    if (certStatusFilter) {
+        certStatusFilter.addEventListener('change', (e) => {
+            certFilters.status = e.target.value;
+            applyCertFilters();
+        });
+    }
+
+    // Certification pagination event listeners
+    const certPrevBtn = document.getElementById('cert-prev-btn');
+    const certNextBtn = document.getElementById('cert-next-btn');
+    const certPerPageSelect = document.getElementById('cert-per-page');
+
+    if (certPrevBtn) {
+        certPrevBtn.addEventListener('click', certPrevPage);
+    }
+
+    if (certNextBtn) {
+        certNextBtn.addEventListener('click', certNextPage);
+    }
+
+    if (certPerPageSelect) {
+        certPerPageSelect.addEventListener('change', (e) => {
+            certPerPage = parseInt(e.target.value, 10);
+            certCurrentPage = 1;
+            applyCertFilters(false);
+        });
+    }
 }
 
 if (document.getElementById('exercises-tab')) {
@@ -2473,3 +2687,4 @@ window.removeStudyResource = removeStudyResource;
 window.updateStudyResourceTitle = updateStudyResourceTitle;
 window.updateStudyResourceUrl = updateStudyResourceUrl;
 window.updateStudyResourceType = updateStudyResourceType;
+window.goToCertPage = goToCertPage;

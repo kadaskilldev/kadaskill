@@ -593,6 +593,114 @@ body {
     gap: 12px;
 }
 
+/* ============================================
+   Certification Filters & Selection
+   ============================================ */
+
+.cert-filters {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    background: rgba(249, 250, 251, 0.8);
+    border-radius: 10px;
+    border: 1px solid rgba(229, 231, 235, 0.6);
+}
+
+.filter-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-box i {
+    position: absolute;
+    left: 12px;
+    color: #9ca3af;
+    font-size: 0.875rem;
+    pointer-events: none;
+}
+
+.search-box .filter-input {
+    padding-left: 36px;
+    width: 240px;
+}
+
+.filter-input {
+    padding: 9px 14px;
+    border: 1px solid var(--border-gray);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    background: var(--white);
+    transition: all 0.2s ease;
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: var(--primary-orange);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.cert-count {
+    font-size: 0.875rem;
+    color: var(--text-gray);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.selection-count {
+    font-size: 0.8125rem;
+    color: var(--primary-orange);
+    font-weight: 600;
+    padding: 4px 10px;
+    background: rgba(245, 158, 11, 0.1);
+    border-radius: 12px;
+    display: none;
+}
+
+.selection-count.visible {
+    display: inline-block;
+}
+
+.section-actions.has-selection {
+    background: rgba(245, 158, 11, 0.08);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: -10px -14px;
+    transition: background 0.2s ease;
+}
+
+.bulk-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.bulk-select {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+    color: var(--text-dark);
+    cursor: pointer;
+}
+
+.bulk-select input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--primary-orange);
+}
+
 .search-input {
     padding: 10px 16px;
     border: 1px solid var(--border-gray);
@@ -628,6 +736,115 @@ body {
 
 .filter-select:hover {
     border-color: #d1d5db;
+}
+
+/* ============================================
+   Pagination Controls
+   ============================================ */
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: rgba(249, 250, 251, 0.8);
+    border-radius: 10px;
+    border: 1px solid rgba(229, 231, 235, 0.6);
+    flex-wrap: wrap;
+}
+
+.pagination-info {
+    font-size: 0.875rem;
+    color: var(--text-gray);
+    font-weight: 500;
+}
+
+.pagination-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-pagination {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    background: var(--white);
+    border: 1px solid var(--border-gray);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-pagination:hover:not(:disabled) {
+    background: var(--bg-gray);
+    border-color: var(--primary-orange);
+    color: var(--primary-orange);
+}
+
+.btn-pagination:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-pages {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.page-number {
+    min-width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    background: var(--white);
+    border: 1px solid var(--border-gray);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.page-number:hover:not(.active) {
+    background: var(--bg-gray);
+    border-color: #d1d5db;
+}
+
+.page-number.active {
+    background: var(--primary-orange);
+    border-color: var(--primary-orange);
+    color: var(--white);
+}
+
+.page-ellipsis {
+    min-width: 32px;
+    text-align: center;
+    color: var(--text-gray);
+    font-size: 0.875rem;
+}
+
+.pagination-per-page {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: var(--text-gray);
+}
+
+.pagination-per-page .filter-select {
+    min-width: 70px;
+    padding: 6px 10px;
+    font-size: 0.8125rem;
 }
 
 /* ============================================
