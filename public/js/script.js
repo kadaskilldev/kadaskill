@@ -678,6 +678,11 @@ function handleCTAClick(e) {
         setTimeout(() => {
             window.location.href = 'certification.html';
         }, 1000);
+    } else if (targetUrl === 'practice.html' || targetUrl === 'public/practice.html') {
+        showNotification('Navigating to Practice page...', 'info');
+        setTimeout(() => {
+            window.location.href = 'practice.html';
+        }, 1000);
     } else {
         const heroForm = document.querySelector('.hero-form');
         if (heroForm) {
