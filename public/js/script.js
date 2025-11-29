@@ -100,6 +100,28 @@ function loadSharedComponents() {
     loadFooter();
 }
 
+function isLoggedInContentPage(pageName) {
+    if (!pageName) return false;
+    const normalized = pageName.toLowerCase();
+    const staticPages = new Set([
+        'home.html',
+        'profile.html',
+        'edit-profile.html',
+        'about.html',
+        'about-us.html'
+    ]);
+
+    if (staticPages.has(normalized)) {
+        return true;
+    }
+
+    return (
+        normalized.startsWith('learn') ||
+        normalized.startsWith('practice') ||
+        normalized.startsWith('certification')
+    );
+}
+
 function initializeUserMenu(scope = document) {
     const avatarToggle = scope.querySelector('.user-profile__toggle');
     const avatarBadge = scope.querySelector('.user-avatar');
@@ -272,6 +294,29 @@ function loadNavigation() {
     `;
 
     navigationElement.innerHTML = nav;
+
+    const logoElement = navigationElement.querySelector('.logo');
+    if (logoElement && isLoggedInContentPage(currentPage)) {
+        logoElement.classList.add('logo--home-link');
+        logoElement.setAttribute('role', 'link');
+        logoElement.setAttribute('tabindex', '0');
+
+        const navigateHome = () => {
+            window.location.href = 'home.html';
+        };
+
+        logoElement.addEventListener('click', (event) => {
+            event.preventDefault();
+            navigateHome();
+        });
+
+        logoElement.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                navigateHome();
+            }
+        });
+    }
 
     const headerElement = navigationElement.querySelector('.header');
     if (headerElement) {
