@@ -279,9 +279,11 @@ async function finishExercise() {
         .eq('exercise_id', currentExercise.id);
 
     const isFirstPass = !previousAttempts || previousAttempts.length === 0;
+    console.log('[PracticeExercise] Previous attempts:', previousAttempts?.length || 0, 'isFirstPass?', isFirstPass);
 
     // Award XP only on first pass
     const xpEarned = (passed && isFirstPass) ? currentExercise.xp_reward : 0;
+    console.log('[PracticeExercise] Score %d%% (passed=%s). XP to award this run: %d', scorePercentage, passed, xpEarned);
 
     // Save attempt to database
     const attemptNumber = (previousAttempts?.length || 0) + 1;
@@ -303,9 +305,13 @@ async function finishExercise() {
 
         if (error) throw error;
 
+        console.log('[PracticeExercise] Attempt stored (attempt #%d).', attemptNumber);
+
         // Update user XP if earned
         if (xpEarned > 0) {
             await updateUserXP(xpEarned);
+        } else {
+            console.log('[PracticeExercise] No XP awarded this run. Either not passed or not first pass.');
         }
 
     } catch (error) {
@@ -323,19 +329,31 @@ async function finishExercise() {
 async function updateUserXP(xpToAdd) {
     try {
         // Get current XP
-        const { data: profile } = await supabase
+        const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('total_xp')
             .eq('id', currentUser.id)
             .single();
 
-        const newXP = (profile?.total_xp || 0) + xpToAdd;
+        if (profileError) {
+            console.error('[PracticeExercise] Failed to fetch profile before XP update:', profileError);
+            return;
+        }
 
-        // Update XP
-        await supabase
+        const priorXP = profile?.total_xp || 0;
+        const newXP = priorXP + xpToAdd;
+        console.log('[PracticeExercise] Updating XP from %d to %d (+%d)', priorXP, newXP, xpToAdd);
+
+        const { error: updateError } = await supabase
             .from('profiles')
             .update({ total_xp: newXP })
             .eq('id', currentUser.id);
+
+        if (updateError) {
+            console.error('[PracticeExercise] Failed to persist XP update:', updateError);
+        } else {
+            console.log('[PracticeExercise] XP update successful.');
+        }
 
     } catch (error) {
         console.error('Error updating XP:', error);
