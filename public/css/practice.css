@@ -296,11 +296,28 @@ body {
     margin-right: 1rem;
     display: inline-block;
     transition: border-color 0.2s;
+    position: relative; 
+}
+.custom-radio::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0); 
+    width: 10px; 
+    height: 10px;
+    border-radius: 50%;
+    background-color: #9094ED;
+    transition: transform 0.15s ease-in-out;
 }
 
 /* Style for when radio is checked */
 .option-label input[type="radio"]:checked + .custom-radio {
-    border: 6px solid #f59e0b;
+    border-color: #9094ED; 
+}
+
+.option-label input[type="radio"]:checked + .custom-radio::before {
+    transform: translate(-50%, -50%) scale(1); 
 }
 
 .option-text {
