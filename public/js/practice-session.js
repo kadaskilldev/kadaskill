@@ -5,8 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializePracticeSessionPage() {
-
-
     const urlParams = new URLSearchParams(window.location.search);
     const exerciseId = urlParams.get('id');
 
@@ -21,6 +19,7 @@ function initializePracticeSessionPage() {
     let quizStartTime;
     let gradedAnswers = {};
     let selectedAnswer = null;
+    let timerInterval = null;
 
     // --- DOM Elements ---
     const quizTitleEl = document.getElementById('quiz-title');
@@ -30,7 +29,9 @@ function initializePracticeSessionPage() {
     const nextBtn = document.getElementById('next-btn');
     const submitBtn = document.getElementById('submit-btn');
     const progressBarFill = document.getElementById('progress-bar-fill');
-    
+    const timerEl = document.getElementById('quiz-timer');
+    const timeRemainingEl = document.getElementById('time-remaining');
+
     // --- Modal Elements ---
     const modal = document.getElementById('completion-modal');
     const finalScoreEl = document.getElementById('final-score');
@@ -54,9 +55,46 @@ function initializePracticeSessionPage() {
         currentQuestionIndex = 0;
         gradedAnswers = {};
         quizStartTime = new Date();
+
+        if (timerInterval) clearInterval(timerInterval);
+        if (currentExercise.time_limit_minutes) {
+            startTimer(currentExercise.time_limit_minutes);
+        } else {
+            timerEl.style.display = 'none';
+        }
+
         renderQuestion();
     }
-    
+
+    function startTimer(minutes) {
+        let timeRemainingSeconds = minutes * 60;
+        timerEl.style.display = 'flex';
+        timerEl.classList.remove('warning');
+
+        const updateTimerDisplay = () => {
+            const mins = Math.floor(timeRemainingSeconds / 60);
+            const secs = timeRemainingSeconds % 60;
+            timeRemainingEl.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        };
+
+        updateTimerDisplay();
+
+        timerInterval = setInterval(() => {
+            timeRemainingSeconds--;
+            updateTimerDisplay();
+
+            if (timeRemainingSeconds <= 30 && !timerEl.classList.contains('warning')) {
+                timerEl.classList.add('warning');
+            }
+
+            if (timeRemainingSeconds <= 0) {
+                clearInterval(timerInterval);
+                showNotification('Time is up! Submitting your answers...', 'warning');
+                setTimeout(finishQuiz, 1500);
+            }
+        }, 1000);
+    }
+
     function renderQuestion() {
         selectedAnswer = null;
         optionsContainerEl.classList.remove('graded');
@@ -66,11 +104,14 @@ function initializePracticeSessionPage() {
         questionTextEl.innerHTML = `${currentQuestionIndex + 1}. ${question.question}`;
         optionsContainerEl.innerHTML = '';
 
+        // FIX #1: This loop now includes the "A.)", "B.)" letters
+        const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
         question.options.forEach((optionText, index) => {
             const optionId = `q${currentQuestionIndex}_option${index}`;
             const optionLabel = document.createElement('label');
             optionLabel.className = 'option-label';
             optionLabel.htmlFor = optionId;
+
             const radioInput = document.createElement('input');
             radioInput.type = 'radio';
             radioInput.name = 'option';
@@ -86,16 +127,27 @@ function initializePracticeSessionPage() {
 
             const customRadio = document.createElement('span');
             customRadio.className = 'custom-radio';
+
+            // --- NEW: Create the letter element ---
+            const optionLetter = document.createElement('span');
+            optionLetter.className = 'option-letter';
+            const letters = ['A', 'B', 'C', 'D', 'E', 'F']; // Handles up to 6 options
+            optionLetter.textContent = `${letters[index]}.)`;
+            // --- END of new code ---
+
             const textSpan = document.createElement('span');
             textSpan.className = 'option-text';
             textSpan.textContent = optionText;
 
+            // Append all parts in the correct order
             optionLabel.appendChild(radioInput);
             optionLabel.appendChild(customRadio);
+            optionLabel.appendChild(optionLetter); // Add the new letter element here
             optionLabel.appendChild(textSpan);
+
             optionsContainerEl.appendChild(optionLabel);
         });
-        
+
         if (isGraded) {
             optionsContainerEl.classList.add('graded');
             submitBtn.style.display = 'none';
@@ -103,7 +155,7 @@ function initializePracticeSessionPage() {
             submitBtn.style.display = 'block';
             submitBtn.disabled = true;
         }
-        
+
         if (!isGraded) {
             document.querySelectorAll('input[name="option"]').forEach(input => {
                 input.addEventListener('change', (event) => {
@@ -112,11 +164,11 @@ function initializePracticeSessionPage() {
                 });
             });
         }
-        
+
         updateButtonStates();
         updateProgressBar();
     }
-    
+
     function updateButtonStates() {
         prevBtn.style.display = currentQuestionIndex > 0 ? 'block' : 'none';
         nextBtn.style.display = currentQuestionIndex < currentExercise.questions.length - 1 ? 'block' : 'none';
@@ -137,7 +189,7 @@ function initializePracticeSessionPage() {
             isCorrect: selectedAnswer === question.correct_answer
         };
         renderQuestion();
-        
+
         const answeredCount = Object.keys(gradedAnswers).length;
         if (answeredCount === currentExercise.questions.length) {
             setTimeout(() => {
@@ -145,7 +197,7 @@ function initializePracticeSessionPage() {
             }, 1000);
         }
     }
-    
+
     function handlePrevious() {
         if (currentQuestionIndex > 0) {
             currentQuestionIndex--;
@@ -161,39 +213,57 @@ function initializePracticeSessionPage() {
     }
 
     function finishQuiz() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+        }
+
         let score = 0;
-        for (const key in gradedAnswers) {
-            if (gradedAnswers[key].isCorrect) {
+        for (let i = 0; i < currentExercise.questions.length; i++) {
+            if (gradedAnswers[i] && gradedAnswers[i].isCorrect) {
                 score++;
             }
         }
         saveAttemptAndShowModal(score, gradedAnswers);
     }
-    
+
     async function saveAttemptAndShowModal(score, answersToSave) {
-        const totalQuestionsAnswered = Object.keys(answersToSave).length;
-        const xp = totalQuestionsAnswered > 0 ? Math.round((score / totalQuestionsAnswered) * currentExercise.xp_reward) : 0;
-
-        finalScoreEl.textContent = `${score}/${totalQuestionsAnswered}`;
-        xpGainedEl.textContent = `${xp} xp`;
-        modal.style.display = 'flex';
-
+        const totalQuestions = currentExercise.questions.length; 
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
         const user = session.user;
 
         const { data: previousAttempts } = await supabase
-            .from('practice_attempts').select('attempt_number, score')
-            .eq('user_id', user.id).eq('exercise_id', currentExercise.id);
+            .from('practice_attempts').select('attempt_number, score, passed')
+            .eq('user_id', user.id)
+            .eq('exercise_id', currentExercise.id);
 
         let newAttemptNumber = 1;
         let isNewBestScore = true;
+        let hasBeenPerfectedBefore = false;
+
         if (previousAttempts && previousAttempts.length > 0) {
             newAttemptNumber = Math.max(...previousAttempts.map(a => a.attempt_number)) + 1;
             const maxScore = Math.max(...previousAttempts.map(a => a.score));
             if (score <= maxScore) isNewBestScore = false;
+            if (previousAttempts.some(attempt => attempt.passed === true)) {
+                hasBeenPerfectedBefore = true;
+            }
         }
-        
+
+        const isCurrentAttemptPerfect = (score === totalQuestions);
+        const xp = (isCurrentAttemptPerfect && !hasBeenPerfectedBefore) ? currentExercise.xp_reward : 0;
+
+        finalScoreEl.textContent = `${score}/${totalQuestions}`;
+        const xpTextElement = document.getElementById('xp-gained').parentElement;
+
+        if (xp > 0) {
+            xpGainedEl.textContent = `${xp} xp`;
+            xpTextElement.style.display = 'block';
+        } else {
+            xpTextElement.style.display = 'none';
+        }
+        modal.style.display = 'flex';
+
         if (isNewBestScore) {
             await supabase.from('practice_attempts').update({ is_best_score: false })
                 .match({ user_id: user.id, exercise_id: currentExercise.id });
@@ -204,10 +274,16 @@ function initializePracticeSessionPage() {
         const timeTakenMinutes = Math.max(1, Math.ceil(timeTakenMs / 60000));
 
         const newAttemptData = {
-            user_id: user.id, exercise_id: currentExercise.id, attempt_number: newAttemptNumber,
-            score: score, passed: (score / currentExercise.questions.length) >= (currentExercise.passing_score / 100),
-            xp_earned: xp, answers: answersToSave, completed_at: completedAt,
-            time_taken_minutes: timeTakenMinutes, is_best_score: isNewBestScore
+            user_id: user.id,
+            exercise_id: currentExercise.id,
+            attempt_number: newAttemptNumber,
+            score: score,
+            passed: isCurrentAttemptPerfect,
+            xp_earned: xp,
+            answers: answersToSave,
+            completed_at: completedAt,
+            time_taken_minutes: timeTakenMinutes,
+            is_best_score: isNewBestScore
         };
 
         await supabase.from('practice_attempts').insert([newAttemptData]);

@@ -21,9 +21,17 @@
         <div class="quiz-header-container">
             <h1 id="quiz-title">Loading Quiz...</h1>
 
-            <!-- Progress Bar -->
-            <div class="progress-bar-container">
-                <div class="progress-bar-fill" id="progress-bar-fill"></div>
+            <div class="quiz-meta-container">
+                <!-- Progress Bar -->
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                </div>
+
+                <!-- NEW: Timer Display -->
+                <div id="quiz-timer" class="quiz-timer" style="display: none;">
+                    <i class="fas fa-clock"></i>
+                    <span id="time-remaining">00:00</span>
+                </div>
             </div>
         </div>
 

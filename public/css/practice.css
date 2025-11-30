@@ -225,6 +225,48 @@ body {
     color: #333;
 }
 
+/* Container for the progress bar and timer */
+.quiz-meta-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+/* Make the progress bar take up the available space */
+.progress-bar-container {
+    flex-grow: 1; 
+}
+
+/* Style for the timer element itself */
+.quiz-timer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #343a40;
+    background-color: #EFEFF5;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #d1d1e0;
+    white-space: nowrap; /* Prevents the timer from wrapping */
+}
+
+/* Style for the warning state when time is low */
+.quiz-timer.warning {
+    color: #d9534f;
+    border-color: #d9534f;
+    animation: pulse 1.5s infinite;
+}
+
+/* A simple pulse animation for the warning state */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
 /* Progress Bar */
 .progress-bar-container {
     width: 100%;
@@ -323,6 +365,16 @@ body {
 .option-text {
     font-size: 1rem;
     color: #495057;
+}
+
+.option-letter {
+    font-weight: 600; 
+    margin-right: 0.75rem; 
+    color: #343a40; 
+}
+.option-label.correct .option-letter,
+.option-label.incorrect .option-letter {
+    color: black;
 }
 
 /* States for after submission */
