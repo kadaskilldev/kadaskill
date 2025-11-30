@@ -354,9 +354,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 1rem;
+    gap: 8rem;
     width: 100%;
-    max-width: 800px; /* Ensure it aligns with the containers above */
+    max-width: 800px; 
 }
 
 .quiz-btn-submit, .quiz-btn-next {
@@ -367,18 +367,6 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.1s;
-}
-
-.quiz-btn-submit {
-    background-color: #f59e0b;
-    color: white;
-}
-.quiz-btn-submit:hover:not(:disabled) {
-    background-color: #d97706;
-}
-.quiz-btn-submit:disabled {
-    background-color: #ced4da;
-    cursor: not-allowed;
 }
 
 .quiz-btn-next {
@@ -502,43 +490,65 @@ body {
     background-color: #fffbeb;
 }
 
-.quiz-actions {
-    display: flex;
-    justify-content: center;
+.nav-image-button {
+    position: relative;
+    display: inline-flex;
     align-items: center;
-    gap: 1rem;
-    width: 100%;
-}
-
-.quiz-btn-nav {
-    background-color: #fff;
-    color: #495057;
-    border: 1px solid #ced4da;
-    padding: 0.7rem 2rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.quiz-btn-nav:hover {
-    background-color: #f1f3f5;
-}
-
-.quiz-btn-submit {
-    background-color: #f59e0b;
-    color: white;
-    padding: 0.8rem 2.5rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
+    justify-content: center;
+    
+    min-height: 50px; 
+    padding: 0 2.5rem;
+    
+    /* Make the button itself transparent */
+    background: transparent;
     border: none;
+    
+    /* Style the text */
+    font-family: var(--button-font-family, 'Inter', sans-serif);
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #2c3e50; 
+    
+    cursor: pointer;
+    transition: transform 0.2s ease;
 }
 
-.quiz-btn-submit:disabled {
-    background-color: #ced4da;
+/* background image is applied */
+.nav-image-button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0; /* Places the image behind the text */
+    
+    background-image: url('../images/practice/nav-btn.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%; /* Stretches the image to fit */
+    transition: background-image 0.2s ease;
+}
+.nav-image-button:hover {
+    transform: translateY(-3px); /* Lifts the button slightly */
+}
+
+/* This targets the background image itself to make it brighter on hover */
+.nav-image-button:hover::before {
+    filter: brightness(1.1); /* Makes the image 10% brighter */
+}
+
+/* This ensures the text appears on top of the background image */
+.nav-image-button span {
+    position: relative;
+    z-index: 1;
+}
+.cta-button:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
+    transform: none; /* Prevents any hover effects */
+}
+
+/* Also, prevent the hover effect on the ::before pseudo-element when disabled */
+.cta-button:disabled::before {
+    background-image: url('../images/home/cta/btn.svg'); /* Reverts to default background */
 }
 
 
