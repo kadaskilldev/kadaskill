@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Session - KadaSkill</title>
+    <link rel="icon" type="image/svg+xml" href="images/loading/favicon.svg">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/practice.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Navigation Placeholder -->
+    <div id="navigation"></div>
+
+    <!-- Main Quiz Content -->
+    <main class="practice-session-main">
+        <div class="quiz-container">
+            <h1 id="quiz-title">Loading Quiz...</h1>
+
+            <!-- Progress Bar -->
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progress-bar-fill"></div>
+            </div>
+
+            <!-- Question Area -->
+            <div id="question-area">
+                <div class="question-header">
+                    <p id="question-text">Loading question...</p>
+                </div>
+                <span class="instruction-text">Select the correct answer</span>
+                <div class="options-container" id="options-container">
+                    <!-- Options will be dynamically inserted here -->
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="quiz-actions">
+                <button id="prev-btn" class="quiz-btn-nav">Previous</button>
+                
+                <!-- This submit button is for the CURRENT question -->
+                <button id="submit-btn" class="quiz-btn-submit">Submit</button>
+
+                <button id="next-btn" class="quiz-btn-nav">Next</button>
+            </div>
+
+            <!-- Add a new container for the finish button, placed below the main actions -->
+            <div class="finish-action-container">
+                <button id="finish-btn" class="quiz-btn-finish" style="display: none;">Finish Quiz</button>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Completion Modal -->
+    <div id="completion-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2>Congratulations!</h2>
+            <p class="modal-score-text">You scored:</p>
+            <p class="modal-score" id="final-score">0/0</p>
+            <p class="modal-xp-text">Exp Gained: <span id="xp-gained">0 xp</span></p>
+            <button id="continue-btn" class="modal-btn-continue">Continue</button>
+        </div>
+    </div>
+
+
+    <!-- Footer Placeholder -->
+    <div id="footer"></div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

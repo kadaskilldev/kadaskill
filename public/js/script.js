@@ -226,6 +226,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         initializeCalendar();
         initializeLearnPage();
         initializePracticePage();
+        initializePracticeSessionPage();
         initializeProfileCoursesNavigation();
         initializeProfileRobotAnimation();
 
@@ -1678,12 +1679,258 @@ function initializeProfileCoursesNavigation() {
     addInteractionListener(prevChevron, 'prev');
 }
 
+
+function initializePracticeSessionPage() {
+    if (!document.querySelector('.practice-session-main')) return;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const exerciseId = urlParams.get('id');
+
+    if (!exerciseId) {
+        window.location.href = 'practice.html';
+        return;
+    }
+
+    // --- Global State ---
+    let currentExercise = null;
+    let currentQuestionIndex = 0;
+    let quizStartTime;
+    // Stores the graded result for each question { qIndex: { correct, selected, isCorrect } }
+    let gradedAnswers = {}; 
+    let selectedAnswer = null; // Tracks selection for the current, ungraded question
+
+    // --- DOM Elements ---
+    const quizTitleEl = document.getElementById('quiz-title');
+    const questionTextEl = document.getElementById('question-text');
+    const optionsContainerEl = document.getElementById('options-container');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const submitBtn = document.getElementById('submit-btn');
+    const finishBtn = document.getElementById('finish-btn');
+    const progressBarFill = document.getElementById('progress-bar-fill');
+    
+    // --- Modal Elements ---
+    const modal = document.getElementById('completion-modal');
+    const finalScoreEl = document.getElementById('final-score');
+    const xpGainedEl = document.getElementById('xp-gained');
+    const continueBtn = document.getElementById('continue-btn');
+
+    async function loadExercise() {
+        const { data, error } = await supabase.from('practice_exercises').select('*').eq('id', exerciseId).single();
+        if (error || !data) {
+            console.error('Failed to load exercise:', error);
+            quizTitleEl.textContent = 'Error';
+            questionTextEl.textContent = 'Could not load the practice session.';
+            return;
+        }
+        currentExercise = data;
+        startQuiz();
+    }
+
+    function startQuiz() {
+        quizTitleEl.textContent = currentExercise.title;
+        currentQuestionIndex = 0;
+        gradedAnswers = {};
+        quizStartTime = new Date();
+        renderQuestion();
+    }
+    
+    function renderQuestion() {
+        selectedAnswer = null; // Reset current selection on navigation
+        optionsContainerEl.classList.remove('graded'); // Remove graded state by default
+        const question = currentExercise.questions[currentQuestionIndex];
+        const isGraded = gradedAnswers.hasOwnProperty(currentQuestionIndex);
+
+        questionTextEl.innerHTML = `${currentQuestionIndex + 1}. ${question.question}`;
+        optionsContainerEl.innerHTML = '';
+
+        question.options.forEach((optionText, index) => {
+            const optionId = `q${currentQuestionIndex}_option${index}`;
+            const optionLabel = document.createElement('label');
+            optionLabel.className = 'option-label';
+            optionLabel.htmlFor = optionId;
+
+            const radioInput = document.createElement('input');
+            radioInput.type = 'radio';
+            radioInput.name = 'option';
+            radioInput.id = optionId;
+            radioInput.value = index;
+
+            // If the question has been graded, show the results
+            if (isGraded) {
+                const answerInfo = gradedAnswers[currentQuestionIndex];
+                const correctIndex = answerInfo.correct;
+                const selectedIndex = answerInfo.selected;
+
+                if (index === correctIndex) optionLabel.classList.add('correct');
+                else if (index === selectedIndex) optionLabel.classList.add('incorrect');
+                
+                if (index === selectedIndex) radioInput.checked = true;
+
+            }
+
+            const customRadio = document.createElement('span');
+            customRadio.className = 'custom-radio';
+            const textSpan = document.createElement('span');
+            textSpan.className = 'option-text';
+            textSpan.textContent = optionText;
+
+            optionLabel.appendChild(radioInput);
+            optionLabel.appendChild(customRadio);
+            optionLabel.appendChild(textSpan);
+            optionsContainerEl.appendChild(optionLabel);
+        });
+        
+        // Update UI based on whether the question is graded
+        if (isGraded) {
+            optionsContainerEl.classList.add('graded');
+            submitBtn.style.display = 'none'; // Hide submit button if already graded
+        } else {
+            submitBtn.style.display = 'block';
+            submitBtn.disabled = true; // Disable until an option is selected
+        }
+        
+        // Add event listeners for UNGRADED questions
+        if (!isGraded) {
+            document.querySelectorAll('input[name="option"]').forEach(input => {
+                input.addEventListener('change', (event) => {
+                    selectedAnswer = parseInt(event.target.value);
+                    submitBtn.disabled = false;
+                });
+            });
+        }
+        
+        updateButtonStates();
+        updateProgressBar();
+    }
+    
+    function updateButtonStates() {
+        prevBtn.style.display = currentQuestionIndex > 0 ? 'block' : 'none';
+        nextBtn.style.display = currentQuestionIndex < currentExercise.questions.length - 1 ? 'block' : 'none';
+
+        // Show finish button if at least one question has been answered
+        if (Object.keys(gradedAnswers).length > 0) {
+            finishBtn.style.display = 'block';
+        }
+    }
+
+    function updateProgressBar() {
+        // Progress bar now shows how many questions have been *answered*
+        const answeredCount = Object.keys(gradedAnswers).length;
+        const progress = (answeredCount / currentExercise.questions.length) * 100;
+        progressBarFill.style.width = `${progress}%`;
+    }
+
+    function handleSubmit() {
+        if (selectedAnswer === null) return; // Should not happen if button is enabled, but good practice
+
+        const question = currentExercise.questions[currentQuestionIndex];
+        const correctIndex = question.correct_answer;
+
+        // Store the graded answer
+        gradedAnswers[currentQuestionIndex] = {
+            correct: correctIndex,
+            selected: selectedAnswer,
+            isCorrect: selectedAnswer === correctIndex
+        };
+
+        // Re-render the question in its new "graded" state
+        renderQuestion();
+    }
+
+    function handlePrevious() {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            renderQuestion();
+        }
+    }
+
+    function handleNext() {
+        if (currentQuestionIndex < currentExercise.questions.length - 1) {
+            currentQuestionIndex++;
+            renderQuestion();
+        }
+    }
+
+    function handleFinish() {
+        // Calculate final score based on the gradedAnswers object
+        let score = 0;
+        for (const key in gradedAnswers) {
+            if (gradedAnswers[key].isCorrect) {
+                score++;
+            }
+        }
+        
+        // Now call the function to save the attempt and show the modal
+        saveAttemptAndShowModal(score, gradedAnswers);
+    }
+    
+    async function saveAttemptAndShowModal(score, answersToSave) {
+        const totalQuestionsAnswered = Object.keys(answersToSave).length;
+        // Calculate XP based on performance on answered questions
+        const xp = totalQuestionsAnswered > 0 ? Math.round((score / totalQuestionsAnswered) * currentExercise.xp_reward) : 0;
+
+        finalScoreEl.textContent = `${score}/${totalQuestionsAnswered}`;
+        xpGainedEl.textContent = `${xp} xp`;
+        modal.style.display = 'flex';
+
+        // The rest of this function for saving to Supabase is the same as before
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        const user = session.user;
+
+        const { data: previousAttempts } = await supabase
+            .from('practice_attempts').select('attempt_number, score')
+            .eq('user_id', user.id).eq('exercise_id', currentExercise.id);
+
+        let newAttemptNumber = 1;
+        let isNewBestScore = true;
+        if (previousAttempts && previousAttempts.length > 0) {
+            newAttemptNumber = Math.max(...previousAttempts.map(a => a.attempt_number)) + 1;
+            const maxScore = Math.max(...previousAttempts.map(a => a.score));
+            if (score <= maxScore) isNewBestScore = false;
+        }
+        
+        if (isNewBestScore) {
+            await supabase.from('practice_attempts').update({ is_best_score: false })
+                .match({ user_id: user.id, exercise_id: currentExercise.id });
+        }
+
+        const completedAt = new Date().toISOString();
+        const timeTakenMs = new Date() - quizStartTime;
+        const timeTakenMinutes = Math.max(1, Math.ceil(timeTakenMs / 60000));
+
+        const newAttemptData = {
+            user_id: user.id, exercise_id: currentExercise.id, attempt_number: newAttemptNumber,
+            score: score, passed: (score / currentExercise.questions.length) >= (currentExercise.passing_score / 100),
+            xp_earned: xp, answers: answersToSave, completed_at: completedAt,
+            time_taken_minutes: timeTakenMinutes, is_best_score: isNewBestScore
+        };
+
+        await supabase.from('practice_attempts').insert([newAttemptData]);
+    }
+
+    // --- Event Listeners ---
+    prevBtn.addEventListener('click', handlePrevious);
+    nextBtn.addEventListener('click', handleNext);
+    submitBtn.addEventListener('click', handleSubmit);
+    finishBtn.addEventListener('click', handleFinish);
+    continueBtn.addEventListener('click', () => { window.location.href = 'practice.html'; });
+
+    loadExercise();
+}
+
+
 // Practice Page Functionality
 function initializePracticePage() {
     // Only run if we're on the practice page
     if (!document.querySelector('.practice-main-content')) return;
     
-    initializePracticeCards();
+    loadPracticeExercises().then(() => {
+        // This ensures cards are loaded before adding listeners
+        initializePracticeCards(); 
+    });
+    
     initializeHeaderScrollAnimation();
 }
 
@@ -1760,24 +2007,15 @@ function initializePracticeCards() {
         if (button) {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
-                const title = card.querySelector('.practice-card-title').textContent;
-                const badge = card.querySelector('.practice-badge').textContent;
-                
-                showNotification(`Starting "${title}"...`, 'info');
-                setTimeout(() => {
-                    showNotification(`Welcome to ${title}! Category: ${badge}`, 'success');
-                }, 1500);
+                const exerciseId = this.getAttribute('data-id');
+                if (exerciseId) {
+                    // Navigate to the practice session page with the exercise ID
+                    window.location.href = `practice-session.html?id=${exerciseId}`;
+                } else {
+                    showNotification('Could not start this exercise. ID is missing.', 'error');
+                }
             });
         }
-        
-        // Add hover animation effect
-        card.addEventListener('mouseenter', function() {
-            this.style.borderColor = '#fbbf24';
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            this.style.borderColor = '#f59e0b';
-        });
     });
 }
 
@@ -2221,4 +2459,57 @@ function loadCertificationDetails(cert) {
             </div>
         </div>
     `).join('');
+}
+
+async function loadPracticeExercises() {
+    const practiceGrid = document.querySelector('.practice-grid');
+    if (!practiceGrid) return; // Exit if not on the practice page
+
+    // Display a loading message
+    practiceGrid.innerHTML = '<p style="color: #666;">Loading practice exercises...</p>';
+
+    try {
+        // Fetch data from the 'practice_exercises' table
+        const { data: exercises, error } = await supabase
+            .from('practice_exercises')
+            .select('*')
+            .eq('is_published', true)
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            // Throw an error to be caught by the catch block
+            throw error;
+        }
+
+        if (exercises.length === 0) {
+            practiceGrid.innerHTML = '<p>No practice exercises are available at the moment. Please check back later!</p>';
+            return;
+        }
+
+        // Clear the loading message
+        practiceGrid.innerHTML = '';
+
+        // Generate a card for each exercise
+        exercises.forEach(exercise => {
+            const card = document.createElement('div');
+            card.className = 'practice-card';
+            card.innerHTML = `
+                <div class="practice-card-header">
+                    <span class="practice-badge ${exercise.category.toLowerCase()}">${exercise.category}</span>
+                </div>
+                <div class="practice-card-body">
+                    <h3 class="practice-card-title">${exercise.title}</h3>
+                    <p class="practice-card-description">${exercise.description}</p>
+                </div>
+                <div class="practice-card-footer">
+                    <button class="practice-btn" data-id="${exercise.id}">Let's Start</button>
+                </div>
+            `;
+            practiceGrid.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error('Error fetching practice exercises:', error);
+        practiceGrid.innerHTML = '<p style="color: #dc3545;">Could not load exercises. Please try again later.</p>';
+    }
 }

@@ -191,6 +191,374 @@ body {
     box-shadow: 0 6px 16px rgba(251, 191, 36, 0.4);
 }
 
+
+/* --- Practice Session / Quiz Page Styles --- */
+.practice-session-main {
+    background-color: #f8f9fa;
+    min-height: calc(100vh - var(--header-height));
+    padding: 4rem 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.quiz-container {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+    padding: 2.5rem 3rem;
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+}
+
+#quiz-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: #333;
+}
+
+/* Progress Bar */
+.progress-bar-container {
+    width: 100%;
+    background-color: #e9ecef;
+    border-radius: 25px;
+    height: 16px;
+    margin-bottom: 2.5rem;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    border-radius: 25px;
+    transition: width 0.4s ease-in-out;
+}
+
+/* Question Area */
+#question-area {
+    text-align: left;
+    margin-bottom: 2.5rem;
+}
+
+.question-header p {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 0.5rem;
+}
+
+.instruction-text {
+    font-size: 0.9rem;
+    color: #6c757d;
+    display: block;
+    margin-bottom: 1.5rem;
+}
+
+/* Options */
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.option-label {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.option-label:hover {
+    background-color: #f1f3f5;
+}
+
+.option-label input[type="radio"] {
+    display: none; /* Hide the default radio button */
+}
+
+.custom-radio {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #adb5bd;
+    border-radius: 50%;
+    margin-right: 1rem;
+    display: inline-block;
+    transition: border-color 0.2s;
+}
+
+/* Style for when radio is checked */
+.option-label input[type="radio"]:checked + .custom-radio {
+    border: 6px solid #f59e0b;
+}
+
+.option-text {
+    font-size: 1rem;
+    color: #495057;
+}
+
+/* States for after submission */
+.option-label.correct {
+    background-color: #d1fae5; /* Green */
+    border-color: #10b981;
+}
+.option-label.incorrect {
+    background-color: #fee2e2; /* Red */
+    border-color: #ef4444;
+}
+.option-label.disabled {
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+/* Quiz Action Buttons */
+.quiz-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.quiz-btn-submit, .quiz-btn-next {
+    padding: 0.8rem 2.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.quiz-btn-submit {
+    background-color: #f59e0b;
+    color: white;
+}
+.quiz-btn-submit:hover:not(:disabled) {
+    background-color: #d97706;
+}
+.quiz-btn-submit:disabled {
+    background-color: #ced4da;
+    cursor: not-allowed;
+}
+
+.quiz-btn-next {
+    background-color: #fff;
+    color: #495057;
+    border: 1px solid #ced4da;
+}
+.quiz-btn-next:hover {
+    background-color: #f1f3f5;
+}
+
+/* Completion Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #2c3e50;
+    color: white;
+    padding: 3rem 4rem;
+    border-radius: 16px;
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+}
+
+.modal-content h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #f59e0b;
+    margin-bottom: 1rem;
+}
+
+.modal-score-text {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.modal-score {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.modal-xp-text {
+    font-size: 1.2rem;
+    margin-bottom: 2.5rem;
+}
+
+.modal-btn-continue {
+    background-color: #f59e0b;
+    color: white;
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.modal-btn-continue:hover {
+    background-color: #d97706;
+}
+
+.quiz-btn-prev, .quiz-btn-next {
+    padding: 0.8rem 2.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+    border: none;
+}
+
+.quiz-btn-prev {
+    background-color: #fff;
+    color: #495057;
+    border: 1px solid #ced4da;
+}
+
+.quiz-btn-prev:hover {
+    background-color: #f1f3f5;
+}
+
+/* Default state for Next button */
+.quiz-btn-next {
+    background-color: #f59e0b; /* Make Next the primary action button */
+    color: white;
+}
+.quiz-btn-next:hover {
+    background-color: #d97706;
+}
+
+/* When the Next button becomes the Submit button */
+.quiz-btn-next.submit-state {
+    background-color: #28a745; /* A green color for submit */
+}
+.quiz-btn-next.submit-state:hover {
+    background-color: #218838;
+}
+
+/* Remove immediate feedback styles, as we grade at the end now */
+.option-label.correct, .option-label.incorrect {
+    /* These styles are no longer needed for this flow */
+    background-color: inherit;
+    border-color: #dee2e6;
+}
+
+.option-label.disabled {
+    cursor: pointer;
+    pointer-events: auto;
+    opacity: 1;
+}
+
+/* Style for selected option */
+.option-label.selected {
+    border-color: #f59e0b;
+    background-color: #fffbeb;
+}
+
+.quiz-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.quiz-btn-nav {
+    background-color: #fff;
+    color: #495057;
+    border: 1px solid #ced4da;
+    padding: 0.7rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.quiz-btn-nav:hover {
+    background-color: #f1f3f5;
+}
+
+.quiz-btn-submit {
+    background-color: #f59e0b;
+    color: white;
+    padding: 0.8rem 2.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+}
+
+.quiz-btn-submit:disabled {
+    background-color: #ced4da;
+    cursor: not-allowed;
+}
+
+/* Styles for the new Finish button container */
+.finish-action-container {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.quiz-btn-finish {
+    background-color: #28a745;
+    color: white;
+    padding: 0.8rem 2.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.quiz-btn-finish:hover {
+    background-color: #218838;
+}
+
+
+/* Re-add immediate feedback styles */
+.option-label.correct {
+    background-color: #d1fae5; /* Green */
+    border-color: #10b981;
+}
+.option-label.incorrect {
+    background-color: #fee2e2; /* Red */
+    border-color: #ef4444;
+}
+
+/* For locking the options after an answer is submitted */
+.options-container.graded .option-label {
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+/* Keep visual feedback on the chosen answer even when disabled */
+.options-container.graded .option-label.selected {
+    opacity: 1;
+}
+
 /* Responsive Design */
 @media (max-width: 1400px) {
     .practice-container {
