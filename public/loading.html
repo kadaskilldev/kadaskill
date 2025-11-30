@@ -7,6 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="images/loading/favicon.svg" />
     <link rel="apple-touch-icon" href="images/loading/favicon.svg" />
     <meta name="description" content="KadaSkill application loading screen" />
+    <link href="https://fonts.cdnfonts.com/css/amazon-ember" rel="stylesheet" />
     <link rel="stylesheet" href="loading/globals.css" />
     <link rel="stylesheet" href="loading/styleguide.css" />
     <link rel="stylesheet" href="loading/style.css" />
@@ -134,6 +135,33 @@
         ]);
       }
 
+      function getGoogleAvatarUrl(user) {
+        if (!user || !user.app_metadata || user.app_metadata.provider !== 'google') {
+          return null;
+        }
+        const metadata = user.user_metadata || {};
+        if (typeof metadata.avatar_url === 'string' && metadata.avatar_url) {
+          return metadata.avatar_url;
+        }
+        if (typeof metadata.picture === 'string' && metadata.picture) {
+          return metadata.picture;
+        }
+        const identities = Array.isArray(user.identities) ? user.identities : [];
+        for (let i = 0; i < identities.length; i++) {
+          const identity = identities[i];
+          if (identity && identity.provider === 'google' && identity.identity_data) {
+            const data = identity.identity_data;
+            if (typeof data.avatar_url === 'string' && data.avatar_url) {
+              return data.avatar_url;
+            }
+            if (typeof data.picture === 'string' && data.picture) {
+              return data.picture;
+            }
+          }
+        }
+        return null;
+      }
+
       async function determineRedirectTarget() {
         try {
           if (!window.supabase || !window.supabase.createClient) {
@@ -159,17 +187,43 @@
 
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
-            .select('full_name, total_xp, bio, avatar_url')
+            .select('full_name, total_xp, bio, avatar_url, role')
             .eq('id', user.id)
             .single();
 
+          const googleAvatarUrl = getGoogleAvatarUrl(user);
+
           if (profileError) {
             console.error('Failed to fetch profile:', profileError);
+            if (profileError.code === 'PGRST116') {
+              const fallbackProfile = {
+                full_name: user.email ? user.email.split('@')[0] : '',
+                total_xp: 0,
+                bio: '',
+                avatar_url: googleAvatarUrl || null,
+              };
+              sessionStorage.setItem('userProfile', JSON.stringify(fallbackProfile));
+              sessionStorage.setItem('authUser', JSON.stringify(user));
+              return 'home.html';
+            }
             return 'index.html';
           }
 
-          sessionStorage.setItem('userProfile', JSON.stringify(profile));
+          let finalProfile = profile || null;
+          if (finalProfile) {
+            const resolvedAvatar = finalProfile.avatar_url || googleAvatarUrl || null;
+            if (resolvedAvatar && !finalProfile.avatar_url) {
+              finalProfile = Object.assign({}, finalProfile, { avatar_url: resolvedAvatar });
+            }
+          }
+
+          sessionStorage.setItem('userProfile', JSON.stringify(finalProfile));
           sessionStorage.setItem('authUser', JSON.stringify(user));
+
+          // Redirect admin users to admin panel
+          if (finalProfile && finalProfile.role === 'admin') {
+            return 'admin.html';
+          }
 
           return 'home.html';
         } catch (err) {

@@ -21,188 +21,9 @@ if (window.supabase && window.supabase.createClient) {
 
 const supabase = supabaseClient; // for compatibility with the rest of the code logic
 
-// --- MASTER AUTHENTICATION & DATA FETCHING FUNCTION ---
-async function checkAuthAndLoadUserData() {
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (!session) {
-        // Redirect to login if the user is on a protected page
-        const publicPages = ['/', '/index.html', '/loading.html'];
-        if (!publicPages.includes(window.location.pathname)) {
-            window.location.href = 'index.html';
-        }
-        return null;
-    }
-
-    const user = session.user;
-
-    // Fetch the user's full profile from the database
-    const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-    if (error) {
-        console.error('Critical Error: Could not fetch user profile. Signing out.', error);
-        await supabase.auth.signOut();
-        window.location.href = 'index.html';
-        return null;
-    }
-
-    // Return both the auth user and the database profile
-    return { user, profile };
-}
-
-// --- UI UPDATE LOGIC ---
-function updateUserUI(user, profile) {
-    if (!user || !profile) return;
-
-    const userName = profile.full_name || user.email.split('@')[0];
-    const userInitial = userName.charAt(0).toUpperCase();
-    const avatarUrl = profile.avatar_url;
-
-    // 1. Update all possible name/greeting elements
-    const nameElements = document.querySelectorAll('.highlight-name, .text-wrapper-37, .profile-hero__name, .highlight');
-    nameElements.forEach(el => {
-        if (el) el.textContent = userName;
-    });
-
-    // 2. Update all possible handle/@username elements
-    const handleElements = document.querySelectorAll('.profile-hero__handle, .text-wrapper');
-    handleElements.forEach(el => {
-        if(el) el.textContent = `@${user.email.split('@')[0]}`;
-    });
-
-    // 3. Update all possible avatar elements
-    const avatarPlaceholders = document.querySelectorAll('.user-avatar, .avatar-img, .profile-hero__avatar-image, .profile-pic');
-    avatarPlaceholders.forEach(el => {
-        if (avatarUrl) {
-            // If it's an IMG tag, set the src
-            if (el.tagName === 'IMG') {
-                el.src = avatarUrl;
-            } else {
-                // If it's a DIV, replace its content with an image
-                el.innerHTML = ''; // Clear initial
-                const img = document.createElement('img');
-                img.src = avatarUrl;
-                img.alt = `Avatar for ${userName}`;
-                img.style.width = '100%';
-                img.style.height = '100%';
-                img.style.objectFit = 'cover';
-                img.style.borderRadius = '50%';
-                el.appendChild(img);
-            }
-        } else {
-            // If no avatar URL, show the initial
-            if (el.tagName === 'DIV') {
-                el.textContent = userInitial;
-            } else { // It's an IMG tag without a source
-                el.src = 'images/user-avatar.jpg'; // A default placeholder image
-            }
-        }
-    });
-
-    // 4. Update the bio on the profile page
-    const bioElement = document.querySelector('.profile-bio-card__copy');
-    if (bioElement) {
-        bioElement.textContent = profile.bio || 'No biography has been set. Click "Edit Profile" to add one.';
-    }
-}
-
-async function loadMyCourses() {
-    // 1. Find the grid container on learn.html page
-    const coursesGrid = document.getElementById('courses-grid');
-    if (!coursesGrid) return; // Stop if we're not on the right page
-
-    // Add a loading message
-    coursesGrid.innerHTML = '<p style="color: #666;">Loading your courses...</p>';
-
-    // 2. Fetch all published courses from the database
-    const { data: courses, error } = await supabase
-        .from('courses')
-        .select('*')
-        .eq('is_published', true)
-        .order('created_at', { ascending: false }); // Show newest courses first
-
-    if (error) {
-        console.error("Error fetching courses:", error);
-        coursesGrid.innerHTML = '<p style="color: #dc3545;">Could not load courses at this time.</p>';
-        return;
-    }
-
-    if (courses.length === 0) {
-        coursesGrid.innerHTML = '<p>No courses are available yet. Check back soon!</p>';
-        return;
-    }
-    
-    // Update the course count
-    const countElement = document.getElementById('course-count');
-    if (countElement) {
-        countElement.textContent = courses.length;
-    }
-
-    // 3. Clear the loading message
-    coursesGrid.innerHTML = '';
-
-    // 4. Loop through the fetched courses and create a card for each one
-    for (const course of courses) {
-        // Find the first lesson to link to
-        const { data: firstMaterial } = await supabase
-            .from('course_materials')
-            .select('id')
-            .eq('course_id', course.id)
-            .order('order_index', { ascending: true })
-            .limit(1)
-            .single();
-
-        const courseCard = document.createElement('div');
-        courseCard.className = 'course-card';
-        courseCard.setAttribute('data-category', course.category_id || 'general'); // For filtering
-
-        // Use the data from the 'course' object to fill the card
-        courseCard.innerHTML = `
-            <div class="course-card-image">
-                <img src="${course.thumbnail_url || 'images/courses/placeholder.jpg'}" alt="${course.title}" onerror="this.onerror=null;this.src='images/courses/placeholder.jpg';">
-                <div class="course-badge ${course.difficulty?.toLowerCase() || 'beginner'}">${course.difficulty || 'Beginner'}</div>
-            </div>
-            <div class="course-card-content">
-                <h3 class="course-card-title">${course.title}</h3>
-                <p class="course-card-description">${course.description}</p>
-                <div class="course-card-footer">
-                    <span class="course-duration"><i class="fas fa-clock"></i> ${course.xp_reward} XP</span>
-                    <button class="course-card-btn">Start</button>
-                </div>
-            </div>
-        `;
-
-        // 5. Add a click listener to the card to navigate to the watch page
-        if (firstMaterial) {
-            courseCard.addEventListener('click', () => {
-                // Navigate to the video player, passing the lesson ID
-                window.location.href = `watch.html?id=${firstMaterial.id}`;
-            });
-        } else {
-            // If there are no lessons, maybe disable the card or show a "coming soon" message
-            courseCard.style.opacity = '0.6';
-            courseCard.querySelector('.course-card-btn').textContent = 'Soon';
-        }
-        
-        coursesGrid.appendChild(courseCard);
-    }
-}
-
-document.addEventListener('DOMContentLoaded', async function() {
-    // Check Auth and Fetch Data FIRST
-    const userData = await checkAuthAndLoadUserData();
-
+document.addEventListener('DOMContentLoaded', function() {
     // Load shared components first
     loadSharedComponents();
-
-    // Update the UI with the fetched data
-    if (userData) {
-        updateUserUI(userData.user, userData.profile);
-    }
     
     // Then initialize page functionality
     setTimeout(() => {
@@ -226,29 +47,33 @@ document.addEventListener('DOMContentLoaded', async function() {
         initializeCalendar();
         initializeLearnPage();
         initializePracticePage();
-        initializePracticeSessionPage();
         initializeProfileCoursesNavigation();
         initializeProfileRobotAnimation();
 
         const pathname = window.location.pathname;
-        if (
-            pathname.endsWith('home.html') ||
-            pathname === '/' ||
-            pathname.endsWith('learn.html') ||
-            pathname.endsWith('learning.html') ||
-            pathname.endsWith('certification.html') ||
-            pathname.endsWith('profile.html') ||
-            pathname.endsWith('practice.html')
-        ) {
-            console.log(`On ${pathname}, loading user data...`);
+        let hasStoredProfile = false;
+        let hasStoredUser = false;
+        try {
+            hasStoredProfile = !!sessionStorage.getItem('userProfile');
+            hasStoredUser = !!sessionStorage.getItem('authUser');
+        } catch (storageError) {
+            console.warn('Unable to access sessionStorage for user data:', storageError);
+        }
+
+        if (hasStoredProfile && hasStoredUser) {
+            console.log(`Loading user data for ${pathname}...`);
             loadDashboardData();
         }
 
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (!href || href === '#') {
+                    return;
+                }
                 e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
+                const target = document.querySelector(href);
                 if (target) {
                     target.scrollIntoView({
                         behavior: 'smooth',
@@ -273,6 +98,28 @@ document.addEventListener('DOMContentLoaded', async function() {
 function loadSharedComponents() {
     loadNavigation();
     loadFooter();
+}
+
+function isLoggedInContentPage(pageName) {
+    if (!pageName) return false;
+    const normalized = pageName.toLowerCase();
+    const staticPages = new Set([
+        'home.html',
+        'profile.html',
+        'edit-profile.html',
+        'about.html',
+        'about-us.html'
+    ]);
+
+    if (staticPages.has(normalized)) {
+        return true;
+    }
+
+    return (
+        normalized.startsWith('learn') ||
+        normalized.startsWith('practice') ||
+        normalized.startsWith('certification')
+    );
 }
 
 function initializeUserMenu(scope = document) {
@@ -382,7 +229,7 @@ function loadNavigation() {
 
     const userProfileMarkup = `
                 <div class="user-profile">
-                    <div class="user-avatar" aria-hidden="true"></div>
+                    <div class="user-avatar" aria-hidden="true">E</div>
                     <button class="user-profile__toggle" aria-label="Open profile menu" aria-haspopup="true" aria-expanded="false">
                         <img src="images/profile/Vector.svg" alt="" class="user-profile__icon">
                     </button>
@@ -447,6 +294,29 @@ function loadNavigation() {
     `;
 
     navigationElement.innerHTML = nav;
+
+    const logoElement = navigationElement.querySelector('.logo');
+    if (logoElement && isLoggedInContentPage(currentPage)) {
+        logoElement.classList.add('logo--home-link');
+        logoElement.setAttribute('role', 'link');
+        logoElement.setAttribute('tabindex', '0');
+
+        const navigateHome = () => {
+            window.location.href = 'home.html';
+        };
+
+        logoElement.addEventListener('click', (event) => {
+            event.preventDefault();
+            navigateHome();
+        });
+
+        logoElement.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                navigateHome();
+            }
+        });
+    }
 
     const headerElement = navigationElement.querySelector('.header');
     if (headerElement) {
@@ -679,13 +549,16 @@ async function handleFormSubmit(e) {
         return;
     }
     
-    if (data.user) {
-        // Successful login OR Sign-up (if email confirmation is OFF)
-        showNotification('Authentication successful! Redirecting to dashboard...', 'success');
-        // Redirect to home page
-        setTimeout(() => {
-            window.location.href = 'home.html'; 
-        }, 1500);
+    if (user) {
+        // If sign up requires verification
+        if (!session) {
+             showNotification('Welcome! Please check your email to verify your account.', 'success');
+             return;
+        }
+        // On successful login or signup (with auto-confirm)
+        // Supabase automatically handles the session in localStorage.
+        // We just need to navigate to the loading page.
+        window.location.href = 'loading.html';
     } else {
         showNotification('An unexpected authentication response was received.', 'error');
     }
@@ -805,6 +678,11 @@ function handleCTAClick(e) {
         setTimeout(() => {
             window.location.href = 'certification.html';
         }, 1000);
+    } else if (targetUrl === 'practice.html' || targetUrl === 'public/practice.html') {
+        showNotification('Navigating to Practice page...', 'info');
+        setTimeout(() => {
+            window.location.href = 'practice.html';
+        }, 1000);
     } else {
         const heroForm = document.querySelector('.hero-form');
         if (heroForm) {
@@ -819,14 +697,9 @@ function handleCTAClick(e) {
 
 // Certification Page Functionality
 function initializeCertificationPage() {
-    // Only run if we're on the certification page
-    if (!document.querySelector('.certifications-grid-section')) return;
-    
-    initializeFiltering();
-    initializeSearch();
-    initializeCertificationCards();
-    initializeContinueCard();
-    updateCertificationCount();
+    // DISABLED - Certification page now uses js/certification.js for database-driven certifications
+    // The old hardcoded certification logic has been replaced with dynamic loading from Supabase
+    return;
 }
 
 function initializeFiltering() {
@@ -1335,14 +1208,9 @@ function getNotificationColor(type) {
 
 // Learn Page Functionality
 function initializeLearnPage() {
-    // Only run if we're on the learn page
-    if (!document.querySelector('.learn-main-content')) return;
-    
-    initializeCourseFiltering();
-    initializeCourseSearch();
-    initializeCourseCards();
-    initializeContinueButton();
-    updateCourseCount();
+    // DISABLED - Learn page now uses js/learn.js for database-driven courses
+    // The old hardcoded course logic has been replaced with dynamic loading from Supabase
+    return;
 }
 
 function initializeCourseFiltering() {
@@ -1679,244 +1547,11 @@ function initializeProfileCoursesNavigation() {
     addInteractionListener(prevChevron, 'prev');
 }
 
-
-// In script.js, replace the ENTIRE initializePracticeSessionPage function with this one.
-
-function initializePracticeSessionPage() {
-    if (!document.querySelector('.practice-session-main')) return;
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const exerciseId = urlParams.get('id');
-
-    if (!exerciseId) {
-        window.location.href = 'practice.html';
-        return;
-    }
-
-    // --- Global State ---
-    let currentExercise = null;
-    let currentQuestionIndex = 0;
-    let quizStartTime;
-    let gradedAnswers = {};
-    let selectedAnswer = null;
-
-    // --- DOM Elements ---
-    const quizTitleEl = document.getElementById('quiz-title');
-    const questionTextEl = document.getElementById('question-text');
-    const optionsContainerEl = document.getElementById('options-container');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const submitBtn = document.getElementById('submit-btn');
-    const progressBarFill = document.getElementById('progress-bar-fill');
-    
-    // --- Modal Elements ---
-    const modal = document.getElementById('completion-modal');
-    const finalScoreEl = document.getElementById('final-score');
-    const xpGainedEl = document.getElementById('xp-gained');
-    const continueBtn = document.getElementById('continue-btn');
-
-    async function loadExercise() {
-        const { data, error } = await supabase.from('practice_exercises').select('*').eq('id', exerciseId).single();
-        if (error || !data) {
-            console.error('Failed to load exercise:', error);
-            quizTitleEl.textContent = 'Error';
-            questionTextEl.textContent = 'Could not load the practice session.';
-            return;
-        }
-        currentExercise = data;
-        startQuiz();
-    }
-
-    function startQuiz() {
-        quizTitleEl.textContent = currentExercise.title;
-        currentQuestionIndex = 0;
-        gradedAnswers = {};
-        quizStartTime = new Date();
-        renderQuestion();
-    }
-    
-    function renderQuestion() {
-        selectedAnswer = null;
-        optionsContainerEl.classList.remove('graded');
-        const question = currentExercise.questions[currentQuestionIndex];
-        const isGraded = gradedAnswers.hasOwnProperty(currentQuestionIndex);
-
-        questionTextEl.innerHTML = `${currentQuestionIndex + 1}. ${question.question}`;
-        optionsContainerEl.innerHTML = '';
-
-        question.options.forEach((optionText, index) => {
-            const optionId = `q${currentQuestionIndex}_option${index}`;
-            const optionLabel = document.createElement('label');
-            optionLabel.className = 'option-label';
-            optionLabel.htmlFor = optionId;
-            const radioInput = document.createElement('input');
-            radioInput.type = 'radio';
-            radioInput.name = 'option';
-            radioInput.id = optionId;
-            radioInput.value = index;
-
-            if (isGraded) {
-                const answerInfo = gradedAnswers[currentQuestionIndex];
-                if (index === answerInfo.correct) optionLabel.classList.add('correct');
-                else if (index === answerInfo.selected) optionLabel.classList.add('incorrect');
-                if (index === answerInfo.selected) radioInput.checked = true;
-            }
-
-            const customRadio = document.createElement('span');
-            customRadio.className = 'custom-radio';
-            const textSpan = document.createElement('span');
-            textSpan.className = 'option-text';
-            textSpan.textContent = optionText;
-
-            optionLabel.appendChild(radioInput);
-            optionLabel.appendChild(customRadio);
-            optionLabel.appendChild(textSpan);
-            optionsContainerEl.appendChild(optionLabel);
-        });
-        
-        if (isGraded) {
-            optionsContainerEl.classList.add('graded');
-            submitBtn.style.display = 'none';
-        } else {
-            submitBtn.style.display = 'block';
-            submitBtn.disabled = true;
-        }
-        
-        if (!isGraded) {
-            document.querySelectorAll('input[name="option"]').forEach(input => {
-                input.addEventListener('change', (event) => {
-                    selectedAnswer = parseInt(event.target.value);
-                    submitBtn.disabled = false;
-                });
-            });
-        }
-        
-        updateButtonStates();
-        updateProgressBar();
-    }
-    
-    function updateButtonStates() {
-        prevBtn.style.display = currentQuestionIndex > 0 ? 'block' : 'none';
-        nextBtn.style.display = currentQuestionIndex < currentExercise.questions.length - 1 ? 'block' : 'none';
-    }
-
-    function updateProgressBar() {
-        const answeredCount = Object.keys(gradedAnswers).length;
-        const progress = (answeredCount / currentExercise.questions.length) * 100;
-        progressBarFill.style.width = `${progress}%`;
-    }
-
-    function handleSubmit() {
-        if (selectedAnswer === null) return;
-        const question = currentExercise.questions[currentQuestionIndex];
-        gradedAnswers[currentQuestionIndex] = {
-            correct: question.correct_answer,
-            selected: selectedAnswer,
-            isCorrect: selectedAnswer === question.correct_answer
-        };
-
-        // Re-render the question to show it as graded
-        renderQuestion();
-        
-        // --- NEW LOGIC: AUTO-FINISH ---
-        // Check if all questions have now been answered
-        const answeredCount = Object.keys(gradedAnswers).length;
-        if (answeredCount === currentExercise.questions.length) {
-            // Use a short delay before showing the modal to let the user see the last feedback
-            setTimeout(() => {
-                finishQuiz();
-            }, 1000); // 1-second delay
-        }
-    }
-    
-    function handlePrevious() {
-        if (currentQuestionIndex > 0) {
-            currentQuestionIndex--;
-            renderQuestion();
-        }
-    }
-
-    function handleNext() {
-        if (currentQuestionIndex < currentExercise.questions.length - 1) {
-            currentQuestionIndex++;
-            renderQuestion();
-        }
-    }
-
-    function finishQuiz() {
-        let score = 0;
-        for (const key in gradedAnswers) {
-            if (gradedAnswers[key].isCorrect) {
-                score++;
-            }
-        }
-        saveAttemptAndShowModal(score, gradedAnswers);
-    }
-    
-    async function saveAttemptAndShowModal(score, answersToSave) {
-        const totalQuestionsAnswered = Object.keys(answersToSave).length;
-        const xp = totalQuestionsAnswered > 0 ? Math.round((score / totalQuestionsAnswered) * currentExercise.xp_reward) : 0;
-
-        finalScoreEl.textContent = `${score}/${totalQuestionsAnswered}`;
-        xpGainedEl.textContent = `${xp} xp`;
-        modal.style.display = 'flex';
-
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return;
-        const user = session.user;
-
-        const { data: previousAttempts } = await supabase
-            .from('practice_attempts').select('attempt_number, score')
-            .eq('user_id', user.id).eq('exercise_id', currentExercise.id);
-
-        let newAttemptNumber = 1;
-        let isNewBestScore = true;
-        if (previousAttempts && previousAttempts.length > 0) {
-            newAttemptNumber = Math.max(...previousAttempts.map(a => a.attempt_number)) + 1;
-            const maxScore = Math.max(...previousAttempts.map(a => a.score));
-            if (score <= maxScore) isNewBestScore = false;
-        }
-        
-        if (isNewBestScore) {
-            await supabase.from('practice_attempts').update({ is_best_score: false })
-                .match({ user_id: user.id, exercise_id: currentExercise.id });
-        }
-
-        const completedAt = new Date().toISOString();
-        const timeTakenMs = new Date() - quizStartTime;
-        const timeTakenMinutes = Math.max(1, Math.ceil(timeTakenMs / 60000));
-
-        const newAttemptData = {
-            user_id: user.id, exercise_id: currentExercise.id, attempt_number: newAttemptNumber,
-            score: score, passed: (score / currentExercise.questions.length) >= (currentExercise.passing_score / 100),
-            xp_earned: xp, answers: answersToSave, completed_at: completedAt,
-            time_taken_minutes: timeTakenMinutes, is_best_score: isNewBestScore
-        };
-
-        await supabase.from('practice_attempts').insert([newAttemptData]);
-    }
-
-    // --- Event Listeners ---
-    prevBtn.addEventListener('click', handlePrevious);
-    nextBtn.addEventListener('click', handleNext);
-    submitBtn.addEventListener('click', handleSubmit);
-    continueBtn.addEventListener('click', () => { window.location.href = 'practice.html'; });
-
-    loadExercise();
-}
-
-
 // Practice Page Functionality
 function initializePracticePage() {
-    // Only run if we're on the practice page
-    if (!document.querySelector('.practice-main-content')) return;
-    
-    loadPracticeExercises().then(() => {
-        // This ensures cards are loaded before adding listeners
-        initializePracticeCards(); 
-    });
-    
-    initializeHeaderScrollAnimation();
+    // DISABLED - Practice page now uses js/practice.js for database-driven exercises
+    // The old hardcoded practice card logic has been replaced with dynamic loading from Supabase
+    return;
 }
 
 function initializeProfileRobotAnimation() {
@@ -1992,15 +1627,24 @@ function initializePracticeCards() {
         if (button) {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
-                const exerciseId = this.getAttribute('data-id');
-                if (exerciseId) {
-                    // Navigate to the practice session page with the exercise ID
-                    window.location.href = `practice-session.html?id=${exerciseId}`;
-                } else {
-                    showNotification('Could not start this exercise. ID is missing.', 'error');
-                }
+                const title = card.querySelector('.practice-card-title').textContent;
+                const badge = card.querySelector('.practice-badge').textContent;
+                
+                showNotification(`Starting "${title}"...`, 'info');
+                setTimeout(() => {
+                    showNotification(`Welcome to ${title}! Category: ${badge}`, 'success');
+                }, 1500);
             });
         }
+        
+        // Add hover animation effect
+        card.addEventListener('mouseenter', function() {
+            this.style.borderColor = '#fbbf24';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.borderColor = '#f59e0b';
+        });
     });
 }
 
@@ -2035,6 +1679,33 @@ function loadDashboardData() {
     updateUserUI(user, profile);
 }
 
+function getProviderAvatarUrl(user) {
+    if (!user || !user.app_metadata || user.app_metadata.provider !== 'google') {
+        return null;
+    }
+    const metadata = user.user_metadata || {};
+    if (typeof metadata.avatar_url === 'string' && metadata.avatar_url) {
+        return metadata.avatar_url;
+    }
+    if (typeof metadata.picture === 'string' && metadata.picture) {
+        return metadata.picture;
+    }
+    const identities = Array.isArray(user.identities) ? user.identities : [];
+    for (let i = 0; i < identities.length; i++) {
+        const identity = identities[i];
+        if (identity && identity.provider === 'google' && identity.identity_data) {
+            const data = identity.identity_data;
+            if (typeof data.avatar_url === 'string' && data.avatar_url) {
+                return data.avatar_url;
+            }
+            if (typeof data.picture === 'string' && data.picture) {
+                return data.picture;
+            }
+        }
+    }
+    return null;
+}
+
 function updateUserUI(user, profile) {
     if (!user || !profile) return;
 
@@ -2051,7 +1722,8 @@ function updateUserUI(user, profile) {
     if (userHandle && !userHandle.startsWith('@')) {
         userHandle = `@${userHandle}`;
     }
-    const avatarUrl = profile.avatar_url;
+    const providerAvatarUrl = getProviderAvatarUrl(user);
+    const avatarUrl = profile.avatar_url || providerAvatarUrl || null;
     const nameWithExclamation = userName.endsWith('!') ? userName : `${userName}!`;
 
     const headerAvatar = document.querySelector('.header-right .user-avatar');
@@ -2444,57 +2116,4 @@ function loadCertificationDetails(cert) {
             </div>
         </div>
     `).join('');
-}
-
-async function loadPracticeExercises() {
-    const practiceGrid = document.querySelector('.practice-grid');
-    if (!practiceGrid) return; // Exit if not on the practice page
-
-    // Display a loading message
-    practiceGrid.innerHTML = '<p style="color: #666;">Loading practice exercises...</p>';
-
-    try {
-        // Fetch data from the 'practice_exercises' table
-        const { data: exercises, error } = await supabase
-            .from('practice_exercises')
-            .select('*')
-            .eq('is_published', true)
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            // Throw an error to be caught by the catch block
-            throw error;
-        }
-
-        if (exercises.length === 0) {
-            practiceGrid.innerHTML = '<p>No practice exercises are available at the moment. Please check back later!</p>';
-            return;
-        }
-
-        // Clear the loading message
-        practiceGrid.innerHTML = '';
-
-        // Generate a card for each exercise
-        exercises.forEach(exercise => {
-            const card = document.createElement('div');
-            card.className = 'practice-card';
-            card.innerHTML = `
-                <div class="practice-card-header">
-                    <span class="practice-badge ${exercise.category.toLowerCase()}">${exercise.category}</span>
-                </div>
-                <div class="practice-card-body">
-                    <h3 class="practice-card-title">${exercise.title}</h3>
-                    <p class="practice-card-description">${exercise.description}</p>
-                </div>
-                <div class="practice-card-footer">
-                    <button class="practice-btn" data-id="${exercise.id}">Let's Start</button>
-                </div>
-            `;
-            practiceGrid.appendChild(card);
-        });
-
-    } catch (error) {
-        console.error('Error fetching practice exercises:', error);
-        practiceGrid.innerHTML = '<p style="color: #dc3545;">Could not load exercises. Please try again later.</p>';
-    }
 }

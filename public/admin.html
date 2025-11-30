@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - KadaSkill</title>
+    <link rel="icon" type="image/svg+xml" href="images/loading/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Admin Layout -->
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar__header">
+                <div class="admin-sidebar__logo">
+                    <img src="images/loading/icon.png" alt="KadaSkill Logo" class="admin-sidebar__logo-image">
+                    <div class="admin-sidebar__logo-text">
+                        <span class="kada">Kada</span><span class="skill">Skill</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="admin-sidebar__nav">
+                <button class="admin-nav-item active" data-section="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics Dashboard</span>
+                </button>
+                <button class="admin-nav-item" data-section="users">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                </button>
+                <button class="admin-nav-item" data-section="content">
+                    <i class="fas fa-book"></i>
+                    <span>Content Management</span>
+                </button>
+                <button class="admin-nav-item" data-section="learning-paths">
+                    <i class="fas fa-route"></i>
+                    <span>Learning Paths</span>
+                </button>
+                <button class="admin-nav-item" data-section="gamification">
+                    <i class="fas fa-trophy"></i>
+                    <span>Gamification</span>
+                </button>
+            </nav>
+
+            <div class="admin-sidebar__footer">
+                <button class="admin-nav-item" data-section="help">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Help & Support</span>
+                </button>
+                <button class="admin-nav-item" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="admin-header">
+                <h2 class="admin-header__title" id="section-title">Analytics Dashboard</h2>
+                <div class="admin-header__user">
+                    <span id="admin-username">Admin User</span>
+                    <img src="images/profile/default-avatar.svg" alt="Admin" class="admin-header__avatar" id="admin-avatar">
+                </div>
+            </div>
+
+            <div class="admin-content">
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="admin-section active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-card__icon" style="background: #3b82f6;">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-card__content">
+                                <span class="stat-card__label">Total Users</span>
+                                <span class="stat-card__value" id="stat-users">0</span>
+                                <span class="stat-card__change" id="stat-users-change">
+                                    <i class="fas fa-arrow-up"></i> 0% vs last month
+                                </span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__icon" style="background: #10b981;">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="stat-card__content">
+                                <span class="stat-card__label">Total Courses</span>
+                                <span class="stat-card__value" id="stat-courses">0</span>
+                                <span class="stat-card__change positive">
+                                    <i class="fas fa-arrow-up"></i> <span id="stat-courses-published">0</span> published
+                                </span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__icon" style="background: #f59e0b;">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <div class="stat-card__content">
+                                <span class="stat-card__label">Active Enrollments</span>
+                                <span class="stat-card__value" id="stat-enrollments">0</span>
+                                <span class="stat-card__change" id="stat-enrollments-change">
+                                    <i class="fas fa-arrow-up"></i> 0% completion rate
+                                </span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__icon" style="background: #8b5cf6;">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="stat-card__content">
+                                <span class="stat-card__label">Total XP Earned</span>
+                                <span class="stat-card__value" id="stat-total-xp">0</span>
+                                <span class="stat-card__change positive">
+                                    <i class="fas fa-trophy"></i> <span id="stat-avg-xp">0</span> avg per user
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="chart-card__header">
+                                <h3 class="chart-card__title">User Engagement (Last 7 Days)</h3>
+                                <div class="chart-card__legend">
+                                    <span class="legend-item">
+                                        <span class="legend-dot" style="background: #3b82f6;"></span>
+                                        Daily Active Users
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="engagement-chart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card">
+                            <div class="chart-card__header">
+                                <h3 class="chart-card__title">Enrollments by Category</h3>
+                            </div>
+                            <div class="chart-container chart-container--pie">
+                                <canvas id="category-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Performers and Recent Activity -->
+                    <div class="admin-grid">
+                        <div class="admin-card">
+                            <h3 class="admin-card__title">Top Performers</h3>
+                            <div id="top-performers" class="leaderboard-list">
+                                <div class="loading-spinner">Loading...</div>
+                            </div>
+                        </div>
+                        <div class="admin-card">
+                            <h3 class="admin-card__title">Recent Activity</h3>
+                            <div id="recent-activity" class="activity-list">
+                                <div class="loading-spinner">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Performance -->
+                    <div class="admin-card" style="margin-top: 24px;">
+                        <h3 class="admin-card__title">Course Performance</h3>
+                        <div class="table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Course Name</th>
+                                        <th>Enrollments</th>
+                                        <th>Avg. Progress</th>
+                                        <th>Completion Rate</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="course-performance-body">
+                                    <tr>
+                                        <td colspan="5" class="loading-cell">Loading course performance...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Users Section -->
+                <section id="users-section" class="admin-section">
+                    <div class="section-header">
+                        <h3>All Users</h3>
+                        <div class="section-actions">
+                            <input type="text" placeholder="Search by name or email..." class="search-input" id="user-search">
+                            <select class="filter-select" id="role-filter">
+                                <option value="all">All Roles</option>
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                            <select class="filter-select" id="status-filter">
+                                <option value="all">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Total XP</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <tr>
+                                    <td colspan="7" class="loading-cell">Loading users...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-pagination">
+                        <div class="pagination-info">
+                            Showing <span id="users-showing">0</span> of <span id="users-total">0</span> users
+                        </div>
+                        <div class="pagination-controls">
+                            <button class="btn-pagination" id="users-prev-btn" disabled>
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </button>
+                            <span class="pagination-page">Page <span id="users-current-page">1</span></span>
+                            <button class="btn-pagination" id="users-next-btn">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Content Management Section -->
+                <section id="content-section" class="admin-section">
+                    <div class="content-tabs">
+                        <button class="content-tab active" data-content-tab="courses">Courses</button>
+                        <button class="content-tab" data-content-tab="certifications">Certifications</button>
+                        <button class="content-tab" data-content-tab="exercises">Practice Exercises</button>
+                    </div>
+
+                    <!-- Courses Tab -->
+                    <div id="courses-tab" class="content-tab-panel active">
+                        <div class="section-header">
+                            <h3>Manage Courses</h3>
+                            <button class="btn-primary" id="add-course-btn">
+                                <i class="fas fa-plus"></i> Add New Course
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Level</th>
+                                        <th>Lessons</th>
+                                        <th>Published</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="courses-table-body">
+                                    <tr>
+                                        <td colspan="6" class="loading-cell">Loading courses...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Certifications Tab -->
+                    <div id="certifications-tab" class="content-tab-panel">
+                        <div class="section-header">
+                            <h3>Manage Certifications</h3>
+                            <button class="btn-primary" id="add-cert-btn">
+                                <img src="/images/cert-backend/add-cert-plus.svg" alt="Add certification" class="btn-icon-img">
+                                Add New Certification
+                            </button>
+                        </div>
+                        <div class="cert-filters">
+                            <div class="filter-row">
+                                <div class="search-box">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" id="cert-search" placeholder="Search certifications..." class="filter-input">
+                                </div>
+                                <select id="cert-category-filter" class="filter-select">
+                                    <option value="">All Categories</option>
+                                    <option value="AI">AI</option>
+                                    <option value="Cloud">Cloud</option>
+                                    <option value="Cybersecurity">Cybersecurity</option>
+                                </select>
+                                <select id="cert-status-filter" class="filter-select">
+                                    <option value="">All Status</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                            <span class="cert-count" id="cert-count">0 certifications</span>
+                        </div>
+                        <div class="section-actions" id="cert-bulk-bar">
+                            <div class="bulk-actions">
+                                <label class="bulk-select">
+                                    <input type="checkbox" id="cert-select-all" onclick="handleCertHeaderCheckboxChange(this.checked)">
+                                    <span>Select all</span>
+                                </label>
+                                <span class="selection-count" id="cert-selection-count"></span>
+                                <button class="btn-secondary btn-sm" id="cert-bulk-activate" disabled>Activate</button>
+                                <button class="btn-secondary btn-sm" id="cert-bulk-deactivate" disabled>Deactivate</button>
+                                <button class="btn-danger btn-sm" id="cert-bulk-delete" disabled>
+                                    <img src="/images/cert-backend/delete-icon.svg" alt="Delete" class="btn-icon-img">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 40px;"></th>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Level</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="certifications-table-body">
+                                    <tr>
+                                        <td colspan="6" class="loading-cell">Loading certifications...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-controls" id="cert-pagination">
+                            <div class="pagination-info">
+                                <span id="cert-page-info">Showing 0-0 of 0</span>
+                            </div>
+                            <div class="pagination-buttons">
+                                <button class="btn-pagination" id="cert-prev-btn" disabled>
+                                    <i class="fas fa-chevron-left"></i> Previous
+                                </button>
+                                <div class="pagination-pages" id="cert-page-numbers"></div>
+                                <button class="btn-pagination" id="cert-next-btn" disabled>
+                                    Next <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                            <div class="pagination-per-page">
+                                <label>Per page:</label>
+                                <select id="cert-per-page" class="filter-select">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Exercises Tab -->
+                    <div id="exercises-tab" class="content-tab-panel">
+                        <div class="section-header">
+                            <h3>Manage Practice Exercises</h3>
+                            <button class="btn-primary" id="add-exercise-btn">
+                                <i class="fas fa-plus"></i> Add New Exercise
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Difficulty</th>
+                                        <th>Questions</th>
+                                        <th>Published</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="exercises-table-body">
+                                    <tr>
+                                        <td colspan="6" class="loading-cell">Loading exercises...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Learning Paths Section -->
+                <section id="learning-paths-section" class="admin-section">
+                    <div class="section-header">
+                        <h3>Learning Paths</h3>
+                        <button class="btn-primary">
+                            <i class="fas fa-plus"></i> Create Learning Path
+                        </button>
+                    </div>
+                    <div class="empty-state">
+                        <i class="fas fa-route"></i>
+                        <p>Learning paths feature coming soon!</p>
+                    </div>
+                </section>
+
+                <!-- Gamification Section -->
+                <section id="gamification-section" class="admin-section">
+                    <div class="section-header">
+                        <h3>Gamification Settings</h3>
+                    </div>
+                    <div class="admin-card">
+                        <h4>Badges</h4>
+                        <p>Manage achievement badges, XP rewards, and user rankings.</p>
+                        <div class="empty-state">
+                            <i class="fas fa-trophy"></i>
+                            <p>Badge management coming soon!</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Help Section -->
+                <section id="help-section" class="admin-section">
+                    <div class="admin-card">
+                        <h3>Help & Support</h3>
+                        <div class="help-content">
+                            <div class="help-item">
+                                <i class="fas fa-book"></i>
+                                <div>
+                                    <h4>Documentation</h4>
+                                    <p>Learn how to use the admin panel effectively</p>
+                                </div>
+                            </div>
+                            <div class="help-item">
+                                <i class="fas fa-question-circle"></i>
+                                <div>
+                                    <h4>FAQs</h4>
+                                    <p>Find answers to common questions</p>
+                                </div>
+                            </div>
+                            <div class="help-item">
+                                <i class="fas fa-envelope"></i>
+                                <div>
+                                    <h4>Contact Support</h4>
+                                    <p>Get help from our support team</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal" id="edit-user-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit User</h3>
+                <button class="modal-close" onclick="closeEditUserModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-user-form">
+                    <input type="hidden" id="edit-user-id">
+
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-input" id="edit-username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" id="edit-full-name">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" id="edit-email" required readonly>
+                        <small class="form-hint">Email cannot be changed</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <select class="form-input" id="edit-role" required>
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Total XP</label>
+                        <input type="number" class="form-input" id="edit-total-xp" min="0">
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeEditUserModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Practice Exercise Modal -->
+    <div class="modal modal-large" id="exercise-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="exercise-modal-title">Add New Practice Exercise</h3>
+                <button class="modal-close" onclick="closeExerciseModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="exercise-form">
+                    <input type="hidden" id="exercise-id">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Title <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="exercise-title" required
+                                   placeholder="e.g., Python Basics: Variables and Data Types">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Slug <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="exercise-slug" required
+                                   placeholder="e.g., python-basics-variables">
+                            <small class="form-hint">URL-friendly identifier (lowercase, hyphens)</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-input" id="exercise-description" rows="3"
+                                      placeholder="Brief description of what this exercise covers..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row form-row-3">
+                        <div class="form-group">
+                            <label class="form-label">Category <span class="required">*</span></label>
+                            <select class="form-input" id="exercise-category" required>
+                                <option value="">Select category</option>
+                                <option value="AI">AI</option>
+                                <option value="Cybersecurity">Cybersecurity</option>
+                                <option value="Cloud">Cloud</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Difficulty <span class="required">*</span></label>
+                            <select class="form-input" id="exercise-difficulty" required>
+                                <option value="">Select difficulty</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                                <option value="Expert">Expert</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Published</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="exercise-published" checked>
+                                <label for="exercise-published" class="toggle-label">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row form-row-3">
+                        <div class="form-group">
+                            <label class="form-label">Passing Score (%)</label>
+                            <input type="number" class="form-input" id="exercise-passing-score"
+                                   min="0" max="100" value="70" placeholder="70">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Time Limit (min)</label>
+                            <input type="number" class="form-input" id="exercise-time-limit"
+                                   min="0" placeholder="15">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">XP Reward</label>
+                            <input type="number" class="form-input" id="exercise-xp-reward"
+                                   min="0" value="15" placeholder="15">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Tags (comma-separated)</label>
+                            <input type="text" class="form-input" id="exercise-tags"
+                                   placeholder="python, basics, variables, data-types">
+                        </div>
+                    </div>
+
+                    <div class="form-divider"></div>
+
+                    <!-- Questions Section -->
+                    <div class="questions-section">
+                        <div class="questions-header">
+                            <h4>Questions</h4>
+                            <button type="button" class="btn-secondary btn-sm" onclick="addQuestion()">
+                                <i class="fas fa-plus"></i> Add Question
+                            </button>
+                        </div>
+                        <div id="questions-container">
+                            <div class="empty-questions">
+                                <i class="fas fa-question-circle"></i>
+                                <p>No questions yet. Click "Add Question" to create your first question.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeExerciseModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Save Exercise
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Certification Modal -->
+    <div class="modal" id="cert-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="cert-modal-title">Add New Certification</h3>
+                <button class="modal-close" onclick="closeCertModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="cert-form">
+                    <input type="hidden" id="cert-id">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Title <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="cert-title" required
+                                   placeholder="e.g., AWS Certified Solutions Architect – Associate">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Slug <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="cert-slug" required
+                                   placeholder="e.g., aws-solutions-architect-associate">
+                            <small class="form-hint">URL-friendly identifier (lowercase, hyphens)</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row form-row-3">
+                        <div class="form-group">
+                            <label class="form-label">Provider</label>
+                            <input type="text" class="form-input" id="cert-provider"
+                                   placeholder="e.g., AWS, Microsoft, CompTIA">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Category <span class="required">*</span></label>
+                            <select class="form-input" id="cert-category" required>
+                                <option value="">Select category</option>
+                                <option value="AI">AI</option>
+                                <option value="Cybersecurity">Cybersecurity</option>
+                                <option value="Cloud">Cloud</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Level</label>
+                            <select class="form-input" id="cert-level">
+                                <option value="">Select level</option>
+                                <option value="Foundation">Foundation</option>
+                                <option value="Associate">Associate</option>
+                                <option value="Professional">Professional</option>
+                                <option value="Expert">Expert</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Short Description</label>
+                            <textarea class="form-input" id="cert-description" rows="3"
+                                      placeholder="Brief description shown on the certification card..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Overview</label>
+                            <textarea class="form-input" id="cert-overview" rows="3"
+                                      placeholder="Longer overview shown on the certification guide page..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row form-row-3">
+                        <div class="form-group">
+                            <label class="form-label">Estimated Duration (hours)</label>
+                            <input type="number" class="form-input" id="cert-duration" min="0" placeholder="40">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Exam Code</label>
+                            <input type="text" class="form-input" id="cert-exam-code" placeholder="e.g., SAA-C03">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Active</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="cert-active" checked>
+                                <label for="cert-active" class="toggle-label">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Image</label>
+                            <small class="form-hint">Upload an image or paste a direct image URL. This maps to the certification icon.</small>
+                            <div class="cert-image-input-row" style="display: flex; gap: 8px; align-items: center;">
+                                <input type="text" class="form-input" id="cert-image-url"
+                                       placeholder="https://.../your-cert-image.png">
+                                <button type="button" class="btn-secondary btn-sm" id="cert-image-upload-btn">
+                                    <i class="fas fa-upload"></i> Upload
+                                </button>
+                                <input type="file" id="cert-image-file" accept="image/*" style="display: none;">
+                            </div>
+                            <div class="form-hint" id="cert-image-status" style="margin-top: 4px; display: none;"></div>
+                            <div class="cert-image-preview-wrapper" style="margin-top: 8px;">
+                                <img id="cert-image-preview" src="images/certifications/placeholder.png" alt="Certification image preview"
+                                     style="max-height: 64px; border-radius: 6px; background: #f3f4f6; padding: 4px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Official URL</label>
+                            <input type="text" class="form-input" id="cert-official-url"
+                                   placeholder="https://... official certification page">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Prerequisites</label>
+                            <textarea class="form-input" id="cert-prerequisites" rows="3"
+                                      placeholder="Enter one prerequisite per line..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Study Resources</label>
+                            <small class="form-hint">Links, docs, and practice materials shown on the certification guide.</small>
+                            <div id="study-resources-container">
+                                <div class="empty-questions">
+                                    <i class="fas fa-link"></i>
+                                    <p>No study resources yet. Click "Add Resource" to add one.</p>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-secondary btn-sm" onclick="addStudyResource()">
+                                <i class="fas fa-plus"></i> Add Resource
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeCertModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Save Certification
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
