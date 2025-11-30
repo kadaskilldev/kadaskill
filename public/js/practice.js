@@ -182,7 +182,7 @@ async function startExercise(exerciseId, exerciseSlug) {
         }
 
         // Redirect to practice exercise page
-        window.location.href = `practice-exercise.html?exercise=${exerciseSlug}`;
+        window.location.href = `practice-session.html?id=${exerciseId}`;
 
     } catch (error) {
         console.error('Unexpected error starting exercise:', error);
