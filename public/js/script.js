@@ -1680,6 +1680,8 @@ function initializeProfileCoursesNavigation() {
 }
 
 
+// In script.js, replace the ENTIRE initializePracticeSessionPage function with this one.
+
 function initializePracticeSessionPage() {
     if (!document.querySelector('.practice-session-main')) return;
 
@@ -1695,9 +1697,8 @@ function initializePracticeSessionPage() {
     let currentExercise = null;
     let currentQuestionIndex = 0;
     let quizStartTime;
-    // Stores the graded result for each question { qIndex: { correct, selected, isCorrect } }
-    let gradedAnswers = {}; 
-    let selectedAnswer = null; // Tracks selection for the current, ungraded question
+    let gradedAnswers = {};
+    let selectedAnswer = null;
 
     // --- DOM Elements ---
     const quizTitleEl = document.getElementById('quiz-title');
@@ -1706,7 +1707,6 @@ function initializePracticeSessionPage() {
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     const submitBtn = document.getElementById('submit-btn');
-    const finishBtn = document.getElementById('finish-btn');
     const progressBarFill = document.getElementById('progress-bar-fill');
     
     // --- Modal Elements ---
@@ -1736,8 +1736,8 @@ function initializePracticeSessionPage() {
     }
     
     function renderQuestion() {
-        selectedAnswer = null; // Reset current selection on navigation
-        optionsContainerEl.classList.remove('graded'); // Remove graded state by default
+        selectedAnswer = null;
+        optionsContainerEl.classList.remove('graded');
         const question = currentExercise.questions[currentQuestionIndex];
         const isGraded = gradedAnswers.hasOwnProperty(currentQuestionIndex);
 
@@ -1749,24 +1749,17 @@ function initializePracticeSessionPage() {
             const optionLabel = document.createElement('label');
             optionLabel.className = 'option-label';
             optionLabel.htmlFor = optionId;
-
             const radioInput = document.createElement('input');
             radioInput.type = 'radio';
             radioInput.name = 'option';
             radioInput.id = optionId;
             radioInput.value = index;
 
-            // If the question has been graded, show the results
             if (isGraded) {
                 const answerInfo = gradedAnswers[currentQuestionIndex];
-                const correctIndex = answerInfo.correct;
-                const selectedIndex = answerInfo.selected;
-
-                if (index === correctIndex) optionLabel.classList.add('correct');
-                else if (index === selectedIndex) optionLabel.classList.add('incorrect');
-                
-                if (index === selectedIndex) radioInput.checked = true;
-
+                if (index === answerInfo.correct) optionLabel.classList.add('correct');
+                else if (index === answerInfo.selected) optionLabel.classList.add('incorrect');
+                if (index === answerInfo.selected) radioInput.checked = true;
             }
 
             const customRadio = document.createElement('span');
@@ -1781,16 +1774,14 @@ function initializePracticeSessionPage() {
             optionsContainerEl.appendChild(optionLabel);
         });
         
-        // Update UI based on whether the question is graded
         if (isGraded) {
             optionsContainerEl.classList.add('graded');
-            submitBtn.style.display = 'none'; // Hide submit button if already graded
+            submitBtn.style.display = 'none';
         } else {
             submitBtn.style.display = 'block';
-            submitBtn.disabled = true; // Disable until an option is selected
+            submitBtn.disabled = true;
         }
         
-        // Add event listeners for UNGRADED questions
         if (!isGraded) {
             document.querySelectorAll('input[name="option"]').forEach(input => {
                 input.addEventListener('change', (event) => {
@@ -1807,37 +1798,37 @@ function initializePracticeSessionPage() {
     function updateButtonStates() {
         prevBtn.style.display = currentQuestionIndex > 0 ? 'block' : 'none';
         nextBtn.style.display = currentQuestionIndex < currentExercise.questions.length - 1 ? 'block' : 'none';
-
-        // Show finish button if at least one question has been answered
-        if (Object.keys(gradedAnswers).length > 0) {
-            finishBtn.style.display = 'block';
-        }
     }
 
     function updateProgressBar() {
-        // Progress bar now shows how many questions have been *answered*
         const answeredCount = Object.keys(gradedAnswers).length;
         const progress = (answeredCount / currentExercise.questions.length) * 100;
         progressBarFill.style.width = `${progress}%`;
     }
 
     function handleSubmit() {
-        if (selectedAnswer === null) return; // Should not happen if button is enabled, but good practice
-
+        if (selectedAnswer === null) return;
         const question = currentExercise.questions[currentQuestionIndex];
-        const correctIndex = question.correct_answer;
-
-        // Store the graded answer
         gradedAnswers[currentQuestionIndex] = {
-            correct: correctIndex,
+            correct: question.correct_answer,
             selected: selectedAnswer,
-            isCorrect: selectedAnswer === correctIndex
+            isCorrect: selectedAnswer === question.correct_answer
         };
 
-        // Re-render the question in its new "graded" state
+        // Re-render the question to show it as graded
         renderQuestion();
+        
+        // --- NEW LOGIC: AUTO-FINISH ---
+        // Check if all questions have now been answered
+        const answeredCount = Object.keys(gradedAnswers).length;
+        if (answeredCount === currentExercise.questions.length) {
+            // Use a short delay before showing the modal to let the user see the last feedback
+            setTimeout(() => {
+                finishQuiz();
+            }, 1000); // 1-second delay
+        }
     }
-
+    
     function handlePrevious() {
         if (currentQuestionIndex > 0) {
             currentQuestionIndex--;
@@ -1852,29 +1843,24 @@ function initializePracticeSessionPage() {
         }
     }
 
-    function handleFinish() {
-        // Calculate final score based on the gradedAnswers object
+    function finishQuiz() {
         let score = 0;
         for (const key in gradedAnswers) {
             if (gradedAnswers[key].isCorrect) {
                 score++;
             }
         }
-        
-        // Now call the function to save the attempt and show the modal
         saveAttemptAndShowModal(score, gradedAnswers);
     }
     
     async function saveAttemptAndShowModal(score, answersToSave) {
         const totalQuestionsAnswered = Object.keys(answersToSave).length;
-        // Calculate XP based on performance on answered questions
         const xp = totalQuestionsAnswered > 0 ? Math.round((score / totalQuestionsAnswered) * currentExercise.xp_reward) : 0;
 
         finalScoreEl.textContent = `${score}/${totalQuestionsAnswered}`;
         xpGainedEl.textContent = `${xp} xp`;
         modal.style.display = 'flex';
 
-        // The rest of this function for saving to Supabase is the same as before
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
         const user = session.user;
@@ -1914,7 +1900,6 @@ function initializePracticeSessionPage() {
     prevBtn.addEventListener('click', handlePrevious);
     nextBtn.addEventListener('click', handleNext);
     submitBtn.addEventListener('click', handleSubmit);
-    finishBtn.addEventListener('click', handleFinish);
     continueBtn.addEventListener('click', () => { window.location.href = 'practice.html'; });
 
     loadExercise();

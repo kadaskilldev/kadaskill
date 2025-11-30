@@ -194,45 +194,50 @@ body {
 
 /* --- Practice Session / Quiz Page Styles --- */
 .practice-session-main {
-    background-color: #f8f9fa;
+    background-color: #FFFFFF; /* Changed from #f8f9fa to white */
     min-height: calc(100vh - var(--header-height));
-    padding: 4rem 1rem;
+    padding: 3rem 1rem;
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
 }
-
-.quiz-container {
-    background-color: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
-    padding: 2.5rem 3rem;
+.quiz-header-container {
     width: 100%;
     max-width: 800px;
     text-align: center;
 }
 
+
+.quiz-container {
+    background-color: #EFEFF5; /* Changed from #ffffff to the new color */
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+    padding: 2.5rem 8rem;
+    width: 100%;
+    max-width: 800px;
+}
+
 #quiz-title {
     font-size: 2rem;
     font-weight: 700;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem; /* Space between title and progress bar */
     color: #333;
 }
 
 /* Progress Bar */
 .progress-bar-container {
     width: 100%;
-    background-color: #e9ecef;
+    background-color: #FDD291; /* background color for unanswered questions */
     border-radius: 25px;
     height: 16px;
-    margin-bottom: 2.5rem;
     overflow: hidden;
 }
 
 .progress-bar-fill {
     width: 0%;
     height: 100%;
-    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    background-color: #FF9900; 
     border-radius: 25px;
     transition: width 0.4s ease-in-out;
 }
@@ -271,6 +276,7 @@ body {
     border: 1px solid #dee2e6;
     border-radius: 8px;
     cursor: pointer;
+    background-color: #FFFFFF;
     transition: background-color 0.2s, border-color 0.2s;
 }
 
@@ -304,12 +310,21 @@ body {
 
 /* States for after submission */
 .option-label.correct {
-    background-color: #d1fae5; /* Green */
-    border-color: #10b981;
+    background-color: #66B2B2; /* New Correct Color */
+    border-color: #508d8d;     /* A slightly darker border for contrast */
+    color: white;              /* White text for better readability */
+}
+/* make sure the text inside the correct label is white*/
+.option-label.correct .option-text {
+    color: white;
 }
 .option-label.incorrect {
-    background-color: #fee2e2; /* Red */
-    border-color: #ef4444;
+    background-color: #EC7F9E;
+    border-color: #c96a86;     /* A slightly darker border for contrast */
+    color: white;              /* White text for better readability */
+}
+.option-label.incorrect .option-text {
+    color: white;
 }
 .option-label.disabled {
     cursor: not-allowed;
@@ -321,7 +336,10 @@ body {
 .quiz-actions {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 1rem;
+    width: 100%;
+    max-width: 800px; /* Ensure it aligns with the containers above */
 }
 
 .quiz-btn-submit, .quiz-btn-next {
@@ -455,13 +473,6 @@ body {
     background-color: #218838;
 }
 
-/* Remove immediate feedback styles, as we grade at the end now */
-.option-label.correct, .option-label.incorrect {
-    /* These styles are no longer needed for this flow */
-    background-color: inherit;
-    border-color: #dee2e6;
-}
-
 .option-label.disabled {
     cursor: pointer;
     pointer-events: auto;
@@ -513,38 +524,20 @@ body {
     cursor: not-allowed;
 }
 
-/* Styles for the new Finish button container */
-.finish-action-container {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #e9ecef;
-}
-
-.quiz-btn-finish {
-    background-color: #28a745;
-    color: white;
-    padding: 0.8rem 2.5rem;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.quiz-btn-finish:hover {
-    background-color: #218838;
-}
-
 
 /* Re-add immediate feedback styles */
 .option-label.correct {
-    background-color: #d1fae5; /* Green */
-    border-color: #10b981;
+    background-color: #66B2B2; 
+}
+.option-label.correct .option-text {
+    color: black;
 }
 .option-label.incorrect {
-    background-color: #fee2e2; /* Red */
-    border-color: #ef4444;
+    background-color: #EC7F9E; 
+    border-color: #c96a86;     
+}
+.option-label.incorrect .option-text {
+    color: black;
 }
 
 /* For locking the options after an answer is submitted */

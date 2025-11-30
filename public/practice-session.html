@@ -17,14 +17,18 @@
 
     <!-- Main Quiz Content -->
     <main class="practice-session-main">
-        <div class="quiz-container">
+        <!-- Header container for title and progress bar -->
+        <div class="quiz-header-container">
             <h1 id="quiz-title">Loading Quiz...</h1>
 
             <!-- Progress Bar -->
             <div class="progress-bar-container">
                 <div class="progress-bar-fill" id="progress-bar-fill"></div>
             </div>
+        </div>
 
+        <!-- The main white box for questions and actions -->
+        <div class="quiz-container">
             <!-- Question Area -->
             <div id="question-area">
                 <div class="question-header">
@@ -35,21 +39,13 @@
                     <!-- Options will be dynamically inserted here -->
                 </div>
             </div>
-            
-            <!-- Action Buttons -->
-            <div class="quiz-actions">
-                <button id="prev-btn" class="quiz-btn-nav">Previous</button>
-                
-                <!-- This submit button is for the CURRENT question -->
-                <button id="submit-btn" class="quiz-btn-submit">Submit</button>
+        </div>
 
-                <button id="next-btn" class="quiz-btn-nav">Next</button>
-            </div>
-
-            <!-- Add a new container for the finish button, placed below the main actions -->
-            <div class="finish-action-container">
-                <button id="finish-btn" class="quiz-btn-finish" style="display: none;">Finish Quiz</button>
-            </div>
+        <!-- Action Buttons -->
+        <div class="quiz-actions">
+            <button id="prev-btn" class="quiz-btn-nav">Previous</button>
+            <button id="submit-btn" class="quiz-btn-submit">Submit</button>
+            <button id="next-btn" class="quiz-btn-nav">Next</button>
         </div>
     </main>
     
