@@ -1239,6 +1239,7 @@ body.has-fixed-header {
 }
 
 .features {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
     gap: 5rem;
@@ -1246,6 +1247,35 @@ body.has-fixed-header {
     margin: 6rem auto;
     /* ✅ space above & below */
     padding: 3rem 0;
+    overflow: visible;
+}
+
+/* Decorative circles for Mission/Vision section */
+.features-circle {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.features-circle--large {
+    width: 483px;
+    height: 483px;
+    left: -380px; /* Moved more to the left */
+    bottom: -150px; /* Near bottom of section */
+}
+
+.features-circle--medium {
+    width: 256px;
+    height: 256px;
+    right: -180px; /* Positioned to the right, partially outside */
+    top: -50px; /* Near top of section */
+}
+
+.features-circle--small {
+    width: 308px;
+    height: 308px;
+    right: -280px; /* Moved more to the right */
+    bottom: -100px; /* Near bottom of section */
 }
 
 .feature-card {

@@ -27,7 +27,8 @@ dist/
 build/
 
 # IDE/editor configs
-.vscode/
+.vscode/*
+!.vscode/mcp.json
 .idea/
 *.swp
 *.swo

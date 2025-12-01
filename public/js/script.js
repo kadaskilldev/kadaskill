@@ -584,12 +584,17 @@ async function handleSocialLogin(e) {
     
     showNotification(`Redirecting to ${platform} login...`, 'info');
 
+    // Dynamically determine redirect URL based on current environment
+    // Works for localhost, GitHub Codespaces, and any other deployment
+    const redirectUrl = `${window.location.origin}/loading.html`;
+    console.log('OAuth redirect URL:', redirectUrl);
+
     // Supabase OAuth Sign In
     const { error } = await supabase.auth.signInWithOAuth({
         provider: provider,
         options: {
             // Redirect to the dashboard after successful login
-            redirectTo: window.location.origin + '/loading.html',
+            redirectTo: redirectUrl,
         },
     });
 
