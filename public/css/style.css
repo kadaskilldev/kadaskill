@@ -1834,7 +1834,7 @@ body.has-fixed-header {
     text-align: center;
     position: relative;
     overflow: hidden;
-    margin-top: 6rem;
+    margin-top: 0;
     box-sizing: border-box;
 }
 

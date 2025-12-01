@@ -12,6 +12,7 @@ pnpm-debug.log
 .env
 .env.local
 .env.*.local
+.env.example
 
 # Logs
 logs
@@ -27,8 +28,7 @@ dist/
 build/
 
 # IDE/editor configs
-.vscode/*
-!.vscode/mcp.json
+.vscode/
 .idea/
 *.swp
 *.swo
