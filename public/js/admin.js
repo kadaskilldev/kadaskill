@@ -613,8 +613,20 @@ function setupEventListeners() {
     // Sidebar navigation
     const navItems = document.querySelectorAll('.admin-nav-item[data-section]');
     navItems.forEach(item => {
-        item.addEventListener('click', () => {
+        item.addEventListener('click', (event) => {
             const section = item.dataset.section;
+            if (section === 'content') {
+                event.preventDefault();
+                const contentSubnav = document.getElementById('content-subnav');
+                const isHidden = !contentSubnav || contentSubnav.hasAttribute('hidden');
+                if (isHidden) {
+                    toggleContentSubnav(true);
+                    switchSection(section);
+                } else {
+                    toggleContentSubnav(false);
+                }
+                return;
+            }
             switchSection(section);
         });
     });
@@ -624,6 +636,9 @@ function setupEventListeners() {
     contentTabs.forEach(tab => {
         tab.addEventListener('click', () => {
             const tabName = tab.dataset.contentTab;
+            if (currentSection !== 'content') {
+                switchSection('content');
+            }
             switchContentTab(tabName);
         });
     });
@@ -711,6 +726,35 @@ function setupEventListeners() {
 }
 
 // ============================================
+// Sidebar Sub-navigation Helpers
+// ============================================
+
+function toggleContentSubnav(forceOpen = null) {
+    const subnav = document.getElementById('content-subnav');
+    const navItem = document.querySelector('.admin-nav-item[data-section="content"]');
+    if (!subnav || !navItem) return;
+
+    const isHidden = subnav.hasAttribute('hidden');
+    let shouldOpen;
+
+    if (forceOpen === true) {
+        shouldOpen = true;
+    } else if (forceOpen === false) {
+        shouldOpen = false;
+    } else {
+        shouldOpen = isHidden;
+    }
+
+    if (shouldOpen) {
+        subnav.removeAttribute('hidden');
+        navItem.setAttribute('aria-expanded', 'true');
+    } else {
+        subnav.setAttribute('hidden', '');
+        navItem.setAttribute('aria-expanded', 'false');
+    }
+}
+
+// ============================================
 // Section Switching
 // ============================================
 
@@ -753,6 +797,12 @@ function switchSection(sectionName) {
 
     currentSection = sectionName;
 
+    if (sectionName === 'content') {
+        toggleContentSubnav(true);
+    } else {
+        toggleContentSubnav(false);
+    }
+
     // Load data for specific sections
     if (sectionName === 'users') {
         loadUsers();
@@ -788,6 +838,7 @@ function switchContentTab(tabName) {
     if (activePanel) {
         activePanel.classList.add('active');
     }
+
 }
 
 // ============================================

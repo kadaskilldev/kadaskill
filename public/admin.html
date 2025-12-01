@@ -38,10 +38,20 @@
                     <i class="fas fa-users"></i>
                     <span>User Management</span>
                 </button>
-                <button class="admin-nav-item" data-section="content">
-                    <i class="fas fa-book"></i>
-                    <span>Content Management</span>
+                <button class="admin-nav-item has-subnav admin-nav-item--content" data-section="content" aria-expanded="false" aria-controls="content-subnav">
+                    <span class="content-nav-icon" aria-hidden="true">
+                        <img src="images/content-management/Content Management.svg" alt="Content Management" loading="lazy">
+                    </span>
+                    <span class="content-nav-label" data-content-nav-label>Content Management</span>
+                    <span class="nav-caret" aria-hidden="true">
+                        <i class="fas fa-chevron-down"></i>
+                    </span>
                 </button>
+                <div class="admin-subnav" id="content-subnav" hidden>
+                    <button class="content-tab active" data-content-tab="courses">Courses</button>
+                    <button class="content-tab" data-content-tab="certifications">Certifications</button>
+                    <button class="content-tab" data-content-tab="exercises">Practice Exercises</button>
+                </div>
                 <button class="admin-nav-item" data-section="learning-paths">
                     <i class="fas fa-route"></i>
                     <span>Learning Paths</span>
@@ -251,11 +261,6 @@
 
                 <!-- Content Management Section -->
                 <section id="content-section" class="admin-section">
-                    <div class="content-tabs">
-                        <button class="content-tab active" data-content-tab="courses">Courses</button>
-                        <button class="content-tab" data-content-tab="certifications">Certifications</button>
-                        <button class="content-tab" data-content-tab="exercises">Practice Exercises</button>
-                    </div>
 
                     <!-- Courses Tab -->
                     <div id="courses-tab" class="content-tab-panel active">
