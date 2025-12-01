@@ -16,54 +16,76 @@
     <div id="navigation"></div>
 
     <!-- Main Quiz Content -->
-    <main class="practice-session-main">
-        <!-- Header container for title and progress bar -->
-        <div class="quiz-header-container">
-            <h1 id="quiz-title">Loading Quiz...</h1>
-
-            <div class="quiz-meta-container">
-                <!-- Progress Bar -->
-                <div class="progress-bar-container">
-                    <div class="progress-bar-fill" id="progress-bar-fill"></div>
-                </div>
-
-                <!-- NEW: Timer Display -->
-                <div id="quiz-timer" class="quiz-timer" style="display: none;">
-                    <i class="fas fa-clock"></i>
-                    <span id="time-remaining">00:00</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- The main white box for questions and actions -->
-        <div class="quiz-container">
-            <!-- Question Area -->
-            <div id="question-area">
-                <div class="question-header">
-                    <p id="question-text">Loading question...</p>
-                </div>
-                <span class="instruction-text">Select the correct answer</span>
-                <div class="options-container" id="options-container">
-                    <!-- Options will be dynamically inserted here -->
+    <main class="exercise-main">
+    <header class="exercise-header">
+        <div class="container">
+            <a href="practice.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Practice
+            </a>
+            <div class="exercise-header-content">
+                <div class="exercise-info">
+                    <h1 class="exercise-title" id="exerciseTitle">Loading exercise...</h1>
+                    <p class="exercise-description" id="exerciseDescription"></p>
+                    <div class="exercise-meta">
+                        <span class="meta-item" id="exerciseCategory">
+                            <i class="fas fa-folder"></i> <span>Category</span>
+                        </span>
+                        <span class="meta-item" id="exerciseDifficulty">
+                            <i class="fas fa-signal"></i> <span>Difficulty</span>
+                        </span>
+                        <span class="meta-item" id="exerciseQuestions">
+                            <i class="fas fa-clipboard-question"></i> <span>0 Questions</span>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
+    </header>
 
-        <!-- Action Buttons -->
-        <div class="quiz-actions">
-            <button id="prev-btn" class="nav-image-button">
-                <span>Previous</span>
-            </button>
-
-            <button id="submit-btn" class="cta-button">
-                <span>Submit</span>
-            </button>
-
-            <button id="next-btn" class="nav-image-button">
-                <span>Next</span>
-            </button>
+    <div class="exercise-container">
+        <div class="exercise-start-screen" id="startScreen">
+            <div class="start-card">
+                <i class="fas fa-play-circle"></i>
+                <h2>Ready to Test Your Knowledge?</h2>
+                <p>This exercise contains <strong id="totalQuestionsStart">0</strong> questions.</p>
+                <div class="start-meta">
+                    <span id="timeLimitStart" style="display: none;"><i class="fas fa-clock"></i> <span>0</span> minutes</span>
+                </div>
+                <button class="btn-start-exercise" id="startExerciseBtn">
+                    <i class="fas fa-rocket"></i> Start Exercise
+                </button>
+            </div>
         </div>
-    </main>
+
+        <div class="exercise-question-screen" id="questionScreen" style="display: none;">
+            <div class="quiz-header-container">
+                <div class="quiz-meta-container">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                    </div>
+                    <div id="quiz-timer" class="quiz-timer" style="display: none;">
+                        <i class="fas fa-clock"></i>
+                        <span id="time-remaining">00:00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="quiz-container">
+                <div id="question-area">
+                    <div class="question-header">
+                        <p id="question-text">Loading question...</p>
+                    </div>
+                    <span class="instruction-text">Select the correct answer</span>
+                    <div class="options-container" id="options-container"></div>
+                </div>
+            </div>
+            <div class="quiz-actions">
+                <button id="prev-btn" class="nav-image-button"><span>Previous</span></button>
+                <button id="submit-btn" class="cta-button"><span>Submit</span></button>
+                <button id="next-btn" class="nav-image-button"><span>Next</span></button>
+            </div>
+        </div>
+    </div>
+</main>
     
     <!-- Completion Modal -->
     <div id="completion-modal" class="modal-overlay" style="display: none;">

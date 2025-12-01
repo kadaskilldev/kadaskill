@@ -631,6 +631,152 @@ body {
     opacity: 1;
 }
 
+
+/* In practice.css, ADD this new block at the end */
+
+/* --- Styles for Merged Intro Screen --- */
+
+.exercise-header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d5073 100%);
+    color: white;
+    padding: 2rem 0;
+    border-bottom: 4px solid #f59e0b;
+}
+
+.exercise-header .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #e2e8f0;
+    text-decoration: none;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #f59e0b;
+}
+
+.exercise-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.exercise-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.exercise-description {
+    font-size: 1rem;
+    color: #cbd5e1;
+    max-width: 60ch;
+    margin-bottom: 1rem;
+}
+
+.exercise-meta {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.9rem;
+    color: #94a3b8;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.exercise-main {
+    padding-bottom: 4rem;
+}
+
+.exercise-container {
+    max-width: 1000px;
+    margin: 2rem auto 0;
+    padding: 0 1rem;
+}
+
+.exercise-start-screen,
+.exercise-question-screen {
+    width: 100%;
+}
+
+.start-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+    padding: 3rem;
+    text-align: center;
+}
+
+.start-card > i {
+    font-size: 3.5rem;
+    color: #f59e0b;
+    margin-bottom: 1rem;
+}
+
+.start-card h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.start-card p {
+    color: #64748b;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.start-meta {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    color: #475569;
+    font-weight: 500;
+    margin-bottom: 2rem;
+}
+
+.start-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-start-exercise {
+    background: #f59e0b;
+    color: #1a202c;
+    border: none;
+    padding: 1rem 3rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.btn-start-exercise:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+}
+
+/* Also, remove the background from the quiz main container now */
+.practice-session-main {
+    background-color: #FFFFFF;
+}
+
 /* Responsive Design */
 @media (max-width: 1400px) {
     .practice-container {
