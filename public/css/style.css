@@ -1397,33 +1397,6 @@ body.has-fixed-header {
     overflow: hidden;
 }
 
-
-/* Background decorative elements */
-
-.team::before {
-    content: '';
-    position: absolute;
-    top: -50px;
-    left: -50px;
-    width: 150px;
-    height: 150px;
-    background: rgba(15, 123, 126, 0.1);
-    border-radius: 50%;
-    z-index: 0;
-}
-
-.team::after {
-    content: '';
-    position: absolute;
-    bottom: -100px;
-    right: -100px;
-    width: 200px;
-    height: 200px;
-    background: rgba(255, 140, 0, 0.1);
-    border-radius: 50%;
-    z-index: 0;
-}
-
 .team h2 {
     text-align: center;
     font-size: 3rem;
@@ -1595,6 +1568,190 @@ body.has-fixed-header {
 }
 
 
+/* Featured Team Member - Alfred (Figma-based design) */
+.team-member--featured {
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 345px;
+    height: auto;
+    position: relative;
+    padding: 0;
+}
+
+.team-member--featured:hover {
+    transform: translateY(-10px);
+    box-shadow: none;
+}
+
+.team-member--featured::before,
+.team-member--featured::after {
+    display: none;
+}
+
+.featured-card-wrapper {
+    position: relative;
+    width: 345px;
+    height: 396px; /* Total height from Figma: card + image overlap */
+}
+
+.team-member-card {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 345px;
+    height: 290px;
+    background: linear-gradient(35deg, #232F3E 0%, #007F7F 100%);
+    box-shadow: 0px 0px 10px rgba(165, 163, 170, 0.25);
+    border-radius: 25px;
+    z-index: 1;
+}
+
+.member-photo--featured {
+    position: absolute;
+    top: 21px; /* From Figma: image starts at y=21 */
+    left: 0;
+    z-index: 2;
+    width: 345px;
+    height: 375px; /* From Figma */
+    overflow: hidden; /* Clip the image to fit within bounds */
+    border-radius: 25px; /* Match the card border radius */
+    background: transparent;
+    pointer-events: none;
+}
+
+.member-photo--featured img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cover the area and crop */
+    object-position: center 20%; /* Show more of the face/upper body, less cropping from top */
+    border-radius: 0;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
+}
+
+/* Specific adjustments for Roan and Francis - move images up more */
+.member-photo--featured img[alt="Roan Manansala"],
+.member-photo--featured img[alt="Francis Erick Romasanta"] {
+    object-position: center 95%; /* Move image up more for these two */
+}
+
+.team-member-info--featured {
+    background: transparent;
+    padding: 16px 4px 0;
+    border-radius: 0;
+    text-align: left;
+}
+
+.team-member-info--featured h4 {
+    color: #000000;
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 0.5%;
+    line-height: 1.2;
+    margin-bottom: 4px;
+}
+
+.team-member-info--featured p {
+    color: #000000;
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    letter-spacing: 0.5%;
+    line-height: 1.2;
+}
+
+/* Decorative circles for featured member - positioned relative to card */
+.featured-circle {
+    position: absolute;
+    border-radius: 50%;
+    z-index: 3;
+}
+
+/* Large circle - top right, at y=0 relative to card (which means at top of wrapper since card starts at y=106) */
+.featured-circle--large {
+    width: 79px;
+    height: 79px;
+    top: -95px; /* Moved up a bit more */
+    right: 20px; /* Moved more to the right */
+    background: 
+        linear-gradient(195deg, rgba(248, 247, 252, 0) 11%, rgba(248, 247, 252, 0.5) 100%),
+        linear-gradient(15deg, rgba(248, 247, 252, 0) 48%, rgba(248, 247, 252, 0.5) 100%),
+        radial-gradient(circle at 50% 50%, rgba(255, 153, 0, 1) 0%, rgba(248, 247, 252, 0.5) 100%);
+    box-shadow: 0px 0px 5px rgba(248, 247, 252, 0.5);
+}
+
+.featured-circle--large::after {
+    content: '';
+    position: absolute;
+    top: 13px;
+    left: 13px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: 
+        linear-gradient(195deg, rgba(248, 247, 252, 0) 11%, rgba(248, 247, 252, 1) 100%),
+        linear-gradient(15deg, rgba(248, 247, 252, 0) 48%, rgba(248, 247, 252, 1) 100%),
+        radial-gradient(circle at 50% 50%, rgba(255, 153, 0, 1) 0%, rgba(248, 247, 252, 0.5) 100%);
+}
+
+/* Medium circle - left side, at y=79 relative to card top (y=-27 from card bottom perspective) */
+.featured-circle--medium {
+    width: 70px;
+    height: 70px;
+    top: -27px; /* 79 - 106 = -27 relative to card (card starts at 106 in the 396 wrapper) */
+    left: 25px; /* Moved to the right */
+    background: 
+        linear-gradient(195deg, rgba(248, 247, 252, 0) 11%, rgba(248, 247, 252, 0.5) 100%),
+        linear-gradient(15deg, rgba(248, 247, 252, 0) 48%, rgba(248, 247, 252, 0.5) 100%),
+        radial-gradient(circle at 50% 50%, rgba(255, 153, 0, 1) 0%, rgba(248, 247, 252, 0.5) 100%);
+    box-shadow: 0px 0px 4.5px rgba(248, 247, 252, 0.5);
+}
+
+.featured-circle--medium::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: 
+        linear-gradient(195deg, rgba(248, 247, 252, 0) 11%, rgba(248, 247, 252, 1) 100%),
+        linear-gradient(15deg, rgba(248, 247, 252, 0) 48%, rgba(248, 247, 252, 1) 100%),
+        radial-gradient(circle at 50% 50%, rgba(255, 153, 0, 1) 0%, rgba(248, 247, 252, 0.5) 100%);
+}
+
+/* Small circle - right side, at y=172 relative to card = 172 - 106 = 66 from card top */
+.featured-circle--small {
+    width: 50px;
+    height: 50px;
+    top: 66px; /* 172 - 106 = 66 */
+    right: 51px; /* x=244 from left means right = 345 - 244 - 50 = 51 */
+    background: 
+        linear-gradient(195deg, rgba(248, 247, 252, 0) 11%, rgba(248, 247, 252, 0.5) 100%),
+        linear-gradient(15deg, rgba(248, 247, 252, 0) 48%, rgba(248, 247, 252, 0.5) 100%),
+        radial-gradient(circle at 50% 50%, rgba(255, 153, 0, 1) 0%, rgba(248, 247, 252, 0.5) 100%);
+    box-shadow: 0px 0px 3.2px rgba(248, 247, 252, 0.5);
+}
+
+.featured-circle--small::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 33px;
+    height: 33px;
+    border-radius: 50%;
+    background: 
+        linear-gradient(195deg, rgba(248, 247, 252, 0) 11%, rgba(248, 247, 252, 1) 100%),
+        linear-gradient(15deg, rgba(248, 247, 252, 0) 48%, rgba(248, 247, 252, 1) 100%),
+        radial-gradient(circle at 50% 50%, rgba(255, 153, 0, 1) 0%, rgba(248, 247, 252, 0.5) 100%);
+}
+
 /* Responsive Design */
 
 @media (max-width: 768px) {
@@ -1616,6 +1773,18 @@ body.has-fixed-header {
     .team-member {
         width: 100%;
         max-width: 280px;
+    }
+    .team-member--featured {
+        width: 100%;
+        max-width: 345px;
+    }
+    .team-member-card {
+        width: 100%;
+        max-width: 345px;
+    }
+    .member-photo--featured {
+        width: 85%;
+        max-width: 294px;
     }
 }
 
