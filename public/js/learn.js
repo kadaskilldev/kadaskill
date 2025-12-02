@@ -210,13 +210,20 @@ function showError(message) {
 
 async function enrollInCourse(courseId, courseSlug) {
     try {
+        console.log('Enrolling in course:', courseId, courseSlug);
+
         const { data: { user }, error: userError } = await supabase.auth.getUser();
 
+        console.log('User auth check:', { user, userError });
+
         if (userError || !user) {
-            // Redirect to login if not authenticated
-            window.location.href = 'index.html';
+            console.error('User not authenticated:', userError);
+            alert('Please log in to enroll in courses.');
+            window.location.href = 'index.html#login';
             return;
         }
+
+        console.log('User authenticated, checking enrollment...');
 
         // Check if already enrolled
         const { data: existingEnrollment, error: checkError } = await supabase
@@ -226,17 +233,22 @@ async function enrollInCourse(courseId, courseSlug) {
             .eq('course_id', courseId)
             .single();
 
+        console.log('Enrollment check:', { existingEnrollment, checkError });
+
         if (checkError && checkError.code !== 'PGRST116') {
             console.error('Error checking enrollment:', checkError);
-            alert('Failed to enroll. Please try again.');
+            alert('Failed to check enrollment status. Please try again.');
             return;
         }
 
         if (existingEnrollment) {
             // Already enrolled, redirect to course
+            console.log('Already enrolled, redirecting to course...');
             window.location.href = `learning.html?course=${courseSlug}`;
             return;
         }
+
+        console.log('Creating new enrollment...');
 
         // Create new enrollment
         const { data: enrollment, error: enrollError } = await supabase
@@ -245,23 +257,27 @@ async function enrollInCourse(courseId, courseSlug) {
                 user_id: user.id,
                 course_id: courseId,
                 status: 'active',
-                progress_percentage: 0
+                progress_percentage: 0,
+                enrolled_at: new Date().toISOString()
             })
             .select()
             .single();
 
         if (enrollError) {
             console.error('Error enrolling:', enrollError);
-            alert('Failed to enroll. Please try again.');
+            alert('Failed to enroll: ' + enrollError.message);
             return;
         }
 
+        console.log('Enrollment created:', enrollment);
+
         // Redirect to course
+        console.log('Redirecting to learning page...');
         window.location.href = `learning.html?course=${courseSlug}`;
 
     } catch (error) {
         console.error('Unexpected error enrolling:', error);
-        alert('An unexpected error occurred.');
+        alert('An unexpected error occurred: ' + error.message);
     }
 }
 

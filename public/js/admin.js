@@ -613,33 +613,35 @@ function setupEventListeners() {
     // Sidebar navigation
     const navItems = document.querySelectorAll('.admin-nav-item[data-section]');
     navItems.forEach(item => {
-        item.addEventListener('click', (event) => {
+        item.addEventListener('click', () => {
             const section = item.dataset.section;
-            if (section === 'content') {
-                event.preventDefault();
-                const contentSubnav = document.getElementById('content-subnav');
-                const isHidden = !contentSubnav || contentSubnav.hasAttribute('hidden');
-                if (isHidden) {
-                    toggleContentSubnav(true);
-                    switchSection(section);
-                } else {
-                    toggleContentSubnav(false);
-                }
-                return;
-            }
             switchSection(section);
         });
     });
 
-    // Content tabs
-    const contentTabs = document.querySelectorAll('.content-tab[data-content-tab]');
-    contentTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const tabName = tab.dataset.contentTab;
-            if (currentSection !== 'content') {
-                switchSection('content');
+    // Content Management expandable menu
+    const contentToggle = document.getElementById('content-management-toggle');
+    const contentSubnav = document.getElementById('content-subnav');
+
+    if (contentToggle && contentSubnav) {
+        contentToggle.addEventListener('click', () => {
+            const isExpanded = contentSubnav.classList.contains('expanded');
+            if (isExpanded) {
+                contentSubnav.classList.remove('expanded');
+                contentToggle.classList.remove('expanded');
+            } else {
+                contentSubnav.classList.add('expanded');
+                contentToggle.classList.add('expanded');
             }
-            switchContentTab(tabName);
+        });
+    }
+
+    // Subnav items
+    const subnavItems = document.querySelectorAll('.admin-subnav-item[data-section]');
+    subnavItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const section = item.dataset.section;
+            switchSection(section);
         });
     });
 
@@ -723,35 +725,48 @@ function setupEventListeners() {
             }
         });
     });
-}
 
-// ============================================
-// Sidebar Sub-navigation Helpers
-// ============================================
-
-function toggleContentSubnav(forceOpen = null) {
-    const subnav = document.getElementById('content-subnav');
-    const navItem = document.querySelector('.admin-nav-item[data-section="content"]');
-    if (!subnav || !navItem) return;
-
-    const isHidden = subnav.hasAttribute('hidden');
-    let shouldOpen;
-
-    if (forceOpen === true) {
-        shouldOpen = true;
-    } else if (forceOpen === false) {
-        shouldOpen = false;
-    } else {
-        shouldOpen = isHidden;
+    // Add New Course button
+    const addCourseBtn = document.getElementById('add-course-btn');
+    if (addCourseBtn) {
+        addCourseBtn.addEventListener('click', addNewCourse);
     }
 
-    if (shouldOpen) {
-        subnav.removeAttribute('hidden');
-        navItem.setAttribute('aria-expanded', 'true');
-    } else {
-        subnav.setAttribute('hidden', '');
-        navItem.setAttribute('aria-expanded', 'false');
+    // Course inline editing - Back button
+    const backToCoursesBtn = document.getElementById('back-to-courses-btn');
+    if (backToCoursesBtn) {
+        backToCoursesBtn.addEventListener('click', backToCoursesView);
     }
+
+    // Course inline editing - Save button
+    const saveCourseBtn = document.getElementById('save-course-btn-inline');
+    if (saveCourseBtn) {
+        saveCourseBtn.addEventListener('click', saveCourseInline);
+    }
+
+    // Course inline editing - Add Lesson button
+    const addLessonBtn = document.getElementById('add-lesson-btn-inline');
+    if (addLessonBtn) {
+        addLessonBtn.addEventListener('click', addNewLessonInline);
+    }
+
+    // Collapsible triggers
+    document.querySelectorAll('.collapsible-trigger').forEach(trigger => {
+        trigger.addEventListener('click', function() {
+            const targetId = this.dataset.target;
+            const target = document.getElementById(targetId);
+            if (!target) return;
+
+            const isExpanded = target.classList.contains('expanded');
+            if (isExpanded) {
+                target.classList.remove('expanded');
+                this.classList.remove('expanded');
+            } else {
+                target.classList.add('expanded');
+                this.classList.add('expanded');
+            }
+        });
+    });
 }
 
 // ============================================
@@ -759,7 +774,7 @@ function toggleContentSubnav(forceOpen = null) {
 // ============================================
 
 function switchSection(sectionName) {
-    // Update nav items
+    // Update main nav items
     const navItems = document.querySelectorAll('.admin-nav-item[data-section]');
     navItems.forEach(item => {
         if (item.dataset.section === sectionName) {
@@ -768,6 +783,27 @@ function switchSection(sectionName) {
             item.classList.remove('active');
         }
     });
+
+    // Update subnav items
+    const subnavItems = document.querySelectorAll('.admin-subnav-item[data-section]');
+    subnavItems.forEach(item => {
+        if (item.dataset.section === sectionName) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+
+    // Auto-expand Content Management if navigating to courses/certifications/exercises
+    const contentSections = ['courses', 'certifications', 'exercises'];
+    if (contentSections.includes(sectionName)) {
+        const contentToggle = document.getElementById('content-management-toggle');
+        const contentSubnav = document.getElementById('content-subnav');
+        if (contentToggle && contentSubnav) {
+            contentSubnav.classList.add('expanded');
+            contentToggle.classList.add('expanded');
+        }
+    }
 
     // Update sections
     const sections = document.querySelectorAll('.admin-section');
@@ -784,7 +820,9 @@ function switchSection(sectionName) {
     const titles = {
         'dashboard': 'Analytics Dashboard',
         'users': 'User Management',
-        'content': 'Content Management',
+        'courses': 'Courses Management',
+        'certifications': 'Certifications Management',
+        'exercises': 'Practice Exercises Management',
         'learning-paths': 'Learning Paths',
         'gamification': 'Gamification',
         'help': 'Help & Support'
@@ -797,48 +835,16 @@ function switchSection(sectionName) {
 
     currentSection = sectionName;
 
-    if (sectionName === 'content') {
-        toggleContentSubnav(true);
-    } else {
-        toggleContentSubnav(false);
-    }
-
     // Load data for specific sections
     if (sectionName === 'users') {
         loadUsers();
-    } else if (sectionName === 'content') {
+    } else if (sectionName === 'courses') {
         loadCourses();
+    } else if (sectionName === 'certifications') {
         loadCertifications();
+    } else if (sectionName === 'exercises') {
         loadExercises();
     }
-}
-
-// ============================================
-// Content Tab Switching
-// ============================================
-
-function switchContentTab(tabName) {
-    // Update tab buttons
-    const tabs = document.querySelectorAll('.content-tab');
-    tabs.forEach(tab => {
-        if (tab.dataset.contentTab === tabName) {
-            tab.classList.add('active');
-        } else {
-            tab.classList.remove('active');
-        }
-    });
-
-    // Update tab panels
-    const panels = document.querySelectorAll('.content-tab-panel');
-    panels.forEach(panel => {
-        panel.classList.remove('active');
-    });
-
-    const activePanel = document.getElementById(`${tabName}-tab`);
-    if (activePanel) {
-        activePanel.classList.add('active');
-    }
-
 }
 
 // ============================================
@@ -1407,20 +1413,70 @@ function updatePaginationControls() {
 
 async function loadCourses() {
     try {
+        console.log('Loading courses...');
+
+        // First get all courses
         const { data: courses, error } = await supabase
             .from('courses')
-            .select('id, title, category, difficulty, is_published, lessons (count)')
+            .select('*')
             .order('created_at', { ascending: false });
 
         if (error) {
             console.error('Error loading courses:', error);
+            const tableBody = document.getElementById('courses-table-body');
+            if (tableBody) {
+                tableBody.innerHTML = `<tr><td colspan="7" class="loading-cell">Error loading courses: ${error.message}</td></tr>`;
+            }
             return;
         }
 
-        renderCoursesTable(courses);
+        console.log('Courses loaded:', courses);
+
+        if (!courses || courses.length === 0) {
+            console.log('No courses found');
+            const tableBody = document.getElementById('courses-table-body');
+            if (tableBody) {
+                tableBody.innerHTML = '<tr><td colspan="7" class="loading-cell">No courses found. Click "Add New Course" to create one.</td></tr>';
+            }
+            return;
+        }
+
+        // Get lesson counts for each course
+        const coursesWithCounts = await Promise.all(
+            courses.map(async (course) => {
+                const { count, error: countError } = await supabase
+                    .from('lessons')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('course_id', course.id);
+
+                if (countError) {
+                    console.error('Error counting lessons for course:', course.id, countError);
+                }
+
+                return {
+                    ...course,
+                    lessonCount: count || 0
+                };
+            })
+        );
+
+        console.log('Courses with counts:', coursesWithCounts);
+        renderCoursesTable(coursesWithCounts);
+
+        // Debug: Check if buttons are rendered
+        setTimeout(() => {
+            const addBtn = document.getElementById('add-course-btn');
+            const actionBtns = document.querySelectorAll('.btn-icon.btn-edit');
+            console.log('Add course button:', addBtn);
+            console.log('Action buttons count:', actionBtns.length);
+        }, 100);
 
     } catch (error) {
-        console.error('Error loading courses:', error);
+        console.error('Error in loadCourses:', error);
+        const tableBody = document.getElementById('courses-table-body');
+        if (tableBody) {
+            tableBody.innerHTML = `<tr><td colspan="7" class="loading-cell">Error: ${error.message}</td></tr>`;
+        }
     }
 }
 
@@ -1430,23 +1486,60 @@ function renderCoursesTable(courses) {
 
     if (courses && courses.length > 0) {
         tableBody.innerHTML = courses.map(course => {
-            const lessonCount = course.lessons?.length || 0;
+            const lessonCount = course.lessonCount || 0;
+
+            // Format last updated date
+            const lastUpdated = course.updated_at ? new Date(course.updated_at).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            }) : 'N/A';
+
+            // Get course image or use placeholder
+            const courseImage = course.thumbnail_url || 'images/placeholder-course.jpg';
+
+            // Difficulty badge styling
+            const difficultyClass = course.difficulty ? `difficulty-${course.difficulty.toLowerCase()}` : '';
+
             return `
-                <tr>
-                    <td>${course.title}</td>
-                    <td><span style="text-transform: capitalize;">${course.category || 'N/A'}</span></td>
-                    <td><span style="text-transform: capitalize;">${course.difficulty || 'N/A'}</span></td>
-                    <td>${lessonCount}</td>
-                    <td><span style="color: ${course.is_published ? '#10b981' : '#ef4444'}; font-weight: 600;">${course.is_published ? 'Yes' : 'No'}</span></td>
+                <tr class="course-row">
                     <td>
-                        <button class="btn-edit" onclick="editCourse('${course.id}')">Edit</button>
-                        <button class="btn-delete" onclick="deleteCourse('${course.id}')">Delete</button>
+                        <div class="course-cell-content">
+                            <img src="${courseImage}" alt="${escapeHtml(course.title)}" class="course-thumbnail" onerror="this.src='images/placeholder-course.jpg'">
+                            <div class="course-info">
+                                <h4 class="course-title">${escapeHtml(course.title)}</h4>
+                                <p class="course-description">${escapeHtml(course.short_description || '').substring(0, 80)}${(course.short_description?.length > 80) ? '...' : ''}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="category-badge">${course.category || 'Uncategorized'}</span>
+                    </td>
+                    <td>
+                        <span class="difficulty-badge ${difficultyClass}">${course.difficulty || 'N/A'}</span>
+                    </td>
+                    <td class="lessons-cell">
+                        <i class="fas fa-book"></i> ${lessonCount}
+                    </td>
+                    <td class="updated-cell">${lastUpdated}</td>
+                    <td>
+                        <span class="status-badge ${course.is_published ? 'status-published' : 'status-draft'}">
+                            <i class="fas fa-circle"></i> ${course.is_published ? 'Published' : 'Draft'}
+                        </span>
+                    </td>
+                    <td class="actions-cell">
+                        <button class="btn-icon btn-edit" onclick="editCourse('${course.id}')" title="Edit course">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon btn-delete" onclick="deleteCourse('${course.id}')" title="Delete course">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </td>
                 </tr>
             `;
         }).join('');
     } else {
-        tableBody.innerHTML = '<tr><td colspan="6" class="loading-cell">No courses found</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="7" class="loading-cell">No courses found</td></tr>';
     }
 }
 
@@ -2097,15 +2190,1249 @@ window.openEditUserModal = openEditUserModal;
 window.closeEditUserModal = closeEditUserModal;
 window.confirmDeleteUser = confirmDeleteUser;
 
-function editCourse(courseId) {
-    alert(`Edit course functionality coming soon! Course ID: ${courseId}`);
-    // TODO: Implement course editing modal/form
+async function editCourse(courseId) {
+    try {
+        // Load course data
+        const { data: course, error } = await supabase
+            .from('courses')
+            .select('*')
+            .eq('id', courseId)
+            .single();
+
+        if (error) throw error;
+
+        // Hide course list, show course edit view
+        document.getElementById('course-list-view').style.display = 'none';
+        document.getElementById('course-edit-view').style.display = 'block';
+
+        // Store current course ID
+        window.currentEditingCourseId = courseId;
+
+        // Populate form
+        document.getElementById('course-title-edit').value = course.title || '';
+        document.getElementById('course-short-desc-edit').value = course.short_description || '';
+        document.getElementById('course-description-edit').value = course.description || '';
+        document.getElementById('course-category-edit').value = course.category || '';
+        document.getElementById('course-difficulty-edit').value = course.difficulty || '';
+        document.getElementById('course-slug-edit').value = course.slug || '';
+        document.getElementById('course-thumbnail-edit').value = course.thumbnail_url || '';
+
+        // Show image preview if URL exists
+        if (course.thumbnail_url) {
+            showImagePreview('thumbnail', course.thumbnail_url);
+        }
+
+        // Prerequisites
+        if (Array.isArray(course.prerequisites)) {
+            document.getElementById('course-prerequisites-edit').value = course.prerequisites.join('\n');
+        }
+
+        // Learning objectives
+        if (Array.isArray(course.learning_objectives)) {
+            document.getElementById('course-objectives-edit').value = course.learning_objectives.join('\n');
+        }
+
+        document.getElementById('course-published-edit').checked = course.is_published || false;
+        document.getElementById('course-featured-edit').checked = course.is_featured || false;
+
+        // Load lessons
+        await loadCourseLessonsInline(courseId);
+
+        // Scroll to top
+        document.querySelector('.admin-content').scrollTop = 0;
+
+    } catch (error) {
+        console.error('Error loading course for editing:', error);
+        showToast('Failed to load course: ' + error.message, 'error');
+    }
 }
 
-function deleteCourse(courseId) {
-    if (confirm('Are you sure you want to delete this course? This action cannot be undone.')) {
-        alert(`Delete course functionality coming soon! Course ID: ${courseId}`);
-        // TODO: Implement course deletion
+// Add new course
+async function addNewCourse() {
+    try {
+        // Create a new course with default values
+        const newCourse = {
+            title: 'New Course',
+            slug: `new-course-${Date.now()}`,
+            short_description: '',
+            description: '',
+            category: 'AI',
+            difficulty: 'Beginner',
+            is_published: false,
+            is_featured: false,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+
+        const { data: createdCourse, error } = await supabase
+            .from('courses')
+            .insert([newCourse])
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        showToast('New course created! Fill in the details.', 'success');
+
+        // Open the course for editing
+        await editCourse(createdCourse.id);
+
+    } catch (error) {
+        console.error('Error creating course:', error);
+        showToast('Failed to create course: ' + error.message, 'error');
+    }
+}
+
+// Back to courses list
+function backToCoursesView() {
+    document.getElementById('course-edit-view').style.display = 'none';
+    document.getElementById('course-list-view').style.display = 'block';
+    window.currentEditingCourseId = null;
+    // Reload courses to show updated list
+    loadCourses();
+}
+
+// Image preview functions
+function previewCourseImage(type) {
+    const inputId = type === 'thumbnail' ? 'course-thumbnail-edit' : 'course-cover-edit';
+    const imageUrl = document.getElementById(inputId).value.trim();
+
+    if (imageUrl) {
+        showImagePreview(type, imageUrl);
+    } else {
+        hideImagePreview(type);
+    }
+}
+
+function showImagePreview(type, imageUrl) {
+    const previewContainer = document.getElementById(`${type}-preview-container`);
+    const previewImg = document.getElementById(`${type}-preview`);
+
+    if (previewContainer && previewImg) {
+        previewImg.src = imageUrl;
+        previewImg.onerror = function() {
+            hideImagePreview(type);
+            showToast('Failed to load image. Please check the URL.', 'error');
+        };
+        previewImg.onload = function() {
+            previewContainer.style.display = 'block';
+        };
+    }
+}
+
+function hideImagePreview(type) {
+    const previewContainer = document.getElementById(`${type}-preview-container`);
+    if (previewContainer) {
+        previewContainer.style.display = 'none';
+    }
+}
+
+function removeCourseImagePreview(type) {
+    const inputId = type === 'thumbnail' ? 'course-thumbnail-edit' : 'course-cover-edit';
+    const fileInputId = type === 'thumbnail' ? 'course-thumbnail-file' : 'course-cover-file';
+    document.getElementById(inputId).value = '';
+    document.getElementById(fileInputId).value = '';
+    hideImagePreview(type);
+    // Clear pending upload
+    if (window.pendingImageUploads) {
+        delete window.pendingImageUploads[type];
+    }
+}
+
+// Store pending file uploads
+window.pendingImageUploads = {};
+
+// Handle file upload and preview
+async function handleImageUpload(type, file) {
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        showToast('Please select an image file', 'error');
+        return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+        showToast('Image size should be less than 5MB', 'error');
+        return;
+    }
+
+    // Store the file for later upload
+    window.pendingImageUploads[type] = file;
+
+    // Show preview using FileReader
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        showImagePreview(type, e.target.result);
+    };
+    reader.onerror = function() {
+        showToast('Failed to read image file', 'error');
+    };
+    reader.readAsDataURL(file);
+}
+
+// Upload image to Supabase Storage
+async function uploadImageToSupabase(file, type, courseId) {
+    try {
+        // Create a unique filename
+        const timestamp = Date.now();
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${courseId}_${type}_${timestamp}.${fileExt}`;
+        const filePath = `course-images/${fileName}`;
+
+        console.log('Uploading image to Supabase Storage:', filePath);
+
+        // Upload to Supabase Storage
+        const { data, error } = await supabase.storage
+            .from('course-assets')
+            .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: false
+            });
+
+        if (error) {
+            console.error('Upload error:', error);
+            throw error;
+        }
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+            .from('course-assets')
+            .getPublicUrl(filePath);
+
+        console.log('Image uploaded successfully:', urlData.publicUrl);
+        return urlData.publicUrl;
+
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        throw error;
+    }
+}
+
+// Make functions globally accessible
+window.previewCourseImage = previewCourseImage;
+window.removeCourseImagePreview = removeCourseImagePreview;
+window.handleImageUpload = handleImageUpload;
+
+// Load lessons for inline editing
+async function loadCourseLessonsInline(courseId) {
+    try {
+        const { data: lessons, error } = await supabase
+            .from('lessons')
+            .select('*')
+            .eq('course_id', courseId)
+            .order('order_index', { ascending: true });
+
+        if (error) throw error;
+
+        renderLessonsAccordion(lessons || []);
+
+    } catch (error) {
+        console.error('Error loading lessons:', error);
+        showToast('Failed to load lessons: ' + error.message, 'error');
+    }
+}
+
+// Render lessons as accordion
+function renderLessonsAccordion(lessons) {
+    const container = document.getElementById('lessons-accordion-container');
+
+    if (!lessons || lessons.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state-inline">
+                <i class="fas fa-book-open"></i>
+                <p>No lessons yet. Click "Add Lesson" to create your first lesson.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = lessons.map((lesson, index) => `
+        <div class="lesson-accordion-item" data-lesson-id="${lesson.id}" data-order-index="${lesson.order_index}">
+            <div class="lesson-accordion-header">
+                <div class="lesson-drag-handle" title="Drag to reorder">
+                    <i class="fas fa-grip-vertical"></i>
+                </div>
+                <div class="lesson-accordion-left" onclick="toggleLessonAccordion('${lesson.id}')">
+                    <span class="lesson-title-text">${escapeHtml(lesson.title)}</span>
+                    <span class="lesson-type-tag lesson-type-${lesson.content_type}">
+                        ${getLessonTypeIcon(lesson.content_type)} ${lesson.content_type}
+                    </span>
+                </div>
+                <div class="lesson-accordion-right" onclick="toggleLessonAccordion('${lesson.id}')">
+                    <span class="lesson-xp-badge"><i class="fas fa-award"></i> ${lesson.xp_reward || 10} XP</span>
+                    <i class="fas fa-chevron-down accordion-arrow"></i>
+                </div>
+            </div>
+            <div class="lesson-accordion-body" id="lesson-body-${lesson.id}" style="display: none;">
+                ${renderLessonEditForm(lesson, index)}
+            </div>
+        </div>
+    `).join('');
+
+    // Initialize drag-and-drop after rendering
+    initializeLessonDragDrop();
+}
+
+// Render lesson edit form
+function renderLessonEditForm(lesson, index) {
+    const contentType = lesson.content_type;
+
+    // Build content type badge
+    const contentTypeBadge = `
+        <div class="lesson-type-badge-inline lesson-type-${contentType}">
+            ${getLessonTypeIcon(contentType)} ${contentType.charAt(0).toUpperCase() + contentType.slice(1)} Lesson
+        </div>
+    `;
+
+    return `
+        <div class="lesson-edit-form">
+            <div class="form-grid">
+                <div class="form-group span-2">
+                    <label class="form-label">Lesson Title</label>
+                    <input type="text" class="form-input" value="${escapeHtml(lesson.title)}" data-lesson-field="title" data-lesson-id="${lesson.id}">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Content Type</label>
+                    ${contentTypeBadge}
+                    <p class="form-hint">Content type is set when creating the lesson and cannot be changed.</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">XP Reward</label>
+                    <input type="number" class="form-input" value="${lesson.xp_reward || 10}" data-lesson-field="xp_reward" data-lesson-id="${lesson.id}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Module Name</label>
+                    <input type="text" class="form-input" value="${lesson.module_name || ''}" placeholder="e.g., Module 1" data-lesson-field="module_name" data-lesson-id="${lesson.id}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Published</label>
+                    <label class="toggle-item">
+                        <input type="checkbox" ${lesson.is_published ? 'checked' : ''} data-lesson-field="is_published" data-lesson-id="${lesson.id}">
+                        <span class="toggle-checkbox"></span>
+                        <span class="toggle-label-text">Visible to users</span>
+                    </label>
+                </div>
+
+                <!-- Content Type Specific Fields -->
+                ${contentType === 'text' ? `
+                    <div class="form-group span-2">
+                        <label class="form-label">Text Content (Markdown/HTML)</label>
+                        <textarea class="form-input" rows="8" data-lesson-field="text_content" data-lesson-id="${lesson.id}" placeholder="Enter lesson content...">${lesson.text_content || ''}</textarea>
+                    </div>
+                ` : ''}
+
+                ${contentType === 'video' ? `
+                    <div class="form-group span-2" style="display: flex; gap: 16px;">
+                        <div class="form-group" style="flex: 2;">
+                            <label class="form-label">Video URL</label>
+                            <input type="text" class="form-input" value="${lesson.video_url || ''}" data-lesson-field="video_url" data-lesson-id="${lesson.id}" placeholder="https://youtube.com/watch?v=...">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label class="form-label">Duration (minutes)</label>
+                            <input type="number" class="form-input" value="${lesson.video_duration_minutes || ''}" data-lesson-field="video_duration_minutes" data-lesson-id="${lesson.id}">
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${contentType === 'quiz' ? `
+                    <div class="form-group span-2">
+                        <div id="quiz-editor-${lesson.id}">
+                            <!-- Quiz editor will be dynamically loaded here -->
+                        </div>
+                    </div>
+                ` : ''}
+            </div>
+
+            <div class="lesson-actions-bar">
+                <button class="btn-danger btn-sm" onclick="deleteLessonInline('${lesson.id}')">
+                    <i class="fas fa-trash"></i> Delete Lesson
+                </button>
+                <button class="btn-primary btn-sm" onclick="saveLessonInline('${lesson.id}')">
+                    <i class="fas fa-save"></i> Save Lesson
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+// Initialize drag-and-drop for lessons
+function initializeLessonDragDrop() {
+    const container = document.getElementById('lessons-accordion-container');
+    if (!container) return;
+
+    // Destroy existing sortable instance if it exists
+    if (container.sortableInstance) {
+        container.sortableInstance.destroy();
+    }
+
+    // Create new sortable instance
+    container.sortableInstance = Sortable.create(container, {
+        animation: 200,
+        handle: '.lesson-drag-handle',
+        ghostClass: 'lesson-ghost',
+        dragClass: 'lesson-dragging',
+        chosenClass: 'lesson-chosen',
+        forceFallback: true,
+        onEnd: async function(evt) {
+            // Get all lesson items in their new order
+            const items = container.querySelectorAll('.lesson-accordion-item');
+            const updates = [];
+
+            items.forEach((item, index) => {
+                const lessonId = item.dataset.lessonId;
+                updates.push({
+                    id: lessonId,
+                    order_index: index
+                });
+            });
+
+            // Update order in database
+            await updateLessonOrder(updates);
+        }
+    });
+}
+
+// Update lesson order in database
+async function updateLessonOrder(updates) {
+    try {
+        // First, set all to negative values to avoid duplicate constraint
+        // This temporarily moves them out of the way
+        for (let i = 0; i < updates.length; i++) {
+            const update = updates[i];
+            const { error } = await supabase
+                .from('lessons')
+                .update({
+                    order_index: -(i + 1000), // Use negative numbers temporarily
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', update.id);
+
+            if (error) {
+                console.error('Error setting temp order for lesson:', update.id, error);
+                throw error;
+            }
+        }
+
+        // Then, set to the actual new order
+        for (const update of updates) {
+            const { error } = await supabase
+                .from('lessons')
+                .update({
+                    order_index: update.order_index,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', update.id);
+
+            if (error) {
+                console.error('Error updating lesson order:', update.id, error);
+                throw error;
+            }
+        }
+
+        showToast('Lesson order updated!', 'success');
+
+    } catch (error) {
+        console.error('Error updating lesson order:', error);
+        showToast('Failed to update lesson order: ' + error.message, 'error');
+
+        // Reload lessons to restore correct order
+        await loadCourseLessonsInline(window.currentEditingCourseId);
+    }
+}
+
+// Toggle lesson accordion
+async function toggleLessonAccordion(lessonId) {
+    const body = document.getElementById(`lesson-body-${lessonId}`);
+    const item = document.querySelector(`[data-lesson-id="${lessonId}"]`);
+
+    if (body.style.display === 'none') {
+        // Close all other accordions
+        document.querySelectorAll('.lesson-accordion-body').forEach(b => b.style.display = 'none');
+        document.querySelectorAll('.lesson-accordion-item').forEach(i => i.classList.remove('active'));
+
+        // Open this one
+        body.style.display = 'block';
+        item.classList.add('active');
+
+        // Check if this lesson is a quiz type and load quiz editor
+        const quizEditor = document.getElementById(`quiz-editor-${lessonId}`);
+        if (quizEditor) {
+            await loadQuizEditorForLesson(lessonId);
+        }
+    } else {
+        body.style.display = 'none';
+        item.classList.remove('active');
+    }
+}
+
+// Save lesson inline
+async function saveLessonInline(lessonId) {
+    try {
+        const fields = document.querySelectorAll(`[data-lesson-id="${lessonId}"]`);
+        const lessonData = { updated_at: new Date().toISOString() };
+
+        fields.forEach(field => {
+            const fieldName = field.dataset.lessonField;
+            if (!fieldName) return;
+
+            if (field.type === 'checkbox') {
+                lessonData[fieldName] = field.checked;
+            } else if (field.type === 'number') {
+                lessonData[fieldName] = parseInt(field.value) || null;
+            } else {
+                lessonData[fieldName] = field.value.trim() || null;
+            }
+        });
+
+        const { error } = await supabase
+            .from('lessons')
+            .update(lessonData)
+            .eq('id', lessonId);
+
+        if (error) throw error;
+
+        showToast('Lesson saved successfully!', 'success');
+        await loadCourseLessonsInline(window.currentEditingCourseId);
+
+    } catch (error) {
+        console.error('Error saving lesson:', error);
+        showToast('Failed to save lesson: ' + error.message, 'error');
+    }
+}
+
+// Delete lesson inline
+async function deleteLessonInline(lessonId) {
+    if (!confirm('Are you sure you want to delete this lesson? This action cannot be undone.')) {
+        return;
+    }
+
+    try {
+        const { error } = await supabase
+            .from('lessons')
+            .delete()
+            .eq('id', lessonId);
+
+        if (error) throw error;
+
+        showToast('Lesson deleted successfully', 'success');
+        await loadCourseLessonsInline(window.currentEditingCourseId);
+
+    } catch (error) {
+        console.error('Error deleting lesson:', error);
+        showToast('Failed to delete lesson: ' + error.message, 'error');
+    }
+}
+
+// Add new lesson inline
+// Open lesson type selection modal
+function addNewLessonInline() {
+    if (!window.currentEditingCourseId) {
+        showToast('No course selected', 'error');
+        return;
+    }
+    openLessonTypeModal();
+}
+
+// Open lesson type modal
+function openLessonTypeModal() {
+    const modal = document.getElementById('lesson-type-modal');
+    if (modal) {
+        modal.classList.add('active');
+        lockBodyScroll();
+    }
+}
+
+// Close lesson type modal
+function closeLessonTypeModal() {
+    const modal = document.getElementById('lesson-type-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        unlockBodyScroll();
+    }
+}
+
+// Create lesson with specific type
+async function createLessonWithType(contentType) {
+    if (!window.currentEditingCourseId) {
+        showToast('No course selected', 'error');
+        return;
+    }
+
+    try {
+        closeLessonTypeModal();
+
+        // Get current lessons count to determine order_index
+        const { data: existingLessons, error: countError } = await supabase
+            .from('lessons')
+            .select('order_index')
+            .eq('course_id', window.currentEditingCourseId)
+            .order('order_index', { ascending: false })
+            .limit(1);
+
+        if (countError) throw countError;
+
+        const nextOrderIndex = existingLessons && existingLessons.length > 0
+            ? existingLessons[0].order_index + 1
+            : 0;
+
+        // Create new lesson with default values based on content type
+        const newLesson = {
+            course_id: window.currentEditingCourseId,
+            title: `New ${contentType.charAt(0).toUpperCase() + contentType.slice(1)} Lesson`,
+            slug: `new-${contentType}-lesson-${Date.now()}`,
+            content_type: contentType,
+            order_index: nextOrderIndex,
+            xp_reward: contentType === 'quiz' ? 20 : 10,
+            is_published: false,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+
+        // Set type-specific defaults
+        if (contentType === 'text') {
+            newLesson.text_content = '';
+        } else if (contentType === 'video') {
+            newLesson.video_url = '';
+            newLesson.video_duration_minutes = null;
+        }
+        // For quiz, we'll create the quiz when the user saves it
+
+        const { data: createdLesson, error } = await supabase
+            .from('lessons')
+            .insert([newLesson])
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        showToast(`${contentType.charAt(0).toUpperCase() + contentType.slice(1)} lesson created!`, 'success');
+
+        // Reload lessons
+        await loadCourseLessonsInline(window.currentEditingCourseId);
+
+        // Auto-expand the new lesson
+        setTimeout(async () => {
+            if (createdLesson && createdLesson.id) {
+                await toggleLessonAccordion(createdLesson.id);
+            }
+        }, 300);
+
+    } catch (error) {
+        console.error('Error creating lesson:', error);
+        showToast('Failed to create lesson: ' + error.message, 'error');
+    }
+}
+
+// Save course (inline)
+async function saveCourseInline() {
+    const saveBtn = document.getElementById('save-course-btn-inline');
+    const originalText = saveBtn.innerHTML;
+
+    try {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+        const title = document.getElementById('course-title-edit').value.trim();
+        const shortDesc = document.getElementById('course-short-desc-edit').value.trim();
+        const description = document.getElementById('course-description-edit').value.trim();
+        const category = document.getElementById('course-category-edit').value;
+        const difficulty = document.getElementById('course-difficulty-edit').value;
+        const slug = document.getElementById('course-slug-edit').value.trim();
+        const prerequisites = document.getElementById('course-prerequisites-edit').value
+            .split('\n')
+            .map(p => p.trim())
+            .filter(p => p.length > 0);
+        const objectives = document.getElementById('course-objectives-edit').value
+            .split('\n')
+            .map(o => o.trim())
+            .filter(o => o.length > 0);
+        const isPublished = document.getElementById('course-published-edit').checked;
+        const isFeatured = document.getElementById('course-featured-edit').checked;
+
+        if (!title || !category || !difficulty || !slug) {
+            showToast('Title, category, difficulty, and slug are required', 'error');
+            return;
+        }
+
+        // Handle image uploads
+        let thumbnail = document.getElementById('course-thumbnail-edit').value.trim();
+
+        // Upload pending images if any
+        if (window.pendingImageUploads) {
+            // Upload thumbnail if pending
+            if (window.pendingImageUploads.thumbnail) {
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading thumbnail...';
+                try {
+                    thumbnail = await uploadImageToSupabase(
+                        window.pendingImageUploads.thumbnail,
+                        'thumbnail',
+                        window.currentEditingCourseId
+                    );
+                    // Update the URL input field
+                    document.getElementById('course-thumbnail-edit').value = thumbnail;
+                    delete window.pendingImageUploads.thumbnail;
+                } catch (uploadError) {
+                    console.error('Thumbnail upload failed:', uploadError);
+                    showToast('Thumbnail upload failed: ' + uploadError.message, 'error');
+                    return;
+                }
+            }
+        }
+
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving course...';
+
+        const courseData = {
+            title,
+            short_description: shortDesc || null,
+            description: description || null,
+            category,
+            difficulty,
+            slug,
+            thumbnail_url: thumbnail || null,
+            prerequisites: prerequisites.length > 0 ? prerequisites : null,
+            learning_objectives: objectives.length > 0 ? objectives : null,
+            is_published: isPublished,
+            is_featured: isFeatured,
+            updated_at: new Date().toISOString()
+        };
+
+        const { error } = await supabase
+            .from('courses')
+            .update(courseData)
+            .eq('id', window.currentEditingCourseId);
+
+        if (error) throw error;
+
+        showToast('Course updated successfully!', 'success');
+        await loadCourses(); // Refresh course list in background
+
+    } catch (error) {
+        console.error('Error saving course:', error);
+        showToast('Failed to save course: ' + error.message, 'error');
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalText;
+    }
+}
+
+// Helper functions
+function getLessonTypeIcon(type) {
+    const icons = {
+        'text': '<i class="fas fa-file-alt"></i>',
+        'video': '<i class="fas fa-video"></i>',
+        'quiz': '<i class="fas fa-question-circle"></i>'
+    };
+    return icons[type] || '<i class="fas fa-file"></i>';
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Make functions global
+window.addNewCourse = addNewCourse;
+window.editCourse = editCourse;
+window.backToCoursesView = backToCoursesView;
+window.toggleLessonAccordion = toggleLessonAccordion;
+window.saveLessonInline = saveLessonInline;
+window.deleteLessonInline = deleteLessonInline;
+// ============================================
+// Quiz Management for Lessons
+// ============================================
+
+// Load quiz editor for a lesson
+async function loadQuizEditorForLesson(lessonId) {
+    try {
+        const container = document.getElementById(`quiz-editor-${lessonId}`);
+        if (!container) return;
+
+        // Get lesson data to check if it has an existing quiz
+        const { data: lesson, error: lessonError } = await supabase
+            .from('lessons')
+            .select('quiz_id')
+            .eq('id', lessonId)
+            .single();
+
+        if (lessonError) throw lessonError;
+
+        let quizData = null;
+        if (lesson.quiz_id) {
+            // Load existing quiz
+            const { data: quiz, error: quizError } = await supabase
+                .from('quizzes')
+                .select('*')
+                .eq('id', lesson.quiz_id)
+                .single();
+
+            if (quizError) throw quizError;
+            quizData = quiz;
+        }
+
+        // Render quiz editor
+        renderQuizEditor(lessonId, quizData);
+
+    } catch (error) {
+        console.error('Error loading quiz editor:', error);
+        showToast('Failed to load quiz editor: ' + error.message, 'error');
+    }
+}
+
+// Render quiz editor UI
+function renderQuizEditor(lessonId, quizData) {
+    const container = document.getElementById(`quiz-editor-${lessonId}`);
+    if (!container) return;
+
+    // Parse questions if they're stored as JSON string
+    let questions = [];
+    if (quizData?.questions) {
+        if (typeof quizData.questions === 'string') {
+            try {
+                questions = JSON.parse(quizData.questions);
+            } catch (e) {
+                console.error('Error parsing questions:', e);
+                questions = [];
+            }
+        } else if (Array.isArray(quizData.questions)) {
+            questions = quizData.questions;
+        }
+    }
+
+    container.innerHTML = `
+        <div class="quiz-editor-container">
+            <div class="quiz-settings-section">
+                <h4 class="quiz-section-title">
+                    <i class="fas fa-cog"></i> Quiz Settings
+                </h4>
+                <div class="form-grid">
+                    <div class="form-group span-2">
+                        <label class="form-label">Quiz Title</label>
+                        <input type="text" class="form-input" id="quiz-title-${lessonId}"
+                               value="${escapeHtml(quizData?.title || '')}"
+                               placeholder="Enter quiz title...">
+                    </div>
+                    <div class="form-group span-2">
+                        <label class="form-label">Quiz Description</label>
+                        <textarea class="form-input" id="quiz-description-${lessonId}"
+                                  rows="2" placeholder="Brief description of the quiz...">${escapeHtml(quizData?.description || '')}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Passing Score (%)</label>
+                        <input type="number" class="form-input" id="quiz-passing-score-${lessonId}"
+                               value="${quizData?.passing_score || 70}" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time Limit (minutes)</label>
+                        <input type="number" class="form-input" id="quiz-time-limit-${lessonId}"
+                               value="${quizData?.time_limit_minutes || ''}" placeholder="Optional">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Max Attempts</label>
+                        <input type="number" class="form-input" id="quiz-max-attempts-${lessonId}"
+                               value="${quizData?.max_attempts || ''}" placeholder="Unlimited">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">XP Reward</label>
+                        <input type="number" class="form-input" id="quiz-xp-reward-${lessonId}"
+                               value="${quizData?.xp_reward || 20}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-questions-section">
+                <div class="quiz-section-header">
+                    <h4 class="quiz-section-title">
+                        <i class="fas fa-question-circle"></i> Questions
+                    </h4>
+                    <button class="btn-primary btn-sm" onclick="addQuizQuestion('${lessonId}')">
+                        <i class="fas fa-plus"></i> Add Question
+                    </button>
+                </div>
+
+                <div id="quiz-questions-container-${lessonId}" class="quiz-questions-container">
+                    ${questions.length === 0 ? `
+                        <div class="empty-state-quiz">
+                            <i class="fas fa-question-circle"></i>
+                            <p>No questions yet. Click "Add Question" to create your first question.</p>
+                        </div>
+                    ` : renderQuizQuestions(lessonId, questions)}
+                </div>
+            </div>
+
+            <div class="quiz-actions-bar">
+                <button class="btn-secondary btn-sm" onclick="cancelQuizEdit('${lessonId}')">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="btn-primary btn-sm" onclick="saveQuizForLesson('${lessonId}')">
+                    <i class="fas fa-save"></i> Save Quiz
+                </button>
+            </div>
+        </div>
+    `;
+
+    // Store quiz ID if editing existing quiz
+    if (quizData?.id) {
+        container.dataset.quizId = quizData.id;
+    }
+
+    // Add event listeners for existing radio buttons
+    setTimeout(() => {
+        const questionItems = container.querySelectorAll('.quiz-question-item');
+        questionItems.forEach((item, index) => {
+            const radios = item.querySelectorAll('.option-radio');
+            radios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updateCorrectIndicators(lessonId, index);
+                });
+            });
+        });
+    }, 100);
+}
+
+// Render quiz questions
+function renderQuizQuestions(lessonId, questions) {
+    return questions.map((q, index) => `
+        <div class="quiz-question-item" data-question-index="${index}">
+            <div class="quiz-question-header">
+                <span class="question-number">Question ${index + 1}</span>
+                <button class="btn-icon btn-danger" onclick="deleteQuizQuestion('${lessonId}', ${index})" title="Delete question">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="quiz-question-body">
+                <div class="form-group">
+                    <label class="form-label">Question Text</label>
+                    <textarea class="form-input question-text" rows="2"
+                              placeholder="Enter your question...">${escapeHtml(q.question || '')}</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Options</label>
+                    <div class="quiz-options-list">
+                        ${(q.options || ['', '', '', '']).map((opt, optIndex) => `
+                            <div class="quiz-option-item">
+                                <input type="radio"
+                                       name="correct-answer-${lessonId}-${index}"
+                                       value="${optIndex}"
+                                       ${q.correct_answer === optIndex ? 'checked' : ''}
+                                       class="option-radio">
+                                <input type="text"
+                                       class="form-input option-text"
+                                       value="${escapeHtml(opt)}"
+                                       placeholder="Option ${optIndex + 1}">
+                                <span class="correct-indicator ${q.correct_answer === optIndex ? 'active' : ''}">
+                                    <i class="fas fa-check-circle"></i> Correct
+                                </span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Explanation (Optional)</label>
+                    <textarea class="form-input question-explanation" rows="2"
+                              placeholder="Explain why this is the correct answer...">${escapeHtml(q.explanation || '')}</textarea>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Add new quiz question
+function addQuizQuestion(lessonId) {
+    const container = document.getElementById(`quiz-questions-container-${lessonId}`);
+    if (!container) return;
+
+    // Remove empty state if exists
+    const emptyState = container.querySelector('.empty-state-quiz');
+    if (emptyState) {
+        emptyState.remove();
+    }
+
+    // Get current question count
+    const questionCount = container.querySelectorAll('.quiz-question-item').length;
+
+    // Add new question HTML
+    const newQuestionHTML = `
+        <div class="quiz-question-item" data-question-index="${questionCount}">
+            <div class="quiz-question-header">
+                <span class="question-number">Question ${questionCount + 1}</span>
+                <button class="btn-icon btn-danger" onclick="deleteQuizQuestion('${lessonId}', ${questionCount})" title="Delete question">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="quiz-question-body">
+                <div class="form-group">
+                    <label class="form-label">Question Text</label>
+                    <textarea class="form-input question-text" rows="2"
+                              placeholder="Enter your question..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Options</label>
+                    <div class="quiz-options-list">
+                        ${[0, 1, 2, 3].map(optIndex => `
+                            <div class="quiz-option-item">
+                                <input type="radio"
+                                       name="correct-answer-${lessonId}-${questionCount}"
+                                       value="${optIndex}"
+                                       ${optIndex === 0 ? 'checked' : ''}
+                                       class="option-radio">
+                                <input type="text"
+                                       class="form-input option-text"
+                                       placeholder="Option ${optIndex + 1}">
+                                <span class="correct-indicator ${optIndex === 0 ? 'active' : ''}">
+                                    <i class="fas fa-check-circle"></i> Correct
+                                </span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Explanation (Optional)</label>
+                    <textarea class="form-input question-explanation" rows="2"
+                              placeholder="Explain why this is the correct answer..."></textarea>
+                </div>
+            </div>
+        </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', newQuestionHTML);
+
+    // Add event listeners for radio buttons
+    const newItem = container.querySelector(`[data-question-index="${questionCount}"]`);
+    const radios = newItem.querySelectorAll('.option-radio');
+    radios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            updateCorrectIndicators(lessonId, questionCount);
+        });
+    });
+
+    showToast('Question added', 'success');
+}
+
+// Delete quiz question
+function deleteQuizQuestion(lessonId, questionIndex) {
+    if (!confirm('Are you sure you want to delete this question?')) {
+        return;
+    }
+
+    const container = document.getElementById(`quiz-questions-container-${lessonId}`);
+    if (!container) return;
+
+    const questionItem = container.querySelector(`[data-question-index="${questionIndex}"]`);
+    if (questionItem) {
+        questionItem.remove();
+    }
+
+    // Reindex remaining questions
+    const allQuestions = container.querySelectorAll('.quiz-question-item');
+    allQuestions.forEach((item, index) => {
+        item.dataset.questionIndex = index;
+        const questionNumber = item.querySelector('.question-number');
+        if (questionNumber) {
+            questionNumber.textContent = `Question ${index + 1}`;
+        }
+        // Update radio button names
+        const radios = item.querySelectorAll('.option-radio');
+        radios.forEach(radio => {
+            radio.name = `correct-answer-${lessonId}-${index}`;
+        });
+    });
+
+    // Show empty state if no questions left
+    if (allQuestions.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state-quiz">
+                <i class="fas fa-question-circle"></i>
+                <p>No questions yet. Click "Add Question" to create your first question.</p>
+            </div>
+        `;
+    }
+
+    showToast('Question deleted', 'success');
+}
+
+// Update correct answer indicators
+function updateCorrectIndicators(lessonId, questionIndex) {
+    const questionItem = document.querySelector(`[data-question-index="${questionIndex}"]`);
+    if (!questionItem) return;
+
+    const indicators = questionItem.querySelectorAll('.correct-indicator');
+    const radios = questionItem.querySelectorAll('.option-radio');
+
+    radios.forEach((radio, index) => {
+        if (radio.checked) {
+            indicators[index].classList.add('active');
+        } else {
+            indicators[index].classList.remove('active');
+        }
+    });
+}
+
+// Save quiz for lesson
+async function saveQuizForLesson(lessonId) {
+    try {
+        const container = document.getElementById(`quiz-editor-${lessonId}`);
+        if (!container) return;
+
+        // Collect quiz data
+        const title = document.getElementById(`quiz-title-${lessonId}`).value.trim();
+        const description = document.getElementById(`quiz-description-${lessonId}`).value.trim();
+        const passingScore = parseInt(document.getElementById(`quiz-passing-score-${lessonId}`).value) || 70;
+        const timeLimit = parseInt(document.getElementById(`quiz-time-limit-${lessonId}`).value) || null;
+        const maxAttempts = parseInt(document.getElementById(`quiz-max-attempts-${lessonId}`).value) || null;
+        const xpReward = parseInt(document.getElementById(`quiz-xp-reward-${lessonId}`).value) || 20;
+
+        if (!title) {
+            showToast('Please enter a quiz title', 'error');
+            return;
+        }
+
+        // Collect questions
+        const questionItems = document.querySelectorAll(`#quiz-questions-container-${lessonId} .quiz-question-item`);
+        const questions = [];
+
+        questionItems.forEach((item, index) => {
+            const questionText = item.querySelector('.question-text').value.trim();
+            const optionInputs = item.querySelectorAll('.option-text');
+            const options = Array.from(optionInputs).map(input => input.value.trim());
+            const correctRadio = item.querySelector('.option-radio:checked');
+            const correctAnswer = correctRadio ? parseInt(correctRadio.value) : 0;
+            const explanation = item.querySelector('.question-explanation').value.trim();
+
+            if (questionText && options.some(opt => opt)) {
+                questions.push({
+                    question: questionText,
+                    options: options,
+                    correct_answer: correctAnswer,
+                    explanation: explanation || null
+                });
+            }
+        });
+
+        if (questions.length === 0) {
+            showToast('Please add at least one question with options', 'error');
+            return;
+        }
+
+        const quizData = {
+            title,
+            description,
+            passing_score: passingScore,
+            time_limit_minutes: timeLimit,
+            max_attempts: maxAttempts,
+            xp_reward: xpReward,
+            questions: JSON.stringify(questions),
+            updated_at: new Date().toISOString()
+        };
+
+        const existingQuizId = container.dataset.quizId;
+
+        let quizId;
+        if (existingQuizId) {
+            // Update existing quiz
+            const { error } = await supabase
+                .from('quizzes')
+                .update(quizData)
+                .eq('id', existingQuizId);
+
+            if (error) throw error;
+            quizId = existingQuizId;
+        } else {
+            // Create new quiz
+            quizData.created_at = new Date().toISOString();
+            const { data: newQuiz, error } = await supabase
+                .from('quizzes')
+                .insert([quizData])
+                .select()
+                .single();
+
+            if (error) throw error;
+            quizId = newQuiz.id;
+        }
+
+        // Update lesson to link to quiz
+        const { error: lessonError } = await supabase
+            .from('lessons')
+            .update({
+                quiz_id: quizId,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', lessonId);
+
+        if (lessonError) throw lessonError;
+
+        showToast('Quiz saved successfully!', 'success');
+
+        // Reload the quiz editor to reflect saved state
+        await loadQuizEditorForLesson(lessonId);
+
+    } catch (error) {
+        console.error('Error saving quiz:', error);
+        showToast('Failed to save quiz: ' + error.message, 'error');
+    }
+}
+
+// Cancel quiz edit
+function cancelQuizEdit(lessonId) {
+    // Just reload the quiz editor to reset any changes
+    loadQuizEditorForLesson(lessonId);
+}
+
+// Make functions globally accessible
+window.loadQuizEditorForLesson = loadQuizEditorForLesson;
+window.addQuizQuestion = addQuizQuestion;
+window.deleteQuizQuestion = deleteQuizQuestion;
+window.saveQuizForLesson = saveQuizForLesson;
+window.cancelQuizEdit = cancelQuizEdit;
+
+window.addNewLessonInline = addNewLessonInline;
+window.openLessonTypeModal = openLessonTypeModal;
+window.closeLessonTypeModal = closeLessonTypeModal;
+window.createLessonWithType = createLessonWithType;
+window.saveCourseInline = saveCourseInline;
+
+async function deleteCourse(courseId) {
+    const confirmed = confirm('Are you sure you want to delete this course? This will also delete all associated lessons. This action cannot be undone.');
+    if (!confirmed) return;
+
+    try {
+        // First, delete all lessons associated with this course
+        const { error: lessonsError } = await supabase
+            .from('lessons')
+            .delete()
+            .eq('course_id', courseId);
+
+        if (lessonsError) {
+            console.error('Error deleting lessons:', lessonsError);
+            showToast('Failed to delete course lessons: ' + lessonsError.message, 'error');
+            return;
+        }
+
+        // Then delete the course itself
+        const { error: courseError } = await supabase
+            .from('courses')
+            .delete()
+            .eq('id', courseId);
+
+        if (courseError) {
+            console.error('Error deleting course:', courseError);
+            showToast('Failed to delete course: ' + courseError.message, 'error');
+            return;
+        }
+
+        showToast('Course deleted successfully', 'success');
+
+        // Reload courses list
+        await loadCourses();
+
+    } catch (error) {
+        console.error('Unexpected error deleting course:', error);
+        showToast('Failed to delete course: ' + error.message, 'error');
     }
 }
 

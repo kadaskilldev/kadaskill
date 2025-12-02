@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/admin.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
 <body>
     <div id="toast-container" class="toast-container"></div>
@@ -38,19 +39,24 @@
                     <i class="fas fa-users"></i>
                     <span>User Management</span>
                 </button>
-                <button class="admin-nav-item has-subnav admin-nav-item--content" data-section="content" aria-expanded="false" aria-controls="content-subnav">
-                    <span class="content-nav-icon" aria-hidden="true">
-                        <img src="images/content-management/Content Management.svg" alt="Content Management" loading="lazy">
-                    </span>
-                    <span class="content-nav-label" data-content-nav-label>Content Management</span>
-                    <span class="nav-caret" aria-hidden="true">
-                        <i class="fas fa-chevron-down"></i>
-                    </span>
+                <button class="admin-nav-item admin-nav-item--expandable" id="content-management-toggle">
+                    <i class="fas fa-book"></i>
+                    <span>Content Management</span>
+                    <i class="fas fa-chevron-down nav-arrow"></i>
                 </button>
-                <div class="admin-subnav" id="content-subnav" hidden>
-                    <button class="content-tab active" data-content-tab="courses">Courses</button>
-                    <button class="content-tab" data-content-tab="certifications">Certifications</button>
-                    <button class="content-tab" data-content-tab="exercises">Practice Exercises</button>
+                <div class="admin-subnav" id="content-subnav">
+                    <button class="admin-subnav-item" data-section="courses">
+                        <i class="fas fa-book-open"></i>
+                        <span>Courses</span>
+                    </button>
+                    <button class="admin-subnav-item" data-section="certifications">
+                        <i class="fas fa-certificate"></i>
+                        <span>Certifications</span>
+                    </button>
+                    <button class="admin-subnav-item" data-section="exercises">
+                        <i class="fas fa-dumbbell"></i>
+                        <span>Practice Exercises</span>
+                    </button>
                 </div>
                 <button class="admin-nav-item" data-section="learning-paths">
                     <i class="fas fa-route"></i>
@@ -259,11 +265,10 @@
                     </div>
                 </section>
 
-                <!-- Content Management Section -->
-                <section id="content-section" class="admin-section">
-
-                    <!-- Courses Tab -->
-                    <div id="courses-tab" class="content-tab-panel active">
+                <!-- Courses Section -->
+                <section id="courses-section" class="admin-section">
+                    <!-- Course List View -->
+                    <div id="course-list-view">
                         <div class="section-header">
                             <h3>Manage Courses</h3>
                             <button class="btn-primary" id="add-course-btn">
@@ -271,28 +276,160 @@
                             </button>
                         </div>
                         <div class="table-container">
-                            <table class="admin-table">
+                            <table class="admin-table courses-table">
                                 <thead>
                                     <tr>
-                                        <th>Title</th>
+                                        <th style="width: 400px;">Course</th>
                                         <th>Category</th>
-                                        <th>Level</th>
+                                        <th>Difficulty</th>
                                         <th>Lessons</th>
-                                        <th>Published</th>
+                                        <th>Last Updated</th>
+                                        <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="courses-table-body">
                                     <tr>
-                                        <td colspan="6" class="loading-cell">Loading courses...</td>
+                                        <td colspan="7" class="loading-cell">Loading courses...</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
-                    <!-- Certifications Tab -->
-                    <div id="certifications-tab" class="content-tab-panel">
+                    <!-- Course Edit View -->
+                    <div id="course-edit-view" class="course-edit-view" style="display: none;">
+                        <!-- Course Edit Header -->
+                        <div class="course-edit-header-inline">
+                            <button class="btn-back-inline" id="back-to-courses-btn">
+                                <i class="fas fa-arrow-left"></i>
+                                <span>Back to Courses</span>
+                            </button>
+                            <div class="course-edit-actions">
+                                <button class="btn-secondary btn-sm" id="preview-course-btn-inline">
+                                    <i class="fas fa-eye"></i> Preview
+                                </button>
+                                <button class="btn-primary btn-sm" id="save-course-btn-inline">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Course Edit Content -->
+                        <div class="course-edit-content">
+                            <!-- Course Basic Info Card -->
+                            <div class="course-card">
+                                <div class="course-card-header">
+                                    <h3><i class="fas fa-info-circle"></i> Course Information</h3>
+                                </div>
+                                <div class="course-card-body">
+                                    <div class="form-grid">
+                                        <div class="form-group span-2">
+                                            <label class="form-label">Course Title <span class="required">*</span></label>
+                                            <input type="text" class="form-input form-input-lg" id="course-title-edit" placeholder="e.g., Introduction to AI & Machine Learning">
+                                        </div>
+                                        <div class="form-group span-2">
+                                            <label class="form-label">Short Description</label>
+                                            <textarea class="form-input" id="course-short-desc-edit" rows="2" placeholder="Brief summary for course cards..."></textarea>
+                                        </div>
+                                        <div class="form-group span-2">
+                                            <label class="form-label">Full Description</label>
+                                            <textarea class="form-input" id="course-description-edit" rows="4" placeholder="Detailed course description..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Course Settings Card (Collapsible) -->
+                            <div class="course-card course-card-collapsible">
+                                <div class="course-card-header collapsible-trigger" data-target="course-settings-body">
+                                    <h3><i class="fas fa-cog"></i> Course Settings</h3>
+                                    <i class="fas fa-chevron-down collapse-icon"></i>
+                                </div>
+                                <div class="course-card-body collapse-content" id="course-settings-body">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label">Category <span class="required">*</span></label>
+                                            <select class="form-input" id="course-category-edit">
+                                                <option value="">Select category</option>
+                                                <option value="AI">AI</option>
+                                                <option value="Cloud">Cloud</option>
+                                                <option value="Cybersecurity">Cybersecurity</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Difficulty <span class="required">*</span></label>
+                                            <select class="form-input" id="course-difficulty-edit">
+                                                <option value="">Select difficulty</option>
+                                                <option value="Beginner">Beginner</option>
+                                                <option value="Intermediate">Intermediate</option>
+                                                <option value="Advanced">Advanced</option>
+                                                <option value="Expert">Expert</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Slug</label>
+                                            <input type="text" class="form-input" id="course-slug-edit" placeholder="intro-to-ai-ml">
+                                            <small class="form-hint">Auto-generated from title</small>
+                                        </div>
+                                        <div class="form-group span-2">
+                                            <label class="form-label">Course Image</label>
+                                            <input type="file" class="form-input" id="course-thumbnail-file" accept="image/*" onchange="handleImageUpload('thumbnail', this.files[0])" style="margin-bottom: 8px;">
+                                            <input type="text" class="form-input" id="course-thumbnail-edit" placeholder="Or paste image URL..." onchange="previewCourseImage('thumbnail')" style="font-size: 12px;">
+                                            <div class="image-preview-container" id="thumbnail-preview-container" style="display: none;">
+                                                <img id="thumbnail-preview" class="image-preview" alt="Course image preview">
+                                                <button type="button" class="btn-remove-preview" onclick="removeCourseImagePreview('thumbnail')">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="form-group span-2">
+                                            <label class="form-label">Prerequisites (one per line)</label>
+                                            <textarea class="form-input" id="course-prerequisites-edit" rows="3" placeholder="Basic programming knowledge&#10;Understanding of Python"></textarea>
+                                        </div>
+                                        <div class="form-group span-2">
+                                            <label class="form-label">Learning Objectives (one per line)</label>
+                                            <textarea class="form-input" id="course-objectives-edit" rows="3" placeholder="Understand AI fundamentals&#10;Build ML models"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Status</label>
+                                            <div class="toggle-group">
+                                                <label class="toggle-item">
+                                                    <input type="checkbox" id="course-published-edit">
+                                                    <span class="toggle-checkbox"></span>
+                                                    <span class="toggle-label-text">Published</span>
+                                                </label>
+                                                <label class="toggle-item">
+                                                    <input type="checkbox" id="course-featured-edit">
+                                                    <span class="toggle-checkbox"></span>
+                                                    <span class="toggle-label-text">Featured</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Course Content/Lessons Card -->
+                            <div class="course-card">
+                                <div class="course-card-header">
+                                    <h3><i class="fas fa-list"></i> Course Content</h3>
+                                    <button class="btn-primary btn-sm" id="add-lesson-btn-inline">
+                                        <i class="fas fa-plus"></i> Add Lesson
+                                    </button>
+                                </div>
+                                <div class="course-card-body">
+                                    <div id="lessons-accordion-container" class="lessons-accordion">
+                                        <!-- Lessons will be rendered here as accordion items -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Certifications Section -->
+                <section id="certifications-section" class="admin-section">
                         <div class="section-header">
                             <h3>Manage Certifications</h3>
                             <button class="btn-primary" id="add-cert-btn">
@@ -377,10 +514,10 @@
                                 </select>
                             </div>
                         </div>
-                    </div>
+                </section>
 
-                    <!-- Exercises Tab -->
-                    <div id="exercises-tab" class="content-tab-panel">
+                <!-- Practice Exercises Section -->
+                <section id="exercises-section" class="admin-section">
                         <div class="section-header">
                             <h3>Manage Practice Exercises</h3>
                             <button class="btn-primary" id="add-exercise-btn">
@@ -406,7 +543,6 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
                 </section>
 
                 <!-- Learning Paths Section -->
@@ -809,6 +945,45 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lesson Type Selection Modal -->
+    <div class="modal" id="lesson-type-modal">
+        <div class="modal-overlay" onclick="closeLessonTypeModal()"></div>
+        <div class="modal-content modal-content-sm">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New Lesson</h3>
+                <button class="modal-close" onclick="closeLessonTypeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-description">Choose the type of content for this lesson:</p>
+                <div class="lesson-type-options">
+                    <div class="lesson-type-card" onclick="createLessonWithType('text')">
+                        <div class="lesson-type-icon text-type">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h4>Text Content</h4>
+                        <p>Create a lesson with text-based content, markdown, or HTML</p>
+                    </div>
+                    <div class="lesson-type-card" onclick="createLessonWithType('video')">
+                        <div class="lesson-type-icon video-type">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h4>Video</h4>
+                        <p>Add a video lesson with a YouTube or Vimeo URL</p>
+                    </div>
+                    <div class="lesson-type-card" onclick="createLessonWithType('quiz')">
+                        <div class="lesson-type-icon quiz-type">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <h4>Quiz</h4>
+                        <p>Create a quiz with multiple choice questions</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
