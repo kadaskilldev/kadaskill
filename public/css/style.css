@@ -1838,6 +1838,33 @@ body.has-fixed-header {
     box-sizing: border-box;
 }
 
+/* Decorative vector backgrounds for contact section */
+.contact::before {
+    content: '';
+    position: absolute;
+    left: -50px;
+    top: 97px;
+    width: 422px;
+    height: 422px;
+    background: url('../images/about/contact-vector-left.svg') no-repeat center center;
+    background-size: contain;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.contact::after {
+    content: '';
+    position: absolute;
+    right: -50px;
+    bottom: 30px;
+    width: 422px;
+    height: 422px;
+    background: url('../images/about/contact-vector-right.svg') no-repeat center center;
+    background-size: contain;
+    pointer-events: none;
+    z-index: 0;
+}
+
 .contact h2 {
     color: var(--Light, #F8F7FC);
     font-size: 45.23px;
@@ -1861,6 +1888,7 @@ body.has-fixed-header {
     /* Reserve space for larger image */
     box-sizing: border-box;
     transform: translateX(60px);
+    z-index: 1;
 }
 
 .contact-robot {
@@ -1968,6 +1996,20 @@ body.has-fixed-header {
 /* Responsive Design for Contact Section */
 
 @media (max-width: 968px) {
+    .contact::before,
+    .contact::after {
+        width: 300px;
+        height: 300px;
+        opacity: 0.5;
+    }
+    .contact::before {
+        left: -100px;
+        top: 50px;
+    }
+    .contact::after {
+        right: -100px;
+        bottom: 50px;
+    }
     .contact-content {
         flex-direction: column;
         gap: 3rem;
@@ -1996,6 +2038,10 @@ body.has-fixed-header {
 }
 
 @media (max-width: 768px) {
+    .contact::before,
+    .contact::after {
+        display: none;
+    }
     .contact {
         margin-top: 4rem;
         padding: 5rem 0;
