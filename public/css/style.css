@@ -701,6 +701,7 @@ body.has-fixed-header {
     align-items: center;
     position: relative;
     padding-top: 80px;
+    overflow: visible;
 }
 
 .hero .container {
@@ -718,6 +719,7 @@ body.has-fixed-header {
     width: 100%;
     gap: 3rem;
     z-index: 2;
+    position: relative;
 }
 
 .hero-text {
@@ -994,50 +996,16 @@ body.has-fixed-header {
     letter-spacing: 0.08px;
 }
 
-.hero-robots {
+/* Hero Robot - positioned bottom-left of hero section, outside container */
+.hero-robot {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none;
-    z-index: 1;
-}
-
-.robot-img {
-    position: absolute;
-    width: 300px;
-    /* Large but not too wide */
-    height: 300px;
-    object-fit: contain;
-    /* Prevent stretching */
-    opacity: 0;
-    /* Start hidden to prevent flash */
-    animation: fadeIn 0.5s ease-in forwards;
-    /* Fade in smoothly */
-}
-
-.robot-img-bottom {
+    left: -80px;
     bottom: -100px;
-    left: 50%;
-    transform: translateX(-50%);
-    /* Center horizontally */
+    width: 500px;
+    height: auto;
+    z-index: 1;
+    pointer-events: none;
 }
-
-.robot-img-upside-down {
-    top: -45%;
-    left: 70%;
-    transform: rotate(180deg);
-    /* Flipped upside down */
-}
-
-.robot-img-top-left {
-    top: 20%;
-    right: 10%;
-    transform: rotate(15deg);
-    /* Slight rotation for variety */
-}
-
 
 /* Fade-in animation to prevent flashing */
 
@@ -1086,17 +1054,10 @@ body.has-fixed-header {
         width: 100%;
         max-width: 400px;
     }
-    .robot-img {
-        width: 200px;
-        height: 200px;
-    }
-    .robot-img-upside-down {
-        top: 5%;
-        left: 5%;
-    }
-    .robot-img-top-left {
-        top: 15%;
-        right: 5%;
+    .hero-robot {
+        width: 400px;
+        left: -70px;
+        bottom: -80px;
     }
 }
 
@@ -1110,20 +1071,10 @@ body.has-fixed-header {
     .hero p {
         font-size: 1rem;
     }
-    .robot-img {
-        width: 150px;
-        height: 150px;
-    }
-    .robot-img-bottom {
-        bottom: -50px;
-    }
-    .robot-img-upside-down {
-        top: 2%;
-        left: 2%;
-    }
-    .robot-img-top-left {
-        top: 10%;
-        right: 2%;
+    .hero-robot {
+        width: 280px;
+        left: -50px;
+        bottom: -60px;
     }
 }
 
@@ -1139,6 +1090,7 @@ body.has-fixed-header {
     overflow: hidden;
     box-sizing: border-box;
     min-height: 800px;
+    z-index: 2;
 }
 
 .welcome-content {
