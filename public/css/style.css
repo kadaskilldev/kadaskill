@@ -770,26 +770,27 @@ body.has-fixed-header {
 
 .hero-form {
     flex-shrink: 0;
-    width: 380px;
+    width: 458px;
 }
 
 .form-container {
-    background: #3a4a5c;
-    border-radius: 15px;
-    padding: 2.5rem;
+    background: linear-gradient(132deg, rgba(35, 47, 62, 1) 43%, rgba(0, 127, 127, 1) 100%);
+    border-radius: 10px;
+    padding: 47px 44px 40px 44px;
     color: white;
+    width: 100%;
 }
 
 .social-login {
     display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+    justify-content: space-between;
+    gap: 56px;
+    margin-bottom: 25px;
 }
 
 .social-btn {
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     border-radius: 8px;
     border: none;
     cursor: pointer;
@@ -797,135 +798,200 @@ body.has-fixed-header {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    padding: 0;
+    background: transparent;
 }
 
-.social-btn.microsoft {
-    background: #f8a8a8;
-}
-
-.social-btn.google {
-    background: #d9ffd0;
-}
-
-.social-btn.linkedin {
-    background: hsl(179, 100%, 88%);
-}
-
-.social-btn.facebook {
-    background: #c5deff;
+.social-btn img {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
 }
 
 .social-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    filter: brightness(1.1);
 }
 
 .divider {
     text-align: center;
-    margin: 1.5rem 0;
+    margin: 25px 0;
     position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0;
 }
 
-.divider::before {
+.divider::before,
+.divider::after {
     content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
+    flex: 1;
     height: 1px;
-    background: rgba(255, 255, 255, 0.3);
+    background: #F8F7FC;
 }
 
 .divider span {
-    background: #3a4a5c;
-    padding: 0 1rem;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.9rem;
+    padding: 0 20px;
+    color: #F8F7FC;
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.5%;
 }
 
 .login-form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0;
 }
 
 .login-form label {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.9);
-    margin-bottom: 0.5rem;
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.5%;
+    color: #F8F7FC;
+    margin-bottom: 17px;
 }
 
 .login-form input {
-    padding: 12px 15px;
+    padding: 14px 18px;
     border: none;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    font-size: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 25px;
+    background: #F8F7FC;
+    color: #1D192B;
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom: 20px;
 }
 
 .login-form input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(29, 25, 43, 0.5);
+}
+
+.login-form input:focus {
+    outline: 2px solid #FF9900;
+    outline-offset: 2px;
 }
 
 .password-field {
     position: relative;
+    margin-bottom: 20px;
+}
+
+.password-field input {
+    margin-bottom: 0;
+    width: 100%;
+    padding-right: 50px;
 }
 
 .password-toggle {
     position: absolute;
-    right: 12px;
+    right: 18px;
     top: 50%;
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.7);
     cursor: pointer;
-    font-size: 1rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.password-toggle .eye-icon {
+    width: 18px;
+    height: 10px;
 }
 
 .form-submit {
-    background: #FF8C00;
-    color: white;
+    position: relative;
+    background: transparent;
+    color: #232F3E;
     border: none;
-    padding: 12px 15px;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
+    padding: 0;
+    height: 46px;
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-size: 17.91px;
+    font-weight: 700;
+    letter-spacing: 0.09px;
     cursor: pointer;
-    transition: background 0.3s ease;
-    margin-top: 1rem;
+    transition: color 0.2s ease;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    isolation: isolate;
 }
 
-.form-submit:hover {
-    background: #e67e00;
+.form-submit::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('../images/home/signup-btn.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    z-index: 0;
+    border-radius: 25px;
+    transition: background-image 0.2s ease;
+}
+
+.form-submit span {
+    position: relative;
+    z-index: 1;
+    color: #232F3E;
+}
+
+.form-submit:hover::before,
+.form-submit:focus-visible::before,
+.form-submit:active::before {
+    background-image: url('../images/home/signup-btn-hover.svg');
 }
 
 .terms {
     text-align: center;
-    font-size: 0.8rem;
-    margin-top: 1rem;
-    color: rgb(255, 255, 255);
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.08px;
+    word-wrap: break-word;
+    margin-top: 20px;
+    color: #F8F7FC;
+}
+
+.terms span {
+    color: #F8F7FC;
 }
 
 .terms a {
-    color: #FFD700;
-    text-decoration: none;
+    color: #F8F7FC;
+    text-decoration: underline;
+    font-weight: 400;
+    letter-spacing: 0.08px;
 }
 
 .login-link {
     text-align: center;
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
-    color: rgb(255, 255, 255);
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.08px;
+    word-wrap: break-word;
+    margin-top: 32px;
+    color: #FF9900;
+}
+
+.login-link span {
+    color: #FF9900;
 }
 
 .login-toggle {
-    color: #FF8C00;
-    text-decoration: none;
-    font-weight: 600;
+    color: #FF9900;
+    text-decoration: underline;
+    font-weight: 400;
+    letter-spacing: 0.08px;
 }
 
 .hero-robots {

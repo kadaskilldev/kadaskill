@@ -66,10 +66,18 @@
                 <div class="hero-form">
                     <div class="form-container">
                         <div class="social-login">
-                            <button class="social-btn microsoft"><i class="fab fa-microsoft"></i></button>
-                            <button class="social-btn google"><i class="fab fa-google"></i></button>
-                            <button class="social-btn linkedin"><i class="fab fa-linkedin"></i></button>
-                            <button class="social-btn facebook"><i class="fab fa-facebook"></i></button>
+                            <button class="social-btn microsoft" aria-label="Sign in with Microsoft">
+                                <img src="images/home/social-google.svg" alt="Microsoft">
+                            </button>
+                            <button class="social-btn google" aria-label="Sign in with Google">
+                                <img src="images/home/social-facebook.svg" alt="Google">
+                            </button>
+                            <button class="social-btn linkedin" aria-label="Sign in with LinkedIn">
+                                <img src="images/home/social-linkedin.svg" alt="LinkedIn">
+                            </button>
+                            <button class="social-btn facebook" aria-label="Sign in with Facebook">
+                                <img src="images/home/social-microsoft.svg" alt="Facebook">
+                            </button>
                         </div>
 
                         <div class="divider">
@@ -83,19 +91,19 @@
                             <label for="password">Password</label>
                             <div class="password-field">
                                 <input type="password" id="password" placeholder="password" required>
-                                <button type="button" class="password-toggle"><i class="fas fa-eye"></i></button>
+                                <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                                    <img src="images/home/eye-icon.svg" alt="Show password" class="eye-icon">
+                                </button>
                             </div>
 
-                            <button type="submit" class="form-submit">Sign Up for Free</button>
+                            <button type="submit" class="form-submit"><span>Sign Up for Free</span></button>
                         </form>
-                        <p class="terms" style="color: #fff;">
-                            By signing up, I agree to KadaSkill
-                            <a href="#" style="color: #FFD700;">Terms</a>
+                        <p class="terms">
+                            <span>By signing up, I agree to KadaSkill </span><a href="#">Terms</a>
                         </p>
 
-                        <p class="login-link" style="color: #fff;">
-                            Already have an account?
-                            <a href="#" class="login-toggle" style="color: #FFD700;">Log in</a>
+                        <p class="login-link">
+                            <span>Already have an account? </span><a href="#" class="login-toggle">Log in</a>
                         </p>
                     </div>
                 </div>

@@ -644,14 +644,25 @@ function initializeLoginToggle() {
 
         loginForm.setAttribute('data-mode', newMode);
 
+        // Get the terms paragraph
+        const termsParagraph = document.querySelector('.terms');
+
         if (newMode === 'login') {
-            formSubmit.textContent = 'Log In';
+            formSubmit.innerHTML = '<span>Log In</span>';
             // Preserve the inline style from the original HTML
-            this.parentElement.innerHTML = 'Don\'t have an account? <a href="#" class="login-toggle" style="color: #FFD700;">Sign up</a>';
+            this.parentElement.innerHTML = '<span>Don\'t have an account? </span><a href="#" class="login-toggle">Sign up</a>';
+            // Update terms text for login
+            if (termsParagraph) {
+                termsParagraph.innerHTML = '<span>By logging in, I agree to KadaSkill </span><a href="#">Terms</a>';
+            }
         } else {
-            formSubmit.textContent = 'Sign Up for Free';
+            formSubmit.innerHTML = '<span>Sign Up for Free</span>';
             //  Preserve the inline style from the original HTML
-            this.parentElement.innerHTML = 'Already have an account? <a href="#" class="login-toggle" style="color: #FFD700;">Log in</a>';
+            this.parentElement.innerHTML = '<span>Already have an account? </span><a href="#" class="login-toggle">Log in</a>';
+            // Update terms text for signup
+            if (termsParagraph) {
+                termsParagraph.innerHTML = '<span>By signing up, I agree to KadaSkill </span><a href="#">Terms</a>';
+            }
         }
 
         // Re-attach the same listener function to the new anchor tag
