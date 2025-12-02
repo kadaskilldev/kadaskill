@@ -1427,6 +1427,49 @@ body.has-fixed-header {
     overflow: hidden;
 }
 
+/* Decorative vectors for team section background */
+.team-vector {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.team-vector--173 {
+    left: -44px;
+    top: 93px;
+    width: 371px;
+    height: 371px;
+    background: url('../images/about/team-vector-173.svg') no-repeat center center;
+    background-size: contain;
+}
+
+.team-vector--203 {
+    right: 0;
+    top: 700px;
+    width: 187px;
+    height: 187px;
+    background: url('../images/about/team-vector-203.svg') no-repeat center center;
+    background-size: contain;
+}
+
+.team-vector--204 {
+    left: 41px;
+    bottom: 150px;
+    width: 281px;
+    height: 281px;
+    background: url('../images/about/team-vector-204.svg') no-repeat center center;
+    background-size: contain;
+}
+
+.team-vector--205 {
+    right: 50px;
+    bottom: -100px;
+    width: 380px;
+    height: 412px;
+    background: url('../images/about/team-vector-205.svg') no-repeat center center;
+    background-size: contain;
+}
+
 .team h2 {
     text-align: center;
     font-size: 3rem;
@@ -1785,6 +1828,9 @@ body.has-fixed-header {
 /* Responsive Design */
 
 @media (max-width: 768px) {
+    .team-vector {
+        display: none;
+    }
     .team-row {
         flex-direction: column;
         align-items: center;
