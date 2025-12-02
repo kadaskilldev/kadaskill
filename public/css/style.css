@@ -2120,10 +2120,62 @@ body.has-fixed-header {
 /* Final CTA Section */
 
 .final-cta {
-    padding-top: 312px;
     padding-bottom: 154.92px;
     background: #efeff5;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decorative vectors for CTA section background */
+.cta-vector {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.cta-circle-left {
+    left: -7px;
+    top: -237px;
+    width: 549px;
+    height: 549px;
+    background: url('../images/about/cta-circle-left.svg') no-repeat center center;
+    background-size: contain;
+}
+
+.cta-circle-right {
+    right: -172px;
+    bottom: -145px;
+    width: 530px;
+    height: 523px;
+    background: url('../images/about/cta-circle-right.svg') no-repeat center center;
+    background-size: contain;
+}
+
+.cta-vector-left {
+    left: 46px;
+    bottom: 0;
+    width: 273px;
+    height: 292px;
+    background: url('../images/about/cta-vector-left.svg') no-repeat center center;
+    background-size: contain;
+}
+
+.cta-vector-right {
+    right: 253px;
+    top: 9px;
+    width: 156px;
+    height: 167px;
+    background: url('../images/about/cta-vector-right.svg') no-repeat center center;
+    background-size: contain;
+}
+
+.final-cta .container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .final-cta h2 {
@@ -2133,7 +2185,9 @@ body.has-fixed-header {
     font-weight: 700;
     letter-spacing: 0.32px;
     word-wrap: break-word;
-    margin-bottom: 1rem;
+    margin: 0;
+    padding-top: 197px;
+    margin-bottom: 28px;
 }
 
 .final-cta p {
@@ -2144,9 +2198,7 @@ body.has-fixed-header {
     letter-spacing: 0.10px;
     word-wrap: break-word;
     white-space: nowrap;
-    margin-bottom: 2rem;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto 134px auto;
 }
 
 /* Footer */
