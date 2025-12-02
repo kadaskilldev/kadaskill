@@ -2132,6 +2132,9 @@ body.has-fixed-header {
     position: absolute;
     pointer-events: none;
     z-index: 0;
+    transform-origin: center center;
+    will-change: transform;
+    animation: cta-accent-swirl 8s linear infinite;
 }
 
 .cta-circle-left {
@@ -2170,6 +2173,75 @@ body.has-fixed-header {
     background-size: contain;
 }
 
+/* Animation delays for organic feel */
+.cta-circle-left { animation-delay: 0s; }
+.cta-circle-right { animation-delay: 0.05s; }
+.cta-vector-left { animation-delay: 0.1s; }
+.cta-vector-right { animation-delay: 0.15s; }
+
+/* Animated robot for Final CTA section */
+.final-cta-robot {
+    --final-cta-robot-size: clamp(80px, 11vw, 160px);
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: var(--final-cta-robot-size);
+    height: auto;
+    pointer-events: none;
+    z-index: 1;
+    transform-origin: center;
+    backface-visibility: visible;
+    will-change: left, top, transform;
+    filter: drop-shadow(0 8px 18px rgba(15, 23, 42, 0.18));
+    animation: final-cta-robot-loop 8s cubic-bezier(.22,.9,.37,.99) infinite;
+}
+
+@keyframes final-cta-robot-loop {
+    0% {
+        top: 20px;
+        left: 20px;
+        transform: translateZ(0) scale(1) scaleX(1) rotate(0deg);
+    }
+    18% {
+        top: 20px;
+        left: 20px;
+        transform: translateZ(0) scale(1.25) scaleX(1) rotate(0deg);
+    }
+    33% {
+        top: calc(100% - var(--final-cta-robot-size) - 20px);
+        left: calc(100% - var(--final-cta-robot-size) - 20px);
+        transform: translateZ(0) scale(0.75) scaleX(-1) rotate(8deg);
+    }
+    50% {
+        top: calc(100% - var(--final-cta-robot-size) - 20px);
+        left: calc(100% - var(--final-cta-robot-size) - 20px);
+        transform: translateZ(0) scale(0.8) scaleX(-1) rotate(8deg);
+    }
+    66% {
+        top: calc(100% - var(--final-cta-robot-size) - 20px);
+        left: 20px;
+        transform: translateZ(0) scale(1.25) scaleX(1) rotate(-6deg);
+    }
+    85% {
+        top: 20px;
+        left: 20px;
+        transform: translateZ(0) scale(1.05) scaleX(1) rotate(0deg);
+    }
+    100% {
+        top: 20px;
+        left: 20px;
+        transform: translateZ(0) scale(1) scaleX(1) rotate(0deg);
+    }
+}
+
+/* Respect user reduced motion preference for final CTA */
+@media (prefers-reduced-motion: reduce) {
+    .cta-vector,
+    .final-cta-robot {
+        animation: none;
+    }
+}
+
 .final-cta .container {
     position: relative;
     z-index: 1;
@@ -2199,6 +2271,11 @@ body.has-fixed-header {
     word-wrap: break-word;
     white-space: nowrap;
     margin: 0 auto 134px auto;
+}
+
+.final-cta .cta-button span {
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-weight: 700;
 }
 
 /* Footer */
