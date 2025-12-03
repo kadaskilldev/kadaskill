@@ -632,16 +632,7 @@
                         <button type="button" class="btn-add-skill" onclick="addSkill()">Add Skill</button>
                     </div>
                     <div class="skills-display" id="skillsContainer">
-                        <span class="skill-tag">Data Preparation <span class="skill-remove" onclick="removeSkill(this)">×</span></span>
-                        <span class="skill-tag">Ethics <span class="skill-remove" onclick="removeSkill(this)">×</span></span>
-                        <span class="skill-tag">Infrastructure as Code <span class="skill-remove" onclick="removeSkill(this)">×</span></span>
-                        <span class="skill-tag">Machine Learning Algorithms <span class="skill-remove" onclick="removeSkill(this)">×</span></span>
-                        <span class="skill-tag">Cloud Computing <span class="skill-remove" onclick="removeSkill(this)">×</span></span>
-                        <span class="skill-tag">Github <span class="skill-remove" onclick="removeSkill(this)">×</span></span>
-                        <span class="skill-tag">Cost Management <span class="skill-remove" onclick="removeSkill(this)">×</span></span>
-                        <span class="skill-tag">Git <span class="skill-remove" onclick="removeSkill(this)">×</span></span>
-                        <span class="skill-tag">Problem Solving <span class="skill-remove" onclick="removeSkill(this)">×</span></span>
-                        <span class="skill-tag">MLOps <span class="skill-remove" onclick="removeSkill(this)">×</span></span>
+                        <!-- Skills will be loaded dynamically from Supabase -->
                     </div>
                 </div>
 
@@ -741,8 +732,40 @@
                     const defaultBio = bioField.dataset.defaultBio || '';
                     bioField.value = profile.bio && profile.bio.trim() ? profile.bio : defaultBio;
                 }
-                // Since this for debugging, we might add lines for location, work, education, etc. in the future, not sure as of now.
+                
+                // Load skills from database
+                loadSkillsFromProfile(profile.skills);
             }
+        }
+        
+        // Load skills from profile data
+        function loadSkillsFromProfile(skills) {
+            const container = document.getElementById('skillsContainer');
+            container.innerHTML = ''; // Clear any existing skills
+            
+            if (skills && Array.isArray(skills)) {
+                skills.forEach(skillName => {
+                    const skillTag = document.createElement('span');
+                    skillTag.className = 'skill-tag';
+                    skillTag.innerHTML = `${skillName} <span class="skill-remove" onclick="removeSkill(this)">×</span>`;
+                    container.appendChild(skillTag);
+                });
+            }
+        }
+        
+        // Get all current skills as an array
+        function getSkillsArray() {
+            const container = document.getElementById('skillsContainer');
+            const skillTags = container.querySelectorAll('.skill-tag');
+            const skills = [];
+            skillTags.forEach(tag => {
+                // Get only the skill name text, not the × button
+                const skillName = tag.childNodes[0].textContent.trim();
+                if (skillName) {
+                    skills.push(skillName);
+                }
+            });
+            return skills;
         }
         // Add an event listener to run this function when the page is ready
         document.addEventListener('DOMContentLoaded', populateProfileForm);
@@ -795,8 +818,7 @@
             const updates = {
                 full_name: document.querySelector('input[placeholder="Enter your full name"]').value,
                 bio: document.querySelector('textarea').value,
-                // Add the other fields we want to save
-                // location: document.querySelector('input[placeholder="Enter your location"]').value,
+                skills: getSkillsArray(), // Save skills array to database
                 updated_at: new Date() // It's good practice to set an updated_at timestamp
             };
 

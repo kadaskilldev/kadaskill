@@ -196,6 +196,7 @@ CREATE TABLE public.profiles (
   following_count integer DEFAULT 0,
   is_public boolean DEFAULT true,
   email_notifications boolean DEFAULT true,
+  skills TEXT[] DEFAULT '{}',
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   CONSTRAINT profiles_pkey PRIMARY KEY (id),
