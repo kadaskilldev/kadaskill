@@ -484,6 +484,7 @@ body.has-fixed-header {
 .cta-button span {
     position: relative;
     z-index: 1;
+    font-weight: 700;
 }
 
 .cta-pill {
@@ -698,9 +699,10 @@ body.has-fixed-header {
     background: #f8fafc;
     min-height: 100vh;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     position: relative;
-    padding-top: 80px;
+    padding-top: 169px;
+    padding-bottom: 80px;
     overflow: visible;
 }
 
@@ -728,42 +730,57 @@ body.has-fixed-header {
 }
 
 .hero h1 {
-    font-size: 3.5rem;
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-size: 63.96px;
     font-weight: 700;
-    margin-bottom: 1.5rem;
-    line-height: 1.2;
-    color: #1a1a1a;
+    letter-spacing: 0.32px;
+    line-height: 1.1;
+    color: #1D192B;
+    margin-bottom: 17px;
+    word-wrap: break-word;
 }
 
-.hero p {
-    font-size: 1.2rem;
+.hero-text > p {
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: 0.14px;
+    color: #1D192B;
     margin-bottom: 2rem;
-    color: #666;
+    word-wrap: break-word;
 }
 
 .partners {
     margin-top: 3rem;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(239, 239, 245, 0.75);
+    border-radius: 18px;
+    padding: 12px 30px;
+    width: fit-content;
 }
 
 .partners-label {
-    display: block;
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 1rem;
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: #1D192B;
+    letter-spacing: 0.5%;
+    white-space: nowrap;
 }
 
 .partner-logos {
     display: flex;
-    gap: 1.5rem;
+    gap: 24px;
     align-items: center;
 }
 
 .partner-logo {
-    height: 30px;
-    opacity: 0.7;
+    height: 28px;
+    opacity: 0.85;
     transition: opacity 0.3s ease;
     object-fit: contain;
-    /* Prevent stretching */
 }
 
 .partner-logo:hover {
@@ -1034,7 +1051,8 @@ body.has-fixed-header {
 
 @media (max-width: 968px) {
     .hero {
-        padding-top: 60px;
+        padding-top: 100px;
+        padding-bottom: 80px;
     }
     .hero-content {
         flex-direction: column;
@@ -1045,10 +1063,10 @@ body.has-fixed-header {
         text-align: center;
     }
     .hero h1 {
-        font-size: 2.5rem;
+        font-size: 48px;
     }
-    .hero p {
-        font-size: 1.1rem;
+    .hero-text > p {
+        font-size: 22px;
     }
     .hero-form {
         width: 100%;
@@ -1059,17 +1077,23 @@ body.has-fixed-header {
         left: -70px;
         bottom: -80px;
     }
+    .partners {
+        justify-content: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
 }
 
 @media (max-width: 768px) {
     .hero {
-        padding-top: 50px;
+        padding-top: 80px;
+        padding-bottom: 60px;
     }
     .hero h1 {
-        font-size: 2rem;
+        font-size: 36px;
     }
-    .hero p {
-        font-size: 1rem;
+    .hero-text > p {
+        font-size: 18px;
     }
     .hero-robot {
         width: 280px;
