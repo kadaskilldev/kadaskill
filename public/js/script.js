@@ -1,4 +1,4 @@
-const SUPABASE_URL = 'https://kbpbubsnadnhebgdggdy.supabase.co'; 
+const SUPABASE_URL = 'https://kbpbubsnadnhebgdggdy.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImticGJ1YnNuYWRuaGViZ2RnZ2R5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMjA4MTksImV4cCI6MjA3MzU5NjgxOX0.4O8ZLeZ2iR786MZ8JS_55nzhn-5WxqabMtDQuAoZkAA';
 
 // Initialize Supabase client
@@ -11,7 +11,7 @@ if (window.supabase && window.supabase.createClient) {
     console.error("Supabase client library not found on the window object. Did you include the CDN link in index.html?");
     // Mock for environments without the library loaded, to prevent immediate fatal errors in auth functions
     supabaseClient = {
-        auth: { 
+        auth: {
             signUp: async () => ({ data: { user: { id: 'mock-id' } }, error: { message: 'Supabase Mock' } }),
             signInWithPassword: async () => ({ data: { user: { id: 'mock-id' } }, error: { message: 'Supabase Mock' } }),
             signInWithOAuth: async () => ({ error: { message: 'Supabase Mock: Library not loaded.' } }),
@@ -21,10 +21,10 @@ if (window.supabase && window.supabase.createClient) {
 
 const supabase = supabaseClient; // for compatibility with the rest of the code logic
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Load shared components first
     loadSharedComponents();
-    
+
     // Then initialize page functionality
     setTimeout(() => {
         // Hide loading screen
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
         initializeFormHandling();
         initializePasswordToggle();
         initializeLoginToggle();
-        
+
         // Initialize page-specific functionality
         initializeCertificationPage();
         initializeCertificationDetailPage();
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
+            anchor.addEventListener('click', function (e) {
                 const href = this.getAttribute('href');
                 if (!href || href === '#') {
                     return;
@@ -345,7 +345,7 @@ function loadNavigation() {
 function loadFooter() {
     const footerElement = document.getElementById('footer');
     if (!footerElement) return;
-    
+
     const footer = `
     <footer class="footer">
         <div class="container">
@@ -402,7 +402,7 @@ function loadFooter() {
         </div>
     </footer>
     `;
-    
+
     footerElement.innerHTML = footer;
 }
 
@@ -411,11 +411,11 @@ function setActiveNavigation() {
     const pathname = window.location.pathname;
     const currentPage = (pathname === '/' || pathname === '') ? 'home.html' : pathname.split('/').pop();
     const navLinks = document.querySelectorAll('.nav-btn');
-    
+
     navLinks.forEach(link => {
         link.classList.remove('active');
         const href = link.getAttribute('href');
-        
+
         if (currentPage === 'profile.html') {
             // Do not highlight any nav link when on profile page
             return;
@@ -480,7 +480,7 @@ async function handleFormSubmit(e) {
     showNotification(isLogin ? 'Logging in...' : 'Creating your account...', 'info');
 
     let response;
-    
+
     if (isLogin) {
         // Supabase Login
         response = await supabase.auth.signInWithPassword({
@@ -548,12 +548,12 @@ async function handleFormSubmit(e) {
         loginForm.reset();
         return;
     }
-    
+
     if (user) {
         // If sign up requires verification
         if (!session) {
-             showNotification('Welcome! Please check your email to verify your account.', 'success');
-             return;
+            showNotification('Welcome! Please check your email to verify your account.', 'success');
+            return;
         }
         // On successful login or signup (with auto-confirm)
         // Supabase automatically handles the session in localStorage.
@@ -571,7 +571,7 @@ async function handleSocialLogin(e) {
     let platform = '';
     let provider = '';
 
-    if (button.classList.contains('microsoft')) { platform = 'Microsoft'; provider = 'microsoft'; } 
+    if (button.classList.contains('microsoft')) { platform = 'Microsoft'; provider = 'microsoft'; }
     else if (button.classList.contains('google')) { platform = 'Google'; provider = 'google'; }
     else if (button.classList.contains('linkedin')) { platform = 'LinkedIn'; provider = 'linkedin'; }
     else if (button.classList.contains('facebook')) { platform = 'Facebook'; provider = 'facebook'; }
@@ -581,7 +581,7 @@ async function handleSocialLogin(e) {
         showNotification(`${platform} login is not currently supported or enabled.`, 'info');
         return;
     }
-    
+
     showNotification(`Redirecting to ${platform} login...`, 'info');
 
     // Dynamically determine redirect URL based on current environment
@@ -611,7 +611,7 @@ function initializePasswordToggle() {
     const passwordInput = document.querySelector('#password');
 
     if (passwordToggle && passwordInput) {
-        passwordToggle.addEventListener('click', function() {
+        passwordToggle.addEventListener('click', function () {
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
 
@@ -636,9 +636,9 @@ function initializeLoginToggle() {
     }
 
     // function that handles the toggle logic
-    const toggleHandler = function(e) {
+    const toggleHandler = function (e) {
         e.preventDefault();
-        
+
         let currentMode = loginForm.getAttribute('data-mode');
         let newMode = currentMode === 'signup' ? 'login' : 'signup';
 
@@ -669,10 +669,10 @@ function initializeLoginToggle() {
         const newToggle = document.querySelector('.login-link .login-toggle');
         if (newToggle) {
             // Re-attach the handler to the newly created element
-            newToggle.addEventListener('click', toggleHandler); 
+            newToggle.addEventListener('click', toggleHandler);
         }
     };
-    
+
     if (loginToggle) {
         // Add the listener to the initial element
         loginToggle.addEventListener('click', toggleHandler);
@@ -682,7 +682,7 @@ function initializeLoginToggle() {
 function handleCTAClick(e) {
     e.preventDefault();
     const targetUrl = this.getAttribute('href');
-    
+
     if (targetUrl === 'learn.html') {
         showNotification('Navigating to Learn page...', 'info');
         setTimeout(() => {
@@ -723,13 +723,13 @@ function initializeFiltering() {
     const certificationCards = document.querySelectorAll('.certification-card');
 
     filterTabs.forEach(tab => {
-        tab.addEventListener('click', function() {
+        tab.addEventListener('click', function () {
             const filter = this.getAttribute('data-filter');
-            
+
             // Update active tab
             filterTabs.forEach(t => t.classList.remove('active'));
             this.classList.add('active');
-            
+
             // Filter cards
             filterCertifications(filter, certificationCards);
             updateCertificationCount();
@@ -741,7 +741,7 @@ function filterCertifications(filter, cards) {
     cards.forEach(card => {
         const category = card.getAttribute('data-category');
         const shouldShow = filter === 'all' || category.includes(filter);
-        
+
         if (shouldShow) {
             card.style.display = 'block';
             card.classList.add('fade-in');
@@ -760,21 +760,21 @@ function initializeSearch() {
 
     function handleSearch(searchInput) {
         if (searchInput && certificationCards.length > 0) {
-            searchInput.addEventListener('input', function() {
+            searchInput.addEventListener('input', function () {
                 const searchTerm = this.value.toLowerCase();
-                
+
                 certificationCards.forEach(card => {
                     const title = card.querySelector('.card-title').textContent.toLowerCase();
                     const description = card.querySelector('.card-description').textContent.toLowerCase();
                     const shouldShow = title.includes(searchTerm) || description.includes(searchTerm);
-                    
+
                     if (shouldShow) {
                         card.style.display = 'block';
                     } else {
                         card.style.display = 'none';
                     }
                 });
-                
+
                 updateCertificationCount();
             });
         }
@@ -786,7 +786,7 @@ function initializeSearch() {
 
 function initializeCertificationCards() {
     const certificationCards = document.querySelectorAll('.certification-card');
-    
+
     // Map of certification titles to detail page IDs
     const certIdMap = {
         'Data Scientist': 'data-scientist',
@@ -799,19 +799,19 @@ function initializeCertificationCards() {
         'Data Analyst': 'data-analyst',
         'Ethical Hacker': 'ethical-hacker'
     };
-    
+
     certificationCards.forEach(card => {
         const button = card.querySelector('.card-button');
-        
+
         if (button) {
-            button.addEventListener('click', function(e) {
+            button.addEventListener('click', function (e) {
                 e.preventDefault();
                 const title = card.querySelector('.card-title').textContent;
                 const buttonText = this.textContent.trim();
-                
+
                 // Get the certification ID from the map
                 const certId = certIdMap[title];
-                
+
                 if (certId) {
                     // Redirect to certification detail page with ID
                     showNotification(`Loading ${title}...`, 'info');
@@ -833,9 +833,9 @@ function initializeCertificationCards() {
 
 function initializeContinueCard() {
     const continueBtn = document.querySelector('.continue-btn');
-    
+
     if (continueBtn) {
-        continueBtn.addEventListener('click', function() {
+        continueBtn.addEventListener('click', function () {
             showNotification('Continuing Data Analyst Track...', 'info');
             // In a real app, this would navigate to the course
         });
@@ -845,7 +845,7 @@ function initializeContinueCard() {
 function updateCertificationCount() {
     const visibleCards = document.querySelectorAll('.certification-card[style*="display: block"], .certification-card:not([style*="display: none"])');
     const countElement = document.getElementById('cert-count');
-    
+
     if (countElement) {
         countElement.textContent = visibleCards.length;
     }
@@ -866,7 +866,7 @@ function initializeCalendar() {
     let state = new Date(today.getFullYear(), today.getMonth(), 1);
 
     function daysInMonth(y, m) { return new Date(y, m + 1, 0).getDate(); }
-    function weekdayLetter(i) { return ['S','M','T','W','T','F','S'][i]; }
+    function weekdayLetter(i) { return ['S', 'M', 'T', 'W', 'T', 'F', 'S'][i]; }
 
     const activeFlashTimers = new WeakMap();
 
@@ -905,9 +905,9 @@ function initializeCalendar() {
             }
         }
 
-    gridEl.dataset.weeks = String(numWeeks);
-    gridEl.style.setProperty('--calendar-gap', numWeeks === 6 ? '12px' : '16px');
-    gridEl.style.setProperty('--calendar-header-gap', numWeeks === 6 ? '8px' : '10px');
+        gridEl.dataset.weeks = String(numWeeks);
+        gridEl.style.setProperty('--calendar-gap', numWeeks === 6 ? '12px' : '16px');
+        gridEl.style.setProperty('--calendar-header-gap', numWeeks === 6 ? '8px' : '10px');
         const profileContent = gridEl.closest('.profile-content');
         if (profileContent) {
             profileContent.dataset.calendarWeeks = String(numWeeks);
@@ -922,11 +922,11 @@ function initializeCalendar() {
         for (let w = 0; w < 7; w++) {
             const row = document.createElement('div');
             row.classList.add('calendar-column');
-            row.setAttribute('role','row');
+            row.setAttribute('role', 'row');
 
             const header = document.createElement('span');
             header.classList.add('calendar-header');
-            header.setAttribute('role','columnheader');
+            header.setAttribute('role', 'columnheader');
             header.textContent = weekdayLetter(w);
             row.appendChild(header);
 
@@ -934,7 +934,7 @@ function initializeCalendar() {
                 const dayNum = weeksMatrix[week][w];
                 const cell = document.createElement('span');
                 cell.classList.add('calendar-cell');
-                cell.setAttribute('role','gridcell');
+                cell.setAttribute('role', 'gridcell');
 
                 if (dayNum !== null && dayNum !== undefined) {
                     cell.textContent = String(dayNum);
@@ -1023,10 +1023,10 @@ function initializeCalendar() {
     bindNavButtons();
 
     // Keyboard navigation when calendar has focus
-    if (!gridEl.hasAttribute('tabindex')) gridEl.setAttribute('tabindex','0');
+    if (!gridEl.hasAttribute('tabindex')) gridEl.setAttribute('tabindex', '0');
     gridEl.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') { change(1); e.preventDefault(); }
-        if (e.key === 'ArrowLeft')  { change(-1); e.preventDefault(); }
+        if (e.key === 'ArrowLeft') { change(-1); e.preventDefault(); }
     });
 
     // Expose simple API for tests/debugging
@@ -1052,7 +1052,7 @@ function initializeCalendar() {
                     console.debug('initializeCalendar: grid replaced — updating reference and re-render');
                     gridEl = newGrid;
                     // Ensure tabindex and keyboard listener remain set
-                    if (!gridEl.hasAttribute('tabindex')) gridEl.setAttribute('tabindex','0');
+                    if (!gridEl.hasAttribute('tabindex')) gridEl.setAttribute('tabindex', '0');
                     // re-render current state into the new grid
                     render(state);
                     bindNavButtons();
@@ -1082,7 +1082,7 @@ async function fetchUserData() {
         // When backend is ready, replace with actual API call
         // const response = await fetch('/api/user/profile');
         // return await response.json();
-        
+
         // Mock data for now
         return {
             id: 1,
@@ -1104,7 +1104,7 @@ async function fetchCertifications() {
         // When backend is ready, replace with actual API call
         // const response = await fetch('/api/certifications');
         // return await response.json();
-        
+
         // Mock data structure that matches expected backend response
         return {
             certifications: [
@@ -1234,13 +1234,13 @@ function initializeCourseFiltering() {
     const courseCards = document.querySelectorAll('.course-card');
 
     filterTabs.forEach(tab => {
-        tab.addEventListener('click', function() {
+        tab.addEventListener('click', function () {
             const filter = this.getAttribute('data-category');
-            
+
             // Update active tab
             filterTabs.forEach(t => t.classList.remove('active'));
             this.classList.add('active');
-            
+
             // Filter courses
             filterCourses(filter, courseCards);
             updateCourseCount();
@@ -1252,7 +1252,7 @@ function filterCourses(filter, cards) {
     cards.forEach(card => {
         const category = card.getAttribute('data-category');
         const shouldShow = filter === 'all' || category === filter;
-        
+
         if (shouldShow) {
             card.style.display = 'block';
             setTimeout(() => card.classList.add('fade-in'), 10);
@@ -1268,21 +1268,21 @@ function initializeCourseSearch() {
     const courseCards = document.querySelectorAll('.course-card');
 
     if (searchInput && courseCards.length > 0) {
-        searchInput.addEventListener('input', function() {
+        searchInput.addEventListener('input', function () {
             const searchTerm = this.value.toLowerCase();
-            
+
             courseCards.forEach(card => {
                 const title = card.querySelector('.course-card-title').textContent.toLowerCase();
                 const description = card.querySelector('.course-card-description').textContent.toLowerCase();
                 const shouldShow = title.includes(searchTerm) || description.includes(searchTerm);
-                
+
                 if (shouldShow) {
                     card.style.display = 'block';
                 } else {
                     card.style.display = 'none';
                 }
             });
-            
+
             updateCourseCount();
         });
     }
@@ -1290,16 +1290,16 @@ function initializeCourseSearch() {
 
 function initializeCourseCards() {
     const courseCards = document.querySelectorAll('.course-card');
-    
+
     courseCards.forEach(card => {
         const button = card.querySelector('.course-card-btn');
-        
+
         if (button) {
-            button.addEventListener('click', function(e) {
+            button.addEventListener('click', function (e) {
                 e.preventDefault();
                 const title = card.querySelector('.course-card-title').textContent;
                 const buttonText = this.textContent.trim();
-                
+
                 if (buttonText === 'Resume') {
                     showNotification(`Resuming "${title}"...`, 'info');
                     setTimeout(() => {
@@ -1318,9 +1318,9 @@ function initializeCourseCards() {
 
 function initializeContinueButton() {
     const continueBtn = document.querySelector('.continue-btn-primary');
-    
+
     if (continueBtn) {
-        continueBtn.addEventListener('click', function(e) {
+        continueBtn.addEventListener('click', function (e) {
             e.preventDefault();
             const courseName = document.querySelector('.course-name')?.textContent || 'your course';
             showNotification(`Continuing ${courseName}...`, 'info');
@@ -1439,29 +1439,33 @@ function initializeProfileCoursesNavigation() {
     const updateChevronState = () => {
         if (prevChevron) {
             const shouldHidePrev = currentIndex === 0;
-            prevChevron.classList.toggle('is-hidden', shouldHidePrev);
-            prevChevron.setAttribute('aria-hidden', shouldHidePrev ? 'true' : 'false');
-            prevChevron.setAttribute('aria-disabled', shouldHidePrev ? 'true' : 'false');
             if (shouldHidePrev) {
-                prevChevron.classList.remove('is-active');
-                if (prevChevron._flashTimeoutId) {
-                    clearTimeout(prevChevron._flashTimeoutId);
-                    prevChevron._flashTimeoutId = null;
-                }
+                // Delay hiding until after flash animation completes
+                setTimeout(() => {
+                    prevChevron.classList.add('is-hidden');
+                    prevChevron.setAttribute('aria-hidden', 'true');
+                    prevChevron.setAttribute('aria-disabled', 'true');
+                }, 180);
+            } else {
+                prevChevron.classList.remove('is-hidden');
+                prevChevron.setAttribute('aria-hidden', 'false');
+                prevChevron.setAttribute('aria-disabled', 'false');
             }
         }
 
         if (nextChevron) {
             const shouldHideNext = currentIndex === pages.length - 1;
-            nextChevron.classList.toggle('is-hidden', shouldHideNext);
-            nextChevron.setAttribute('aria-hidden', shouldHideNext ? 'true' : 'false');
-            nextChevron.setAttribute('aria-disabled', shouldHideNext ? 'true' : 'false');
             if (shouldHideNext) {
-                nextChevron.classList.remove('is-active');
-                if (nextChevron._flashTimeoutId) {
-                    clearTimeout(nextChevron._flashTimeoutId);
-                    nextChevron._flashTimeoutId = null;
-                }
+                // Delay hiding until after flash animation completes
+                setTimeout(() => {
+                    nextChevron.classList.add('is-hidden');
+                    nextChevron.setAttribute('aria-hidden', 'true');
+                    nextChevron.setAttribute('aria-disabled', 'true');
+                }, 180);
+            } else {
+                nextChevron.classList.remove('is-hidden');
+                nextChevron.setAttribute('aria-hidden', 'false');
+                nextChevron.setAttribute('aria-disabled', 'false');
             }
         }
     };
@@ -1636,29 +1640,29 @@ function initializeHeaderScrollAnimation() {
 
 function initializePracticeCards() {
     const practiceCards = document.querySelectorAll('.practice-card');
-    
+
     practiceCards.forEach(card => {
         const button = card.querySelector('.practice-btn');
-        
+
         if (button) {
-            button.addEventListener('click', function(e) {
+            button.addEventListener('click', function (e) {
                 e.preventDefault();
                 const title = card.querySelector('.practice-card-title').textContent;
                 const badge = card.querySelector('.practice-badge').textContent;
-                
+
                 showNotification(`Starting "${title}"...`, 'info');
                 setTimeout(() => {
                     showNotification(`Welcome to ${title}! Category: ${badge}`, 'success');
                 }, 1500);
             });
         }
-        
+
         // Add hover animation effect
-        card.addEventListener('mouseenter', function() {
+        card.addEventListener('mouseenter', function () {
             this.style.borderColor = '#fbbf24';
         });
-        
-        card.addEventListener('mouseleave', function() {
+
+        card.addEventListener('mouseleave', function () {
             this.style.borderColor = '#f59e0b';
         });
     });
@@ -2065,30 +2069,30 @@ async function getCertificationData(certId) {
             .select('*')
             .eq('slug', certId)
             .single();
-        
+
         if (data && !error) {
             return data;
         }
     } catch (error) {
         console.warn('Supabase fetch failed, using fallback data:', error);
     }
-    
+
     return certificationDataFallback[certId];
 }
 
 async function initializeCertificationDetailPage() {
     if (!document.querySelector('.cert-header')) return;
-    
+
     const urlParams = new URLSearchParams(window.location.search);
     const certId = urlParams.get('id');
-    
+
     if (!certId) {
         window.location.href = 'certification.html';
         return;
     }
-    
+
     const certData = await getCertificationData(certId);
-    
+
     if (certData) {
         loadCertificationDetails(certData);
     } else {
@@ -2104,12 +2108,12 @@ function loadCertificationDetails(cert) {
     document.getElementById('cert-duration').textContent = cert.duration;
     document.getElementById('cert-level').textContent = cert.level;
     document.getElementById('cert-description').textContent = cert.description;
-    
+
     const prereqList = document.getElementById('prerequisites-list');
-    prereqList.innerHTML = cert.prerequisites.map(prereq => 
+    prereqList.innerHTML = cert.prerequisites.map(prereq =>
         `<li><i class="fas fa-check-circle"></i> ${prereq}</li>`
     ).join('');
-    
+
     const stepsContainer = document.getElementById('guide-steps');
     stepsContainer.innerHTML = cert.steps.map((step, index) => `
         <div class="guide-step">
