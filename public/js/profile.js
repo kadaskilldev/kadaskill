@@ -64,10 +64,10 @@ async function loadUserProfile() {
 function updateSkillsSection(profile) {
     const skillsList = document.getElementById('profileSkillsList');
     if (!skillsList) return;
-    
+
     // Clear existing skills
     skillsList.innerHTML = '';
-    
+
     // Check if profile has skills
     if (profile.skills && Array.isArray(profile.skills) && profile.skills.length > 0) {
         profile.skills.forEach(skillName => {
@@ -258,7 +258,7 @@ async function loadUserCourses() {
 
                 return `
                     <article class="profile-course-card" aria-label="${course.title} course">
-                        <div class="profile-course-card__background" style="background-image: url('${course.thumbnail_url || ''}');"></div>
+                        <div class="profile-course-card__background"></div>
                         <div class="profile-course-card__content">
                             <span class="profile-course-card__eyebrow">Course - ${enrollment.progress_percentage}% complete</span>
                             <h3 class="profile-course-card__title">${course.title}</h3>
