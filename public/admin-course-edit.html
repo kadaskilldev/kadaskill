@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Course - KadaSkill Admin</title>
+    <link rel="icon" type="image/svg+xml" href="images/loading/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/admin-course-edit.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Course Edit Layout -->
+    <div class="course-edit-layout">
+        <!-- Header -->
+        <header class="course-edit-header">
+            <div class="header-left">
+                <button class="btn-back" onclick="window.location.href='admin.html'">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Courses</span>
+                </button>
+                <h1 class="course-title-header" id="course-title-display">Loading Course...</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn-secondary" id="preview-course-btn">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+                <button class="btn-primary" id="save-course-btn">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="course-edit-main">
+            <!-- Course Basic Info -->
+            <section class="course-section card">
+                <div class="section-header">
+                    <h2><i class="fas fa-info-circle"></i> Course Information</h2>
+                </div>
+                <div class="section-content">
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label class="form-label">Course Title <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="course-title" placeholder="e.g., Introduction to AI & Machine Learning">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label class="form-label">Short Description</label>
+                            <textarea class="form-input" id="course-short-desc" rows="2" placeholder="Brief one-liner for course cards..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label class="form-label">Full Description</label>
+                            <textarea class="form-input" id="course-description" rows="6" placeholder="Detailed course description..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Course Settings (Collapsible) -->
+            <section class="course-section card">
+                <div class="section-header collapsible" id="settings-toggle">
+                    <h2><i class="fas fa-cog"></i> Course Settings</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </div>
+                <div class="section-content collapsible-content" id="settings-content">
+                    <div class="form-row form-row-3">
+                        <div class="form-group">
+                            <label class="form-label">Category <span class="required">*</span></label>
+                            <select class="form-input" id="course-category">
+                                <option value="">Select category</option>
+                                <option value="AI">AI</option>
+                                <option value="Cloud">Cloud</option>
+                                <option value="Cybersecurity">Cybersecurity</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Difficulty <span class="required">*</span></label>
+                            <select class="form-input" id="course-difficulty">
+                                <option value="">Select difficulty</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                                <option value="Expert">Expert</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Duration (hours)</label>
+                            <input type="number" class="form-input" id="course-duration" min="0" placeholder="10">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Slug (URL-friendly) <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="course-slug" placeholder="intro-to-ai-ml">
+                            <small class="form-hint">Auto-generated from title</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Thumbnail URL</label>
+                            <input type="text" class="form-input" id="course-thumbnail" placeholder="https://...">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Cover Image URL</label>
+                            <input type="text" class="form-input" id="course-cover" placeholder="https://...">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label class="form-label">Prerequisites (one per line)</label>
+                            <textarea class="form-input" id="course-prerequisites" rows="3" placeholder="Basic programming knowledge&#10;Understanding of Python"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label class="form-label">Learning Objectives (one per line)</label>
+                            <textarea class="form-input" id="course-objectives" rows="4" placeholder="Understand AI fundamentals&#10;Build ML models&#10;Deploy AI solutions"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row form-row-2">
+                        <div class="form-group">
+                            <label class="form-label">Published</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="course-published">
+                                <label for="course-published" class="toggle-label">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="toggle-text">Make course visible to users</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Featured</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="course-featured">
+                                <label for="course-featured" class="toggle-label">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="toggle-text">Show on homepage</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Course Content (Lessons/Sections) -->
+            <section class="course-section card">
+                <div class="section-header">
+                    <h2><i class="fas fa-list"></i> Course Content</h2>
+                    <button class="btn-primary btn-sm" id="add-lesson-btn">
+                        <i class="fas fa-plus"></i> Add Lesson
+                    </button>
+                </div>
+                <div class="section-content">
+                    <div id="lessons-container" class="lessons-container">
+                        <div class="empty-state">
+                            <i class="fas fa-book-open"></i>
+                            <p>No lessons yet. Click "Add Lesson" to create your first lesson.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add/Edit Lesson Modal -->
+    <div class="modal modal-large" id="lesson-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="lesson-modal-title">Add Lesson</h3>
+                <button class="modal-close" onclick="closeLessonModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="lesson-form">
+                    <input type="hidden" id="lesson-id">
+                    <input type="hidden" id="lesson-order-index">
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label class="form-label">Lesson Title <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="lesson-title" required placeholder="e.g., What is Machine Learning?">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Slug</label>
+                            <input type="text" class="form-input" id="lesson-slug" placeholder="what-is-machine-learning">
+                            <small class="form-hint">Auto-generated from title</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Module/Section Name</label>
+                            <input type="text" class="form-input" id="lesson-module" placeholder="Module 1: Introduction">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Content Type <span class="required">*</span></label>
+                            <select class="form-input" id="lesson-content-type" required>
+                                <option value="">Select type</option>
+                                <option value="text">Text Content</option>
+                                <option value="video">Video</option>
+                                <option value="quiz">Quiz</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">XP Reward</label>
+                            <input type="number" class="form-input" id="lesson-xp" min="0" value="10" placeholder="10">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-input" id="lesson-description" rows="2" placeholder="Brief lesson description..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Content Type Specific Fields -->
+                    <div id="text-content-fields" class="content-type-fields" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label class="form-label">Text Content (Markdown/HTML)</label>
+                                <textarea class="form-input" id="lesson-text-content" rows="12" placeholder="Enter lesson content here..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="video-content-fields" class="content-type-fields" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Video URL (YouTube/Vimeo)</label>
+                                <input type="text" class="form-input" id="lesson-video-url" placeholder="https://www.youtube.com/watch?v=...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Video Duration (minutes)</label>
+                                <input type="number" class="form-input" id="lesson-video-duration" min="0" placeholder="15">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="quiz-content-fields" class="content-type-fields" style="display: none;">
+                        <div class="info-banner">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Quiz lessons link to the Quizzes section. You can create and manage quizzes separately.</span>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label class="form-label">Select Quiz</label>
+                                <select class="form-input" id="lesson-quiz-id">
+                                    <option value="">No quiz selected</option>
+                                    <!-- Populated dynamically -->
+                                </select>
+                                <button type="button" class="btn-secondary btn-sm" style="margin-top: 8px;">
+                                    <i class="fas fa-plus"></i> Create New Quiz
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Published</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="lesson-published" checked>
+                                <label for="lesson-published" class="toggle-label">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeLessonModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Save Lesson
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script src="js/admin-course-edit.js"></script>
+</body>
+</html>

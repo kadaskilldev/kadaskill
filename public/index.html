@@ -66,10 +66,18 @@
                 <div class="hero-form">
                     <div class="form-container">
                         <div class="social-login">
-                            <button class="social-btn microsoft"><i class="fab fa-microsoft"></i></button>
-                            <button class="social-btn google"><i class="fab fa-google"></i></button>
-                            <button class="social-btn linkedin"><i class="fab fa-linkedin"></i></button>
-                            <button class="social-btn facebook"><i class="fab fa-facebook"></i></button>
+                            <button class="social-btn microsoft" aria-label="Sign in with Microsoft">
+                                <img src="images/home/social-google.svg" alt="Microsoft">
+                            </button>
+                            <button class="social-btn google" aria-label="Sign in with Google">
+                                <img src="images/home/social-facebook.svg" alt="Google">
+                            </button>
+                            <button class="social-btn linkedin" aria-label="Sign in with LinkedIn">
+                                <img src="images/home/social-linkedin.svg" alt="LinkedIn">
+                            </button>
+                            <button class="social-btn facebook" aria-label="Sign in with Facebook">
+                                <img src="images/home/social-microsoft.svg" alt="Facebook">
+                            </button>
                         </div>
 
                         <div class="divider">
@@ -83,29 +91,27 @@
                             <label for="password">Password</label>
                             <div class="password-field">
                                 <input type="password" id="password" placeholder="password" required>
-                                <button type="button" class="password-toggle"><i class="fas fa-eye"></i></button>
+                                <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                                    <img src="images/home/eye-icon.svg" alt="Show password" class="eye-icon">
+                                </button>
                             </div>
 
-                            <button type="submit" class="form-submit">Sign Up for Free</button>
+                            <button type="submit" class="form-submit"><span>Sign Up for Free</span></button>
                         </form>
-                        <p class="terms" style="color: #fff;">
-                            By signing up, I agree to KadaSkill
-                            <a href="#" style="color: #FFD700;">Terms</a>
+                        <p class="terms">
+                            <span>By signing up, I agree to KadaSkill </span><a href="#">Terms</a>
                         </p>
 
-                        <p class="login-link" style="color: #fff;">
-                            Already have an account?
-                            <a href="#" class="login-toggle" style="color: #FFD700;">Log in</a>
+                        <p class="login-link">
+                            <span>Already have an account? </span><a href="#" class="login-toggle">Log in</a>
                         </p>
                     </div>
                 </div>
             </div>
-
-            <div class="hero-robots">
-                <img src="images/robot-hero.png" alt="KadaSkill Robot Upside Down" class="robot-img robot-img-upside-down" onerror="this.style.display='none';">
-                <img src="images/robot-hero.png" alt="KadaSkill Robot Top Left" class="robot-img robot-img-top-left" onerror="this.style.display='none';">
-            </div>
         </div>
+
+        <!-- Hero Robot positioned bottom-left of viewport -->
+        <img src="images/home/hero-robot.png" alt="KadaSkill Robot" class="hero-robot">
     </section>
 
     <!-- Welcome Section -->
@@ -135,6 +141,11 @@
 
 
     <div class="features">
+        <!-- Decorative circles -->
+        <img src="images/about/circle-large.svg" alt="" class="features-circle features-circle--large" aria-hidden="true">
+        <img src="images/about/circle-medium.svg" alt="" class="features-circle features-circle--medium" aria-hidden="true">
+        <img src="images/about/circle-small.svg" alt="" class="features-circle features-circle--small" aria-hidden="true">
+        
         <div class="feature-card mission">
             <div class="feature-robot">
                 <img src="images/robot-hero.png" alt="Mission Robot">
@@ -151,102 +162,163 @@
             <p>To become the Philippines' leading provider of future-proof cloud, AI, and cybersecurity consulting services — recognized for our excellence, agility, and Filipino ingenuity.</p>
         </div>
     </div>
-    </div>
-    </section>
 
-    <div class="team-grid">
-        <div style="text-align: center; color: #FF9900; font-size: 63.96px; font-family: 'Amazon Ember', 'Inter', sans-serif; font-weight: 700; letter-spacing: 0.32px; word-wrap: break-word">MEET THE TEAM</div>
-        <div style="width: 100%; text-align: center; color: black; font-size: 20px; font-family: 'Amazon Ember', 'Inter', sans-serif; font-weight: 700; letter-spacing: 0.10px; word-wrap: break-word">Meet the multidisciplinary team behind KadaSkill, combining design, development, and learning<br>expertise to power your upskilling journey.</div>
-        <!-- First Row - 3 members -->
-        <div class="team-row">
-            <div class="team-member">
-                <div class="member-photo">
-                    <img src="images/team/eijay.png" alt="Alfred Joshua Palpal-latoc">
+    <!-- Team Section -->
+    <section class="team">
+        <!-- Decorative background vectors -->
+        <div class="team-vector team-vector--173"></div>
+        <div class="team-vector team-vector--203"></div>
+        <div class="team-vector team-vector--204"></div>
+        <div class="team-vector team-vector--205"></div>
+        
+        <div class="team-grid">
+            <div style="text-align: center; color: #FF9900; font-size: 63.96px; font-family: 'Amazon Ember', 'Inter', sans-serif; font-weight: 700; letter-spacing: 0.32px; word-wrap: break-word">MEET THE TEAM</div>
+            <div style="width: 100%; text-align: center; color: black; font-size: 20px; font-family: 'Amazon Ember', 'Inter', sans-serif; font-weight: 700; letter-spacing: 0.10px; word-wrap: break-word">Meet the multidisciplinary team behind KadaSkill, combining design, development, and learning<br>expertise to power your upskilling journey.</div>
+            <!-- First Row -->
+            <div class="team-row">
+                <div class="team-member team-member--featured">
+                    <div class="featured-card-wrapper">
+                        <div class="team-member-card">
+                            <div class="featured-circle featured-circle--large"></div>
+                            <div class="featured-circle featured-circle--medium"></div>
+                            <div class="featured-circle featured-circle--small"></div>
+                        </div>
+                        <div class="member-photo member-photo--featured">
+                            <img src="images/team/eijay.png" alt="Alfred Joshua Palpal-latoc">
+                        </div>
+                    </div>
+                    <div class="team-member-info team-member-info--featured">
+                        <h4>Alfred Joshua Palpal-latoc</h4>
+                        <p>UI / UX Designer</p>
+                    </div>
                 </div>
-                <div class="team-member-info">
-                    <h4>Alfred Joshua Palpal-latoc</h4>
-                    <p>UI / UX Designer</p>
+
+                <div class="team-member team-member--featured">
+                    <div class="featured-card-wrapper">
+                        <div class="team-member-card">
+                            <div class="featured-circle featured-circle--large"></div>
+                            <div class="featured-circle featured-circle--medium"></div>
+                            <div class="featured-circle featured-circle--small"></div>
+                        </div>
+                        <div class="member-photo member-photo--featured">
+                            <img src="images/team/daniela.png" alt="Daniela Joaquin">
+                        </div>
+                    </div>
+                    <div class="team-member-info team-member-info--featured">
+                        <h4>Daniela Joaquin</h4>
+                        <p>Frontend Developer</p>
+                    </div>
+                </div>
+
+                <div class="team-member team-member--featured">
+                    <div class="featured-card-wrapper">
+                        <div class="team-member-card">
+                            <div class="featured-circle featured-circle--large"></div>
+                            <div class="featured-circle featured-circle--medium"></div>
+                            <div class="featured-circle featured-circle--small"></div>
+                        </div>
+                        <div class="member-photo member-photo--featured">
+                            <img src="images/team/precious.png" alt="Precious Grace Deborah Manucom">
+                        </div>
+                    </div>
+                    <div class="team-member-info team-member-info--featured">
+                        <h4>Precious Grace Deborah Manucom</h4>
+                        <p>Hosting/DevOps</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="team-member">
-                <div class="member-photo">
-                    <img src="images/team/daniela.png" alt="Daniela Joaquin">
+            <!-- Second Row -->
+            <div class="team-row">
+                <div class="team-member team-member--featured">
+                    <div class="featured-card-wrapper">
+                        <div class="team-member-card">
+                            <div class="featured-circle featured-circle--large"></div>
+                            <div class="featured-circle featured-circle--medium"></div>
+                            <div class="featured-circle featured-circle--small"></div>
+                        </div>
+                        <div class="member-photo member-photo--featured">
+                            <img src="images/team/rj.png" alt="Roljohn Frilles">
+                        </div>
+                    </div>
+                    <div class="team-member-info team-member-info--featured">
+                        <h4>Roljohn Frilles</h4>
+                        <p>Content Development Lead</p>
+                    </div>
                 </div>
-                <div class="team-member-info">
-                    <h4>Daniela Joaquin</h4>
-                    <p>Frontend Developer</p>
+
+                <div class="team-member team-member--featured">
+                    <div class="featured-card-wrapper">
+                        <div class="team-member-card">
+                            <div class="featured-circle featured-circle--large"></div>
+                            <div class="featured-circle featured-circle--medium"></div>
+                            <div class="featured-circle featured-circle--small"></div>
+                        </div>
+                        <div class="member-photo member-photo--featured">
+                            <img src="images/team/roan.png" alt="Roan Manansala">
+                        </div>
+                    </div>
+                    <div class="team-member-info team-member-info--featured">
+                        <h4>Roan Manansala</h4>
+                        <p>Backend Developer</p>
+                    </div>
+                </div>
+
+                <div class="team-member team-member--featured">
+                    <div class="featured-card-wrapper">
+                        <div class="team-member-card">
+                            <div class="featured-circle featured-circle--large"></div>
+                            <div class="featured-circle featured-circle--medium"></div>
+                            <div class="featured-circle featured-circle--small"></div>
+                        </div>
+                        <div class="member-photo member-photo--featured">
+                            <img src="images/team/paul.png" alt="Paul Angelo Macaraeg">
+                        </div>
+                    </div>
+                    <div class="team-member-info team-member-info--featured">
+                        <h4>Paul Angelo Macaraeg</h4>
+                        <p>QA Tester</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="team-member">
-                <div class="member-photo">
-                    <img src="images/team/precious.png" alt="Precious Grace Deborah Manucom">
+            <!-- Third Row -->
+            <div class="team-row">
+                <div class="team-member team-member--featured">
+                    <div class="featured-card-wrapper">
+                        <div class="team-member-card">
+                            <div class="featured-circle featured-circle--large"></div>
+                            <div class="featured-circle featured-circle--medium"></div>
+                            <div class="featured-circle featured-circle--small"></div>
+                        </div>
+                        <div class="member-photo member-photo--featured">
+                            <img src="images/team/daniel.png" alt="Daniel Penero">
+                        </div>
+                    </div>
+                    <div class="team-member-info team-member-info--featured">
+                        <h4>Daniel Penero</h4>
+                        <p>System Analyst</p>
+                    </div>
                 </div>
-                <div class="team-member-info">
-                    <h4>Precious Grace Deborah Manucom</h4>
-                    <p>Hosting/DevOps</p>
+
+                <div class="team-member team-member--featured">
+                    <div class="featured-card-wrapper">
+                        <div class="team-member-card">
+                            <div class="featured-circle featured-circle--large"></div>
+                            <div class="featured-circle featured-circle--medium"></div>
+                            <div class="featured-circle featured-circle--small"></div>
+                        </div>
+                        <div class="member-photo member-photo--featured">
+                            <img src="images/team/francis.png" alt="Francis Erick Romasanta">
+                        </div>
+                    </div>
+                    <div class="team-member-info team-member-info--featured">
+                        <h4>Francis Erick Romasanta</h4>
+                        <p>Project Manager</p>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Second Row - 3 members -->
-        <div class="team-row">
-            <div class="team-member">
-                <div class="member-photo">
-                    <img src="images/team/rj.png" alt="Roljohn Frilles">
-                </div>
-                <div class="team-member-info">
-                    <h4>Roljohn Frilles</h4>
-                    <p>Content Development Lead</p>
-                </div>
-            </div>
-
-            <div class="team-member">
-                <div class="member-photo">
-                    <img src="images/team/roan.png" alt="Roan Manansala">
-                </div>
-                <div class="team-member-info">
-                    <h4>Roan Manansala</h4>
-                    <p>Backend Developer</p>
-                </div>
-            </div>
-
-            <div class="team-member">
-                <div class="member-photo">
-                    <img src="images/team/paul.png" alt="Paul Angelo Macaraeg">
-                </div>
-                <div class="team-member-info">
-                    <h4>Paul Angelo Macaraeg</h4>
-                    <p>QA Tester</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Third Row - 2 members centered -->
-        <div class="team-row">
-            <div class="team-member">
-                <div class="member-photo">
-                    <img src="images/team/daniel.png" alt="Daniel Penero">
-                </div>
-                <div class="team-member-info">
-                    <h4>Daniel Penero</h4>
-                    <p>System Analyst</p>
-                </div>
-            </div>
-
-            <div class="team-member">
-                <div class="member-photo">
-                    <img src="images/team/francis.png" alt="Francis Erick Romasanta">
-                </div>
-                <div class="team-member-info">
-                    <h4>Francis Erick Romasanta</h4>
-                    <p>Project Manager</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
     </section>
 
     <!-- Contact Section -->
@@ -286,6 +358,15 @@
 
     <!-- Final CTA Section -->
     <section class="final-cta">
+        <!-- Decorative animated robot icon -->
+        <img src="images/home/cta/icon.png" alt="" class="final-cta-robot" aria-hidden="true">
+        
+        <!-- Decorative vectors -->
+        <div class="cta-vector cta-circle-left"></div>
+        <div class="cta-vector cta-circle-right"></div>
+        <div class="cta-vector cta-vector-left"></div>
+        <div class="cta-vector cta-vector-right"></div>
+        
         <div class="container">
             <h2>Ready to Level Up Your Skills?</h2>
             <p>Join KadaSkill today and start your bite-sized journey in cloud, AI & cybersecurity.</p>

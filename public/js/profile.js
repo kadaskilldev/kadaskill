@@ -50,9 +50,41 @@ async function loadUserProfile() {
         userProfile = profile;
         updateProfileHero(profile);
         updateBioSection(profile);
+        updateSkillsSection(profile); // Load skills dynamically
 
     } catch (error) {
         console.error('Unexpected error loading user profile:', error);
+    }
+}
+
+// ============================================
+// Update Skills Section
+// ============================================
+
+function updateSkillsSection(profile) {
+    const skillsList = document.getElementById('profileSkillsList');
+    if (!skillsList) return;
+    
+    // Clear existing skills
+    skillsList.innerHTML = '';
+    
+    // Check if profile has skills
+    if (profile.skills && Array.isArray(profile.skills) && profile.skills.length > 0) {
+        profile.skills.forEach(skillName => {
+            const chip = document.createElement('span');
+            chip.className = 'profile-skills-card__chip';
+            chip.setAttribute('role', 'listitem');
+            chip.textContent = skillName;
+            skillsList.appendChild(chip);
+        });
+    } else {
+        // Show a placeholder message if no skills
+        const placeholder = document.createElement('span');
+        placeholder.className = 'profile-skills-card__chip profile-skills-card__chip--empty';
+        placeholder.textContent = 'No skills added yet';
+        placeholder.style.opacity = '0.6';
+        placeholder.style.fontStyle = 'italic';
+        skillsList.appendChild(placeholder);
     }
 }
 
