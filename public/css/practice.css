@@ -33,8 +33,10 @@ body {
 
 .practice-hero-content {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 2rem;               
 }
 
 .practice-robot {
@@ -43,6 +45,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    animation: 
+        entranceAnimation 1s ease-out forwards, 
+        floatAnimation 4s ease-in-out 1s infinite;
 }
 
 .practice-robot img {
@@ -52,7 +57,7 @@ body {
 }
 
 .practice-hero-text {
-    text-align: center;
+    text-align: left;
 }
 
 .practice-title {
@@ -77,56 +82,124 @@ body {
 .practice-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
+    gap: 4rem;
     margin-top: 2rem;
 }
 
 /* Practice Card */
 .practice-card {
-    background: linear-gradient(135deg, #1e3a5f 0%, #2d5073 100%);
-    border: 3px solid #f59e0b;
-    min-height: 400px;
+    position: relative;
+    padding: 20px 20px 0 0;
+
+    /* Force remove any background, border, or shadow inherited from global styles */
+    background: transparent ; 
+    box-shadow: none ;
+    border: none ;
+}
+
+.practice-card-content {
+    background-image: url('../images/practice/practice-card-background.png');
+    background-color: #1e3a5f; 
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    background-size: cover;
+
+
     border-radius: 16px;
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    gap: 1.5rem;
+    min-height: 400px;
     position: relative;
-    overflow: hidden;
+    z-index: 3;
+    transition: box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Decorative background pattern */
+/* The Orange XP Card (Middle Layer) - positioned BEHIND the main card */
 .practice-card::before {
-    content: '';
+    content: var(--xp-reward, '250xp');
     position: absolute;
-    top: 50%;
-    right: -20px;
-    width: 150px;
-    height: 150px;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="2"/><circle cx="50" cy="50" r="30" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="2"/><circle cx="50" cy="50" r="20" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="2"/></svg>');
-    background-size: contain;
-    background-repeat: no-repeat;
-    opacity: 0.3;
-    pointer-events: none;
+    top: 12px; 
+    left: 8px;  
+    right: 12px; 
+    bottom: 8px; 
+    z-index: 2;
+    background: #f59e0b;
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    /* Text styling */
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff;
+    padding: 0.5rem 1.5rem;
 }
 
+/* The White "Practice" Card (Bottom Layer) - positioned furthest back */
+.practice-card::after {
+    content: 'Practice';
+    position: absolute;
+    top: 4px;   
+    left: 16px;
+    right: 4px; 
+    bottom: 16px; 
+    z-index: 1;
+    background: #e2e8f0;
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    /* Text styling */
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #f59e0b;
+    padding: 0.5rem 1.5rem;
+}
+
+/* 1. Keep the Container grounded */
 .practice-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    border-color: #f59e0b;
+    transform: none !important;
+    z-index: 20; /* Bring the active card stack above its neighbors */
+}
+
+/* 2. Blue Card (Front) */
+.practice-card:hover .practice-card-content {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); 
+    transform: none !important;
+}
+
+/* 3. Orange Card (Middle)  */
+.practice-card:hover::before {
+    top: -10px; 
+    left: 8px;  
+    right: 12px;
+}
+
+/* 4. White Card (Back) - Lifts way up to reveal "Practice" */
+.practice-card:hover::after {
+    top: -40px;  
+    left: 16px; 
+    right: 4px; 
 }
 
 /* Card Header */
 .practice-card-header {
     display: flex;
-    justify-content: flex-start;
+    justify-content: flex-end;
 }
 
 .practice-badge {
     background: #f59e0b;
-    color: #1a202c;
+    color: #ffffff;
     padding: 0.4rem 1rem;
     border-radius: 50px;
     font-size: 0.75rem;
@@ -149,11 +222,11 @@ body {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 1.75rem; 
 }
 
 .practice-card-title {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #ffffff;
     line-height: 1.3;
@@ -168,7 +241,7 @@ body {
 /* Card Footer */
 .practice-card-footer {
     display: flex;
-    justify-content: flex-start;
+    justify-content: flex-end;
     margin-top: auto;
 }
 
@@ -191,10 +264,52 @@ body {
     box-shadow: 0 6px 16px rgba(251, 191, 36, 0.4);
 }
 
+.practice-card-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50px;
+    padding: 0 2.5rem;
+    background: transparent;
+    border: none;
+    font-family: var(--button-font-family, 'Inter', sans-serif);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #1a202c; /* Dark text */
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.practice-card-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image: url('../images/practice/lets-start-btn.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    transition: filter 0.2s ease;
+}
+
+.practice-card-btn:hover {
+    transform: translateY(-3px);
+}
+
+.practice-card-btn:hover::before {
+    filter: brightness(1.1);
+}
+
+.practice-card-btn span {
+    position: relative;
+    z-index: 1;
+}
+
 
 /* --- Practice Session / Quiz Page Styles --- */
 .practice-session-main {
-    background-color: #FFFFFF; /* Changed from #f8f9fa to white */
+    background-color: #FFFFFF; 
     min-height: calc(100vh - var(--header-height));
     padding: 3rem 1rem;
     display: flex;
@@ -210,7 +325,7 @@ body {
 
 
 .quiz-container {
-    background-color: #EFEFF5; /* Changed from #ffffff to the new color */
+    background-color: #EFEFF5; 
     border-radius: 16px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
     padding: 2.5rem 8rem;
@@ -221,7 +336,7 @@ body {
 #quiz-title {
     font-size: 2rem;
     font-weight: 700;
-    margin-bottom: 1.5rem; /* Space between title and progress bar */
+    margin-bottom: 1.5rem; 
     color: #333;
 }
 
@@ -270,7 +385,7 @@ body {
 /* Progress Bar */
 .progress-bar-container {
     width: 100%;
-    background-color: #FDD291; /* background color for unanswered questions */
+    background-color: #FDD291; 
     border-radius: 25px;
     height: 16px;
     overflow: hidden;
@@ -379,18 +494,17 @@ body {
 
 /* States for after submission */
 .option-label.correct {
-    background-color: #66B2B2; /* New Correct Color */
-    border-color: #508d8d;     /* A slightly darker border for contrast */
-    color: white;              /* White text for better readability */
+    background-color: #66B2B2;
+    border-color: #508d8d;     
+    color: white;              
 }
-/* make sure the text inside the correct label is white*/
 .option-label.correct .option-text {
     color: white;
 }
 .option-label.incorrect {
     background-color: #EC7F9E;
-    border-color: #c96a86;     /* A slightly darker border for contrast */
-    color: white;              /* White text for better readability */
+    border-color: #c96a86;     
+    color: white;             
 }
 .option-label.incorrect .option-text {
     color: white;
@@ -515,7 +629,7 @@ body {
 
 /* Default state for Next button */
 .quiz-btn-next {
-    background-color: #f59e0b; /* Make Next the primary action button */
+    background-color: #f59e0b; 
     color: white;
 }
 .quiz-btn-next:hover {
@@ -551,7 +665,6 @@ body {
     min-height: 50px; 
     padding: 0 2.5rem;
     
-    /* Make the button itself transparent */
     background: transparent;
     border: none;
     
@@ -570,24 +683,22 @@ body {
     content: '';
     position: absolute;
     inset: 0;
-    z-index: 0; /* Places the image behind the text */
+    z-index: 0; 
     
     background-image: url('../images/practice/nav-btn.png');
     background-repeat: no-repeat;
     background-position: center;
-    background-size: 100% 100%; /* Stretches the image to fit */
+    background-size: 100% 100%;
     transition: background-image 0.2s ease;
 }
 .nav-image-button:hover {
     transform: translateY(-3px); /* Lifts the button slightly */
 }
 
-/* This targets the background image itself to make it brighter on hover */
 .nav-image-button:hover::before {
-    filter: brightness(1.1); /* Makes the image 10% brighter */
+    filter: brightness(1.1); 
 }
 
-/* This ensures the text appears on top of the background image */
 .nav-image-button span {
     position: relative;
     z-index: 1;
@@ -595,16 +706,14 @@ body {
 .cta-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    transform: none; /* Prevents any hover effects */
+    transform: none;
 }
 
-/* Also, prevent the hover effect on the ::before pseudo-element when disabled */
 .cta-button:disabled::before {
-    background-image: url('../images/home/cta/btn.svg'); /* Reverts to default background */
+    background-image: url('../images/home/cta/btn.svg');
 }
 
 
-/* Re-add immediate feedback styles */
 .option-label.correct {
     background-color: #66B2B2; 
 }
@@ -626,15 +735,12 @@ body {
     opacity: 0.8;
 }
 
-/* Keep visual feedback on the chosen answer even when disabled */
 .options-container.graded .option-label.selected {
     opacity: 1;
 }
 
 
-/* In practice.css, ADD this new block at the end */
 
-/* --- Styles for Merged Intro Screen --- */
 
 .exercise-header {
     background: linear-gradient(135deg, #1e3a5f 0%, #2d5073 100%);
@@ -772,7 +878,6 @@ body {
     box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
 }
 
-/* Also, remove the background from the quiz main container now */
 .practice-session-main {
     background-color: #FFFFFF;
 }
@@ -834,4 +939,27 @@ body {
     .practice-btn {
         width: 100%;
     }
+}
+
+@keyframes floatAnimation {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px); /* Moves the robot up */
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes entranceAnimation {
+  0% {
+    opacity: 0;
+    transform: translateY(30px); /* Start 30px below its final position */
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);   /* End at its normal position */
+  }
 }

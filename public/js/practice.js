@@ -76,33 +76,27 @@ function renderExercises(exercises) {
 function createExerciseCard(exercise) {
     const categoryClass = getCategoryClass(exercise.category);
     const categoryLabel = getCategoryLabel(exercise.category);
-    const questionCount = exercise.questions ? exercise.questions.length : 0;
-    const timeLimit = exercise.time_limit_minutes ? `${exercise.time_limit_minutes} min` : 'No time limit';
     const xpReward = exercise.xp_reward || 0;
 
     return `
-        <div class="practice-card" data-category="${categoryClass}">
-            <div class="practice-card-header">
-                <span class="practice-badge ${categoryClass}">${categoryLabel}</span>
-            </div>
-            <div class="practice-card-body">
-                <h3 class="practice-card-title">${exercise.title}</h3>
-                <p class="practice-card-description">${truncateText(exercise.description, 100)}</p>
-                <div class="practice-card-meta" style="display: flex; gap: 16px; margin-top: 12px; font-size: 14px; color: #666;">
-                    <span><i class="fas fa-question-circle"></i> ${questionCount} questions</span>
-                    <span><i class="fas fa-clock"></i> ${timeLimit}</span>
-                    <span><i class="fas fa-star"></i> ${xpReward} XP</span>
+        <div class="practice-card" data-category="${categoryClass}" style="--xp-reward: '${xpReward}xp';">
+            <div class="practice-card-content">
+                <div class="practice-card-header">
+                    <span class="practice-badge ${categoryClass}">${categoryLabel}</span>
                 </div>
-            </div>
-            <div class="practice-card-footer">
-                <button class="practice-btn" onclick="startExercise('${exercise.id}', '${exercise.slug}')">
-                    Let's Start
-                </button>
+                <div class="practice-card-body">
+                    <h3 class="practice-card-title">${exercise.title}</h3>
+                    <p class="practice-card-description">${truncateText(exercise.description, 100)}</p>
+                </div>
+                <div class="practice-card-footer">
+                    <button class="practice-card-btn" onclick="startExercise('${exercise.id}')">
+                        <span>Let's Start</span>
+                    </button>
+                </div>
             </div>
         </div>
     `;
 }
-
 // ============================================
 // Helper Functions
 // ============================================
