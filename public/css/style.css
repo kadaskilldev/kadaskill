@@ -1,5 +1,6 @@
 /* Reset and Base Styles */
 @import url('https://fonts.cdnfonts.com/css/amazon-ember');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 * {
     margin: 0;
@@ -377,10 +378,12 @@ body.has-fixed-header {
     height: clamp(240px, 28vw, 380px);
     object-fit: contain;
 }
+
 .cta-bg-left {
     top: 420px;
     right: -120px;
 }
+
 .cta-bg-right {
     top: -80px;
     left: -180px;
@@ -404,7 +407,8 @@ body.has-fixed-header {
 
 .cta-content {
     position: relative;
-    z-index: 2; /* bumped so robot sits below content but above background accents */
+    z-index: 2;
+    /* bumped so robot sits below content but above background accents */
     margin-top: 0;
     text-align: center;
     width: 100%;
@@ -555,15 +559,17 @@ body.has-fixed-header {
     height: auto;
     pointer-events: none;
     transform-origin: center;
-    backface-visibility: visible; /* keep visible during flips */
+    backface-visibility: visible;
+    /* keep visible during flips */
     will-change: left, top, transform;
     /* subtle drop shadow so robot reads above the background shapes */
     filter: drop-shadow(0 8px 18px rgba(15, 23, 42, 0.18));
     /* Keep the overall duration similar to earlier but smooth out transitions */
-    animation: cta-robot-loop 8s cubic-bezier(.22,.9,.37,.99) infinite;
+    animation: cta-robot-loop 8s cubic-bezier(.22, .9, .37, .99) infinite;
 }
 
 @keyframes cta-robot-loop {
+
     /* 0%: start top-left, initial size */
     0% {
         top: 20px;
@@ -616,12 +622,14 @@ body.has-fixed-header {
 
 /* Swirl animation for CTA background/accent elements synchronized with robot loop */
 @keyframes cta-accent-swirl {
+
     /* 0 - 18%: idle (no swirl) */
     0% {
-        transform: rotate(0deg) translate(0,0);
+        transform: rotate(0deg) translate(0, 0);
     }
+
     18% {
-        transform: rotate(0deg) translate(0,0);
+        transform: rotate(0deg) translate(0, 0);
     }
 
     /* 18 - 33%: swirl while robot slants to bottom-right */
@@ -651,13 +659,25 @@ body.has-fixed-header {
 }
 
 /* Make subtle differences so the left/right accents feel organic (optional) */
-.cta-bg-left { animation-delay: 0s; }
-.cta-bg-right { animation-delay: 0.05s; }
-.cta-accent-left { animation-delay: 0.1s; }
-.cta-accent-right { animation-delay: 0.15s; }
+.cta-bg-left {
+    animation-delay: 0s;
+}
+
+.cta-bg-right {
+    animation-delay: 0.05s;
+}
+
+.cta-accent-left {
+    animation-delay: 0.1s;
+}
+
+.cta-accent-right {
+    animation-delay: 0.15s;
+}
 
 /* Respect user reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
+
     .cta-bg,
     .cta-accent {
         animation: none;
@@ -679,6 +699,7 @@ body.has-fixed-header {
         grid-template-columns: 1fr;
         gap: 24px;
     }
+
     .cta-button {
         width: auto;
         max-width: 100%;
@@ -740,7 +761,7 @@ body.has-fixed-header {
     word-wrap: break-word;
 }
 
-.hero-text > p {
+.hero-text>p {
     font-family: 'Amazon Ember', 'Inter', sans-serif;
     font-size: 28px;
     font-weight: 500;
@@ -1037,10 +1058,12 @@ body.has-fixed-header {
         filter: drop-shadow(0 0 18px rgba(0, 247, 255, 0.25));
         transform: translateY(0);
     }
+
     50% {
         filter: drop-shadow(0 0 30px rgba(0, 247, 255, 0.6));
         transform: translateY(-4px);
     }
+
     100% {
         filter: drop-shadow(0 0 18px rgba(0, 247, 255, 0.25));
         transform: translateY(0);
@@ -1054,29 +1077,36 @@ body.has-fixed-header {
         padding-top: 100px;
         padding-bottom: 80px;
     }
+
     .hero-content {
         flex-direction: column;
         gap: 2rem;
     }
+
     .hero-text {
         max-width: 100%;
         text-align: center;
     }
+
     .hero h1 {
         font-size: 48px;
     }
-    .hero-text > p {
+
+    .hero-text>p {
         font-size: 22px;
     }
+
     .hero-form {
         width: 100%;
         max-width: 400px;
     }
+
     .hero-robot {
         width: 400px;
         left: -70px;
         bottom: -80px;
     }
+
     .partners {
         justify-content: center;
         margin-left: auto;
@@ -1089,12 +1119,15 @@ body.has-fixed-header {
         padding-top: 80px;
         padding-bottom: 60px;
     }
+
     .hero h1 {
         font-size: 36px;
     }
-    .hero-text > p {
+
+    .hero-text>p {
         font-size: 18px;
     }
+
     .hero-robot {
         width: 280px;
         left: -50px;
@@ -1217,9 +1250,11 @@ body.has-fixed-header {
         padding: 15rem 0 12rem;
         min-height: 700px;
     }
+
     .welcome h2 {
         font-size: 2.5rem;
     }
+
     .welcome p {
         font-size: 1.1rem;
     }
@@ -1230,9 +1265,11 @@ body.has-fixed-header {
         padding: 12rem 0 10rem;
         min-height: 650px;
     }
+
     .welcome h2 {
         font-size: 2rem;
     }
+
     .welcome p {
         font-size: 1rem;
     }
@@ -1304,22 +1341,28 @@ body.has-fixed-header {
 .features-circle--large {
     width: 483px;
     height: 483px;
-    left: -380px; /* Moved more to the left */
-    bottom: -150px; /* Near bottom of section */
+    left: -380px;
+    /* Moved more to the left */
+    bottom: -150px;
+    /* Near bottom of section */
 }
 
 .features-circle--medium {
     width: 256px;
     height: 256px;
-    right: -180px; /* Positioned to the right, partially outside */
-    top: -50px; /* Near top of section */
+    right: -180px;
+    /* Positioned to the right, partially outside */
+    top: -50px;
+    /* Near top of section */
 }
 
 .features-circle--small {
     width: 308px;
     height: 308px;
-    right: -280px; /* Moved more to the right */
-    bottom: -100px; /* Near bottom of section */
+    right: -280px;
+    /* Moved more to the right */
+    bottom: -100px;
+    /* Near bottom of section */
 }
 
 .feature-card {
@@ -1369,10 +1412,13 @@ body.has-fixed-header {
 }
 
 @keyframes decorPulse {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: scale(1);
         opacity: 0.9;
     }
+
     50% {
         transform: scale(1.04);
         opacity: 1;
@@ -1408,9 +1454,11 @@ body.has-fixed-header {
     0% {
         transform: translateY(4%);
     }
+
     50% {
         transform: translateY(1%);
     }
+
     100% {
         transform: translateY(4%);
     }
@@ -1712,7 +1760,8 @@ body.has-fixed-header {
 .featured-card-wrapper {
     position: relative;
     width: 345px;
-    height: 396px; /* Total height from Figma: card + image overlap */
+    height: 396px;
+    /* Total height from Figma: card + image overlap */
 }
 
 .team-member-card {
@@ -1729,13 +1778,17 @@ body.has-fixed-header {
 
 .member-photo--featured {
     position: absolute;
-    top: 21px; /* From Figma: image starts at y=21 */
+    top: 21px;
+    /* From Figma: image starts at y=21 */
     left: 0;
     z-index: 2;
     width: 345px;
-    height: 375px; /* From Figma */
-    overflow: hidden; /* Clip the image to fit within bounds */
-    border-radius: 25px; /* Match the card border radius */
+    height: 375px;
+    /* From Figma */
+    overflow: hidden;
+    /* Clip the image to fit within bounds */
+    border-radius: 25px;
+    /* Match the card border radius */
     background: transparent;
     pointer-events: none;
 }
@@ -1743,8 +1796,10 @@ body.has-fixed-header {
 .member-photo--featured img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Cover the area and crop */
-    object-position: center 20%; /* Show more of the face/upper body, less cropping from top */
+    object-fit: cover;
+    /* Cover the area and crop */
+    object-position: center 20%;
+    /* Show more of the face/upper body, less cropping from top */
     border-radius: 0;
     filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
 }
@@ -1752,7 +1807,8 @@ body.has-fixed-header {
 /* Specific adjustments for Roan and Francis - move images up more */
 .member-photo--featured img[alt="Roan Manansala"],
 .member-photo--featured img[alt="Francis Erick Romasanta"] {
-    object-position: center 95%; /* Move image up more for these two */
+    object-position: center 95%;
+    /* Move image up more for these two */
 }
 
 .team-member-info--featured {
@@ -1792,9 +1848,11 @@ body.has-fixed-header {
 .featured-circle--large {
     width: 79px;
     height: 79px;
-    top: -95px; /* Moved up a bit more */
-    right: 20px; /* Moved more to the right */
-    background: 
+    top: -95px;
+    /* Moved up a bit more */
+    right: 20px;
+    /* Moved more to the right */
+    background:
         linear-gradient(195deg, rgba(248, 247, 252, 0) 11%, rgba(248, 247, 252, 0.5) 100%),
         linear-gradient(15deg, rgba(248, 247, 252, 0) 48%, rgba(248, 247, 252, 0.5) 100%),
         radial-gradient(circle at 50% 50%, rgba(255, 153, 0, 1) 0%, rgba(248, 247, 252, 0.5) 100%);
@@ -1809,7 +1867,7 @@ body.has-fixed-header {
     width: 52px;
     height: 52px;
     border-radius: 50%;
-    background: 
+    background:
         linear-gradient(195deg, rgba(248, 247, 252, 0) 11%, rgba(248, 247, 252, 1) 100%),
         linear-gradient(15deg, rgba(248, 247, 252, 0) 48%, rgba(248, 247, 252, 1) 100%),
         radial-gradient(circle at 50% 50%, rgba(255, 153, 0, 1) 0%, rgba(248, 247, 252, 0.5) 100%);
@@ -1819,9 +1877,11 @@ body.has-fixed-header {
 .featured-circle--medium {
     width: 70px;
     height: 70px;
-    top: -27px; /* 79 - 106 = -27 relative to card (card starts at 106 in the 396 wrapper) */
-    left: 25px; /* Moved to the right */
-    background: 
+    top: -27px;
+    /* 79 - 106 = -27 relative to card (card starts at 106 in the 396 wrapper) */
+    left: 25px;
+    /* Moved to the right */
+    background:
         linear-gradient(195deg, rgba(248, 247, 252, 0) 11%, rgba(248, 247, 252, 0.5) 100%),
         linear-gradient(15deg, rgba(248, 247, 252, 0) 48%, rgba(248, 247, 252, 0.5) 100%),
         radial-gradient(circle at 50% 50%, rgba(255, 153, 0, 1) 0%, rgba(248, 247, 252, 0.5) 100%);
@@ -1836,7 +1896,7 @@ body.has-fixed-header {
     width: 46px;
     height: 46px;
     border-radius: 50%;
-    background: 
+    background:
         linear-gradient(195deg, rgba(248, 247, 252, 0) 11%, rgba(248, 247, 252, 1) 100%),
         linear-gradient(15deg, rgba(248, 247, 252, 0) 48%, rgba(248, 247, 252, 1) 100%),
         radial-gradient(circle at 50% 50%, rgba(255, 153, 0, 1) 0%, rgba(248, 247, 252, 0.5) 100%);
@@ -1846,9 +1906,11 @@ body.has-fixed-header {
 .featured-circle--small {
     width: 50px;
     height: 50px;
-    top: 66px; /* 172 - 106 = 66 */
-    right: 51px; /* x=244 from left means right = 345 - 244 - 50 = 51 */
-    background: 
+    top: 66px;
+    /* 172 - 106 = 66 */
+    right: 51px;
+    /* x=244 from left means right = 345 - 244 - 50 = 51 */
+    background:
         linear-gradient(195deg, rgba(248, 247, 252, 0) 11%, rgba(248, 247, 252, 0.5) 100%),
         linear-gradient(15deg, rgba(248, 247, 252, 0) 48%, rgba(248, 247, 252, 0.5) 100%),
         radial-gradient(circle at 50% 50%, rgba(255, 153, 0, 1) 0%, rgba(248, 247, 252, 0.5) 100%);
@@ -1863,7 +1925,7 @@ body.has-fixed-header {
     width: 33px;
     height: 33px;
     border-radius: 50%;
-    background: 
+    background:
         linear-gradient(195deg, rgba(248, 247, 252, 0) 11%, rgba(248, 247, 252, 1) 100%),
         linear-gradient(15deg, rgba(248, 247, 252, 0) 48%, rgba(248, 247, 252, 1) 100%),
         radial-gradient(circle at 50% 50%, rgba(255, 153, 0, 1) 0%, rgba(248, 247, 252, 0.5) 100%);
@@ -1875,33 +1937,41 @@ body.has-fixed-header {
     .team-vector {
         display: none;
     }
+
     .team-row {
         flex-direction: column;
         align-items: center;
         gap: 2rem;
     }
+
     .team h2 {
         font-size: 2.5rem;
     }
+
     .team-subtitle {
         font-size: 1.1rem;
         padding: 0 1rem;
     }
+
     .team {
         padding: 3rem 1rem;
     }
+
     .team-member {
         width: 100%;
         max-width: 280px;
     }
+
     .team-member--featured {
         width: 100%;
         max-width: 345px;
     }
+
     .team-member-card {
         width: 100%;
         max-width: 345px;
     }
+
     .member-photo--featured {
         width: 85%;
         max-width: 294px;
@@ -1912,6 +1982,7 @@ body.has-fixed-header {
     .team-row {
         gap: 2rem;
     }
+
     .team-member {
         width: 260px;
     }
@@ -2015,10 +2086,12 @@ body.has-fixed-header {
         filter: drop-shadow(0 0 18px rgba(0, 247, 255, 0.25));
         transform: translateY(0);
     }
+
     50% {
         filter: drop-shadow(0 0 30px rgba(0, 247, 255, 0.6));
         transform: translateY(-4px);
     }
+
     100% {
         filter: drop-shadow(0 0 18px rgba(0, 247, 255, 0.25));
         transform: translateY(0);
@@ -2086,36 +2159,44 @@ body.has-fixed-header {
 /* Responsive Design for Contact Section */
 
 @media (max-width: 968px) {
+
     .contact::before,
     .contact::after {
         width: 300px;
         height: 300px;
         opacity: 0.5;
     }
+
     .contact::before {
         left: -100px;
         top: 50px;
     }
+
     .contact::after {
         right: -100px;
         bottom: 50px;
     }
+
     .contact-content {
         flex-direction: column;
         gap: 3rem;
         min-height: auto;
         transform: none;
     }
+
     .contact-robot {
         transform: translateX(0);
     }
+
     .contact-info {
         text-align: center;
         transform: none;
     }
+
     .contact-details {
         align-items: center;
     }
+
     .contact-robot-img {
         width: 350px;
         /* Adjusted for smaller screens */
@@ -2128,27 +2209,34 @@ body.has-fixed-header {
 }
 
 @media (max-width: 768px) {
+
     .contact::before,
     .contact::after {
         display: none;
     }
+
     .contact {
         margin-top: 4rem;
         padding: 5rem 0;
     }
+
     .contact h2 {
         font-size: 2.5rem;
     }
+
     .contact-robot-img {
         width: 300px;
         height: 300px;
     }
+
     .contact-info p {
         font-size: 1.2rem;
     }
+
     .contact-item {
         font-size: 1.1rem;
     }
+
     .contact-item i {
         width: 30px;
         font-size: 1.2rem;
@@ -2218,10 +2306,21 @@ body.has-fixed-header {
 }
 
 /* Animation delays for organic feel */
-.cta-circle-left { animation-delay: 0s; }
-.cta-circle-right { animation-delay: 0.05s; }
-.cta-vector-left { animation-delay: 0.1s; }
-.cta-vector-right { animation-delay: 0.15s; }
+.cta-circle-left {
+    animation-delay: 0s;
+}
+
+.cta-circle-right {
+    animation-delay: 0.05s;
+}
+
+.cta-vector-left {
+    animation-delay: 0.1s;
+}
+
+.cta-vector-right {
+    animation-delay: 0.15s;
+}
 
 /* Animated robot for Final CTA section */
 .final-cta-robot {
@@ -2237,7 +2336,7 @@ body.has-fixed-header {
     backface-visibility: visible;
     will-change: left, top, transform;
     filter: drop-shadow(0 8px 18px rgba(15, 23, 42, 0.18));
-    animation: final-cta-robot-loop 8s cubic-bezier(.22,.9,.37,.99) infinite;
+    animation: final-cta-robot-loop 8s cubic-bezier(.22, .9, .37, .99) infinite;
 }
 
 @keyframes final-cta-robot-loop {
@@ -2246,31 +2345,37 @@ body.has-fixed-header {
         left: 20px;
         transform: translateZ(0) scale(1) scaleX(1) rotate(0deg);
     }
+
     18% {
         top: 20px;
         left: 20px;
         transform: translateZ(0) scale(1.25) scaleX(1) rotate(0deg);
     }
+
     33% {
         top: calc(100% - var(--final-cta-robot-size) - 20px);
         left: calc(100% - var(--final-cta-robot-size) - 20px);
         transform: translateZ(0) scale(0.75) scaleX(-1) rotate(8deg);
     }
+
     50% {
         top: calc(100% - var(--final-cta-robot-size) - 20px);
         left: calc(100% - var(--final-cta-robot-size) - 20px);
         transform: translateZ(0) scale(0.8) scaleX(-1) rotate(8deg);
     }
+
     66% {
         top: calc(100% - var(--final-cta-robot-size) - 20px);
         left: 20px;
         transform: translateZ(0) scale(1.25) scaleX(1) rotate(-6deg);
     }
+
     85% {
         top: 20px;
         left: 20px;
         transform: translateZ(0) scale(1.05) scaleX(1) rotate(0deg);
     }
+
     100% {
         top: 20px;
         left: 20px;
@@ -2280,6 +2385,7 @@ body.has-fixed-header {
 
 /* Respect user reduced motion preference for final CTA */
 @media (prefers-reduced-motion: reduce) {
+
     .cta-vector,
     .final-cta-robot {
         animation: none;
@@ -2322,99 +2428,176 @@ body.has-fixed-header {
     font-weight: 700;
 }
 
-/* Footer */
+/* Footer - Figma Design */
 
 .footer {
-    background: #2c3e50;
-    color: white;
-    padding: 3rem 0 1rem;
+    background: #232F3E;
+    color: #F8F7FC;
+    padding: 56px 0 30px;
     margin-top: 0;
 }
 
-.footer-content {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 3rem;
-    margin-bottom: 2rem;
+.footer-container {
+    max-width: 1440px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 72px;
 }
 
-.footer-section.brand {
-    max-width: 300px;
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    gap: 60px;
+    margin-bottom: 60px;
+}
+
+/* Brand Section */
+.footer-brand {
+    max-width: 320px;
+    flex-shrink: 0;
 }
 
 .footer-logo {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 1rem;
+    gap: 22px;
+    margin-bottom: 24px;
+    filter: drop-shadow(0px 0px 25px rgba(248, 247, 252, 0.15));
 }
 
 .footer-logo img {
-    width: 30px;
-    height: 30px;
+    width: 94px;
+    height: 73px;
 }
 
 .footer-logo span {
-    font-size: 1.3rem;
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-size: 45.23px;
     font-weight: 700;
+    letter-spacing: 0.23px;
+    color: #F8F7FC;
 }
 
-.footer-section p {
-    color: #bdc3c7;
-    line-height: 1.6;
-    font-size: 0.95rem;
+.footer-tagline {
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.08px;
+    line-height: 1.5;
+    color: #F8F7FC;
+    max-width: 312px;
 }
 
-.footer-section h4 {
-    margin-bottom: 1.5rem;
-    color: #FFD700;
-    font-weight: 600;
+/* Footer Sections */
+.footer-section {
+    flex-shrink: 0;
 }
 
+.footer-contact-section h4 {
+    font-family: 'Inter', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #FFFFFF;
+    margin-bottom: 20px;
+}
+
+.footer-general h4,
+.footer-about h4 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #FFFFFF;
+    margin-bottom: 20px;
+}
+
+/* Contact Items */
 .footer-contact {
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 16px;
 }
 
 .footer-contact .contact-item {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
-    font-size: 0.9rem;
-    color: #bdc3c7;
-}
-
-.footer-contact .contact-item i {
-    width: 20px;
-    color: #FFD700;
-}
-
-.footer-section ul {
-    list-style: none;
-}
-
-.footer-section ul li {
-    margin-bottom: 0.8rem;
-}
-
-.footer-section ul li a {
-    color: #bdc3c7;
+    gap: 14px;
     text-decoration: none;
-    font-size: 0.9rem;
-    transition: color 0.3s ease;
+    transition: opacity 0.2s ease;
 }
 
-.footer-section ul li a:hover {
-    color: white;
+.footer-contact .contact-item:hover {
+    opacity: 0.8;
 }
 
+.footer-contact .contact-item img {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.footer-contact .contact-item img[alt="Email"] {
+    width: 18px;
+    height: 15px;
+}
+
+.footer-contact .contact-item span {
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.08px;
+    color: #F8F7FC;
+}
+
+/* Footer Links Grid */
+.footer-links-grid {
+    display: flex;
+    gap: 70px;
+}
+
+/* Footer Links */
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-links li {
+    margin-bottom: 20px;
+}
+
+.footer-links li:last-child {
+    margin-bottom: 0;
+}
+
+.footer-links li a {
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.08px;
+    color: #F8F7FC;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.footer-links li a:hover {
+    opacity: 0.8;
+}
+
+/* Footer Bottom */
 .footer-bottom {
     text-align: center;
-    padding-top: 2rem;
-    border-top: 1px solid #34495e;
-    color: #95a5a6;
-    font-size: 0.9rem;
+    padding-top: 30px;
+    border-top: 1px solid rgba(248, 247, 252, 0.2);
+}
+
+.footer-bottom p {
+    font-family: 'Amazon Ember', 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.06px;
+    color: #F8F7FC;
 }
 
 
@@ -2427,12 +2610,14 @@ body.has-fixed-header {
 
 /* Ensure CTA block doesn't introduce extra external spacing */
 .cta-section {
-    margin-top: 0;    /* don't pull CTA down */
-    margin-bottom: 0; /* remove any external gap at bottom */
+    margin-top: 0;
+    /* don't pull CTA down */
+    margin-bottom: 0;
+    /* remove any external gap at bottom */
 }
 
 /* When CTA immediately follows main-content, remove any leftover top gap */
-.main-content + .cta-section {
+.main-content+.cta-section {
     margin-top: 0;
 }
 
@@ -2442,7 +2627,7 @@ body.has-fixed-header {
 }
 
 /* Ensure no default element spacing remains between the blocks */
-.cta-section + .footer {
+.cta-section+.footer {
     margin-top: 0;
 }
 
@@ -2454,30 +2639,74 @@ body.has-fixed-header {
         text-align: center;
         gap: 2rem;
     }
+
     .hero-form {
         width: 100%;
         max-width: 400px;
     }
+
     .hero h1 {
         font-size: 2.5rem;
     }
+
     .contact-content {
         flex-direction: column;
         gap: 2rem;
     }
+
     .features {
         grid-template-columns: 1fr;
         gap: 2rem;
     }
+
     .team-grid {
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 2rem;
     }
+
+    .footer-container {
+        padding: 0 24px;
+    }
+
     .footer-content {
-        grid-template-columns: 1fr;
-        gap: 2rem;
+        flex-direction: column;
+        gap: 40px;
+        text-align: center;
+        align-items: center;
+    }
+
+    .footer-brand {
+        max-width: 100%;
         text-align: center;
     }
+
+    .footer-logo {
+        justify-content: center;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .footer-logo span {
+        font-size: 32px;
+    }
+
+    .footer-tagline {
+        margin: 0 auto;
+    }
+
+    .footer-contact {
+        align-items: center;
+    }
+
+    .footer-links-grid {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .footer-links {
+        text-align: center;
+    }
+
     .final-cta p {
         white-space: normal;
     }
@@ -2488,6 +2717,7 @@ body.has-fixed-header {
         min-height: auto;
         padding: 2rem 0;
     }
+
     .hero-robot {
         position: relative;
         bottom: auto;
@@ -2497,17 +2727,21 @@ body.has-fixed-header {
         height: 200px;
         margin: 2rem auto 0;
     }
+
     .welcome h2 {
         font-size: 2rem;
     }
+
     .welcome p {
         font-size: 1.1rem;
     }
+
     .team h2,
     .contact h2,
     .final-cta h2 {
         font-size: 2rem;
     }
+
     .about-text h2 {
         font-size: 1.4rem;
     }
