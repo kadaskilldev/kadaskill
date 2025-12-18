@@ -1,15 +1,24 @@
-# KadaSkill Frontend
+# KadaSkill Learning Platform
 
-A modern, responsive landing page for the KadaSkill learning platform built with vanilla HTML, CSS, and JavaScript, designed to run with Bun.
+A modern, full-featured learning management system for AI, Cybersecurity, and Cloud skills, built with vanilla HTML, CSS, JavaScript, and powered by Supabase.
 
 ## 🚀 Features
 
+### Core Platform
+- **User Authentication** - Email/password and OAuth (Google, Microsoft, Facebook, LinkedIn)
+- **Course Management** - Browse, enroll, and complete courses with progress tracking
+- **Practice Exercises** - Interactive coding challenges with automated testing
+- **Certification Tracking** - Study paths for professional certifications (AWS, Azure, CompTIA, etc.)
+- **Gamification System** - XP, levels, badges, streaks, and leaderboards
+- **Admin Panel** - Complete content management system for courses, users, and analytics
+
+### Technical Features
 - **Responsive Design** - Works seamlessly on desktop, tablet, and mobile devices
 - **Modern UI/UX** - Clean, professional design with smooth animations
-- **Interactive Elements** - Hover effects, form handling, and scroll animations
-- **Team Showcase** - Professional team member profiles with hover effects
-- **Contact Integration** - Social media links and contact information
-- **Fast Performance** - Optimized for speed with Bun runtime
+- **Real-time Data** - Supabase backend with PostgreSQL database
+- **Row Level Security** - Database-enforced access control
+- **Fast Performance** - Optimized with Bun runtime
+- **Comprehensive Documentation** - Full API, architecture, and developer guides
 
 ## 📋 Prerequisites
 
@@ -150,6 +159,72 @@ bun remove package-name
 1. Upload the `public` folder contents to your web server
 2. Ensure your server can serve static files
 
+## 📚 Documentation
+
+Comprehensive documentation is available to help you understand, use, and contribute to KadaSkill:
+
+### For Users
+- **[USER_GUIDE.md](./USER_GUIDE.md)** - Complete guide for learners and administrators
+  - Getting started and account creation
+  - Browsing and enrolling in courses
+  - Practice exercises and certifications
+  - Profile management and gamification
+  - Admin panel operations
+
+### For Developers
+- **[DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md)** - Developer onboarding and workflows
+  - Development environment setup
+  - Project structure and organization
+  - Coding standards and conventions
+  - Common development tasks
+  - Debugging tips and troubleshooting
+
+- **[API_DOCUMENTATION.md](./API_DOCUMENTATION.md)** - Complete API reference
+  - Authentication API (signup, login, OAuth)
+  - Database API patterns and queries
+  - Storage API for file uploads
+  - Error handling and best practices
+
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System architecture and design
+  - High-level architecture diagrams
+  - Technology stack justification
+  - Data architecture and database schema
+  - Security architecture
+  - Scalability considerations
+
+- **[COMPONENT_LIBRARY.md](./COMPONENT_LIBRARY.md)** - UI component documentation
+  - Navigation components
+  - Card components (courses, certifications, exercises)
+  - Form components and buttons
+  - Modal and notification patterns
+
+### Operations & Deployment
+- **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Production deployment instructions
+  - Environment configuration
+  - Deployment options (Vercel, Netlify, VPS)
+  - Database migration procedures
+  - Monitoring and maintenance
+
+- **[TESTING_GUIDE.md](./TESTING_GUIDE.md)** - Testing strategies and procedures
+  - Manual testing checklists
+  - Automated testing recommendations
+  - Browser and responsive testing
+  - Security testing procedures
+
+### Project Management
+- **[CHANGELOG.md](./CHANGELOG.md)** - Version history and release notes
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Contribution guidelines and code of conduct
+- **[SECURITY.md](./SECURITY.md)** - Security policies and vulnerability reporting
+
+### Database
+- **[sql/DATABASE_README.md](./sql/DATABASE_README.md)** - Database documentation
+  - Schema overview and ERD
+  - Common queries and operations
+  - RLS policies and triggers
+  - Performance optimization
+
+---
+
 ## 🔍 Browser Support
 
 - Chrome 90+
@@ -159,16 +234,20 @@ bun remove package-name
 
 ## 📞 Support
 
-For questions or support regarding this frontend implementation:
-- Review the code comments for implementation details
-- Check the browser console for any JavaScript errors
-- Ensure all image files are properly placed in the images directory
+For questions or support:
+- **Documentation**: Check the comprehensive guides above
+- **Issues**: Report bugs via [GitHub Issues](https://github.com/your-org/kadaskill/issues)
+- **Email**: support@kadaskill.com
+- **Developer Questions**: See [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md)
 
 ## 🤝 Contributing
 
+We welcome contributions! Please see our [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
+
+**Quick Start**:
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes following our [coding standards](./DEVELOPER_GUIDE.md#coding-standards)
 4. Test thoroughly
 5. Submit a pull request
 
@@ -178,4 +257,17 @@ This project is created for KadaSkill by Dekastrath Solutions Inc.
 
 ---
 
-**Note**: This is a frontend-only implementation. For full functionality, you'll need to integrate with a backend service for user authentication, course management, and other dynamic features.
+## 🔗 Technology Stack
+
+- **Frontend**: Vanilla HTML5, CSS3, JavaScript (ES6+)
+- **Backend**: Supabase (PostgreSQL, Authentication, Storage)
+- **Server**: Express.js with Bun runtime
+- **Database**: PostgreSQL 15 with Row Level Security
+- **Deployment**: Vercel/Netlify (recommended) or traditional hosting
+- **Version Control**: Git
+
+---
+
+**Built with ❤️ by Dekastrath Solutions Inc.**
+
+For more information, visit our comprehensive [documentation](#-documentation).
