@@ -7,7 +7,6 @@
     <title>KadaSkill - Step Into Your Next Skill</title>
     <link rel="icon" type="image/svg+xml" href="images/loading/favicon.svg">
     <link rel="apple-touch-icon" href="images/loading/favicon.svg">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.cdnfonts.com/css/amazon-ember" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -443,7 +442,9 @@
         </div>
     </footer>
 
-    <script src="js/script.js"></script>
+    <!-- Load Supabase AFTER body to avoid conflicts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/script.js?v=20250122-v5"></script>
 </body>
 
 </html>

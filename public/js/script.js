@@ -1,3 +1,5 @@
+console.log('🚀 KadaSkill script.js loaded - Version 2025-01-22');
+
 const SUPABASE_URL = 'https://kbpbubsnadnhebgdggdy.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImticGJ1YnNuYWRuaGViZ2RnZ2R5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMjA4MTksImV4cCI6MjA3MzU5NjgxOX0.4O8ZLeZ2iR786MZ8JS_55nzhn-5WxqabMtDQuAoZkAA';
 
@@ -19,14 +21,23 @@ if (window.supabase && window.supabase.createClient) {
     };
 }
 
-const supabase = supabaseClient; // for compatibility with the rest of the code logic
+// DON'T use 'const supabase' - it conflicts with the CDN!
+// Just use supabaseClient throughout the code
+console.log('✓ Supabase client initialized:', supabaseClient ? 'Success' : 'Failed');
+
+// Create alias for backward compatibility
+window.supabase = supabaseClient;
 
 document.addEventListener('DOMContentLoaded', function () {
+    console.log('DOM Content Loaded - Initializing...');
+
     // Load shared components first
     loadSharedComponents();
 
     // Then initialize page functionality
     setTimeout(() => {
+        console.log('Initializing form handling...');
+
         // Hide loading screen
         const loadingScreen = document.querySelector('.loading-screen');
         if (loadingScreen) {
@@ -40,6 +51,8 @@ document.addEventListener('DOMContentLoaded', function () {
         initializeFormHandling();
         initializePasswordToggle();
         initializeLoginToggle();
+
+        console.log('Initialization complete');
 
         // Initialize page-specific functionality
         initializeCertificationPage();
@@ -447,22 +460,30 @@ function setActiveNavigation() {
 
 // Form Handling
 function initializeFormHandling() {
+    console.log('initializeFormHandling called');
+
     const loginForm = document.querySelector('.login-form');
+    console.log('Login form found:', loginForm);
     if (loginForm) {
         loginForm.addEventListener('submit', handleFormSubmit);
+        console.log('Submit handler attached to login form');
     }
 
     // Social login buttons
     const socialButtons = document.querySelectorAll('.social-btn');
+    console.log('Social buttons found:', socialButtons.length);
     socialButtons.forEach(button => {
         button.addEventListener('click', handleSocialLogin);
     });
 
     // CTA buttons
     const ctaButtons = document.querySelectorAll('.cta-button');
+    console.log('CTA buttons found:', ctaButtons.length);
     ctaButtons.forEach(button => {
         button.addEventListener('click', handleCTAClick);
     });
+
+    console.log('Form handling initialized successfully');
 }
 
 //Supabase integrated form submission
