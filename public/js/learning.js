@@ -51,8 +51,24 @@ async function initializeLearning(courseSlug) {
         // Load course data
         await loadCourse(courseSlug);
 
-        // Load or create enrollment
-        await loadEnrollment();
+        // Check prerequisites
+        const prerequisitesCheck = await checkCoursePrerequisites();
+        if (!prerequisitesCheck.met) {
+            showPrerequisiteError(prerequisitesCheck);
+            return;
+        }
+
+        // Check if user is enrolled
+        const isEnrolled = await checkEnrollment();
+
+        if (!isEnrolled) {
+            // Show course preview (not enrolled)
+            await showCoursePreview();
+            return;
+        }
+
+        // User is enrolled - show learning interface
+        showLearningInterface();
 
         // Load lessons
         await loadLessons();
@@ -136,12 +152,11 @@ function updateCourseHeader() {
 }
 
 // ============================================
-// Load Enrollment
+// Check Enrollment (without auto-enrolling)
 // ============================================
 
-async function loadEnrollment() {
+async function checkEnrollment() {
     try {
-        // Check if already enrolled
         const { data: existingEnrollment, error: checkError } = await supabase
             .from('enrollments')
             .select('id, progress_percentage')
@@ -151,16 +166,157 @@ async function loadEnrollment() {
 
         if (checkError) {
             console.error('Error checking enrollment:', checkError);
-            return;
+            return false;
         }
 
         if (existingEnrollment) {
             enrollmentId = existingEnrollment.id;
             updateProgressCircle(existingEnrollment.progress_percentage || 0);
-            return;
+            return true;
         }
 
-        // Create new enrollment
+        return false;
+    } catch (error) {
+        console.error('Error in checkEnrollment:', error);
+        return false;
+    }
+}
+
+// ============================================
+// Show Course Preview (Not Enrolled)
+// ============================================
+
+async function showCoursePreview() {
+    // Hide learning interface
+    const learningMain = document.getElementById('learningMain');
+    if (learningMain) learningMain.style.display = 'none';
+
+    // Show preview section
+    const preview = document.getElementById('coursePreview');
+    if (preview) preview.style.display = 'block';
+
+    // Hide progress widget
+    const progressWidget = document.querySelector('.course-progress-widget');
+    if (progressWidget) progressWidget.style.display = 'none';
+
+    // Populate course details
+    const fullDescEl = document.getElementById('courseFullDescription');
+    if (fullDescEl) {
+        fullDescEl.textContent = currentCourse.description || 'No description available.';
+    }
+
+    // Populate highlights (parse from description or use default)
+    const highlightsEl = document.getElementById('courseHighlights');
+    if (highlightsEl) {
+        let objectives = [];
+
+        if (currentCourse.learning_objectives) {
+            try {
+                objectives = Array.isArray(currentCourse.learning_objectives)
+                    ? currentCourse.learning_objectives
+                    : JSON.parse(currentCourse.learning_objectives);
+            } catch (e) {
+                console.error('Error parsing learning objectives:', e);
+            }
+        }
+
+        highlightsEl.innerHTML = objectives.length > 0
+            ? objectives.map(obj => `<li>${obj}</li>`).join('')
+            : '<li>Master essential concepts and skills</li><li>Complete hands-on projects</li><li>Earn certificates and badges</li>';
+    }
+
+    // Populate enrollment stats
+    document.getElementById('enrolledCount').textContent = `${currentCourse.enrolled_count || 0} students`;
+    document.getElementById('enrollDuration').textContent = `${currentCourse.duration_hours || 0} hours`;
+    document.getElementById('enrollDifficulty').textContent = currentCourse.difficulty || 'Beginner';
+    document.getElementById('enrollXP').textContent = `${currentCourse.xp_reward || 0} XP`;
+
+    // Load syllabus (lessons)
+    await loadSyllabus();
+
+    // Setup enroll button
+    const enrollBtn = document.getElementById('enrollBtn');
+    if (enrollBtn) {
+        enrollBtn.addEventListener('click', handleEnrollNow);
+    }
+}
+
+// ============================================
+// Show Learning Interface (Enrolled)
+// ============================================
+
+function showLearningInterface() {
+    // Show learning interface
+    const learningMain = document.getElementById('learningMain');
+    if (learningMain) learningMain.style.display = 'block';
+
+    // Hide preview section
+    const preview = document.getElementById('coursePreview');
+    if (preview) preview.style.display = 'none';
+
+    // Show progress widget
+    const progressWidget = document.querySelector('.course-progress-widget');
+    if (progressWidget) progressWidget.style.display = 'block';
+}
+
+// ============================================
+// Load Syllabus (for preview)
+// ============================================
+
+async function loadSyllabus() {
+    const { data: lessons, error } = await supabase
+        .from('lessons')
+        .select('*')
+        .eq('course_id', currentCourse.id)
+        .order('order_index', { ascending: true });
+
+    if (error) {
+        console.error('Error loading syllabus:', error);
+        document.getElementById('syllabusContent').innerHTML = '<p>Error loading syllabus</p>';
+        return;
+    }
+
+    const syllabusContent = document.getElementById('syllabusContent');
+    if (!syllabusContent) return;
+
+    if (!lessons || lessons.length === 0) {
+        syllabusContent.innerHTML = '<p>No lessons available yet.</p>';
+        return;
+    }
+
+    syllabusContent.innerHTML = `
+        <div class="syllabus-list">
+            ${lessons.map((lesson, index) => `
+                <div class="syllabus-item">
+                    <div class="syllabus-item-number">${index + 1}</div>
+                    <div class="syllabus-item-content">
+                        <h4>${lesson.title}</h4>
+                        <div class="syllabus-item-meta">
+                            <span class="lesson-type">
+                                <i class="fas ${getLessonIcon(lesson.type)}"></i>
+                                ${lesson.type}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+// ============================================
+// Handle Enroll Now Button
+// ============================================
+
+async function handleEnrollNow() {
+    const enrollBtn = document.getElementById('enrollBtn');
+    if (enrollBtn) {
+        enrollBtn.disabled = true;
+        enrollBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enrolling...';
+    }
+
+    try {
+        // Create enrollment
         const { data: newEnrollment, error: createError } = await supabase
             .from('enrollments')
             .insert({
@@ -176,13 +332,136 @@ async function loadEnrollment() {
 
         if (createError) {
             console.error('Error creating enrollment:', createError);
+            showNotification('Failed to enroll. Please try again.', 'error');
+            if (enrollBtn) {
+                enrollBtn.disabled = false;
+                enrollBtn.innerHTML = '<i class="fas fa-check-circle"></i> Enroll Now';
+            }
             return;
         }
 
         enrollmentId = newEnrollment.id;
-        updateProgressCircle(0);
+        showNotification('Successfully enrolled! Loading course...', 'success');
+
+        // Reload page to show learning interface
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
+
     } catch (error) {
-        console.error('Error in loadEnrollment:', error);
+        console.error('Error enrolling:', error);
+        showNotification('An error occurred. Please try again.', 'error');
+        if (enrollBtn) {
+            enrollBtn.disabled = false;
+            enrollBtn.innerHTML = '<i class="fas fa-check-circle"></i> Enroll Now';
+        }
+    }
+}
+
+// ============================================
+// Helper: Get Lesson Icon
+// ============================================
+
+function getLessonIcon(type) {
+    switch(type?.toLowerCase()) {
+        case 'video': return 'fa-play-circle';
+        case 'text': return 'fa-file-alt';
+        case 'quiz': return 'fa-question-circle';
+        default: return 'fa-book';
+    }
+}
+
+// ============================================
+// Check Course Prerequisites
+// ============================================
+
+async function checkCoursePrerequisites() {
+    // If no prerequisites, course is unlocked
+    if (!currentCourse.prerequisites || currentCourse.prerequisites.length === 0) {
+        return { met: true, missingCourse: null };
+    }
+
+    try {
+        // Get user's completed courses
+        const { data: completedEnrollments, error } = await supabase
+            .from('enrollments')
+            .select('course_id, courses!inner(slug, title)')
+            .eq('user_id', currentUser.id)
+            .eq('status', 'completed');
+
+        if (error) {
+            console.error('Error checking prerequisites:', error);
+            return { met: true, missingCourse: null }; // Allow access on error
+        }
+
+        const completedSlugs = completedEnrollments
+            ? completedEnrollments.map(e => e.courses.slug)
+            : [];
+
+        // Check each prerequisite
+        for (const prerequisiteSlug of currentCourse.prerequisites) {
+            if (!completedSlugs.includes(prerequisiteSlug)) {
+                // Fetch the prerequisite course details
+                const { data: prerequisiteCourse } = await supabase
+                    .from('courses')
+                    .select('slug, title')
+                    .eq('slug', prerequisiteSlug)
+                    .single();
+
+                return {
+                    met: false,
+                    missingCourse: prerequisiteCourse || { title: prerequisiteSlug, slug: prerequisiteSlug }
+                };
+            }
+        }
+
+        // All prerequisites met
+        return { met: true, missingCourse: null };
+    } catch (error) {
+        console.error('Error in prerequisite check:', error);
+        return { met: true, missingCourse: null }; // Allow access on error
+    }
+}
+
+// ============================================
+// Show Prerequisite Error
+// ============================================
+
+function showPrerequisiteError(prerequisitesCheck) {
+    const learningMain = document.getElementById('learningMain');
+    if (learningMain) learningMain.style.display = 'none';
+
+    const preview = document.getElementById('coursePreview');
+    if (preview) {
+        preview.style.display = 'block';
+        preview.innerHTML = `
+            <div class="container">
+                <div class="prerequisite-error">
+                    <div class="prerequisite-error-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h2>Course Locked</h2>
+                    <p>This course requires you to complete a prerequisite course first.</p>
+                    <div class="prerequisite-required">
+                        <h3>Required Course:</h3>
+                        <div class="prerequisite-course-card">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>${prerequisitesCheck.missingCourse.title}</span>
+                        </div>
+                    </div>
+                    <div class="prerequisite-actions">
+                        <a href="learn.html" class="btn-back-to-courses">
+                            <i class="fas fa-arrow-left"></i>
+                            Back to Courses
+                        </a>
+                        <a href="learning.html?course=${prerequisitesCheck.missingCourse.slug}" class="btn-start-prerequisite">
+                            <i class="fas fa-play-circle"></i>
+                            Start Required Course
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `;
     }
 }
 

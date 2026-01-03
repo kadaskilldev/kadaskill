@@ -384,10 +384,6 @@
                                             </div>
                                         </div>
                                         <div class="form-group span-2">
-                                            <label class="form-label">Prerequisites (one per line)</label>
-                                            <textarea class="form-input" id="course-prerequisites-edit" rows="3" placeholder="Basic programming knowledge&#10;Understanding of Python"></textarea>
-                                        </div>
-                                        <div class="form-group span-2">
                                             <label class="form-label">Learning Objectives (one per line)</label>
                                             <textarea class="form-input" id="course-objectives-edit" rows="3" placeholder="Understand AI fundamentals&#10;Build ML models"></textarea>
                                         </div>
@@ -549,13 +545,77 @@
                 <section id="learning-paths-section" class="admin-section">
                     <div class="section-header">
                         <h3>Learning Paths</h3>
-                        <button class="btn-primary">
-                            <i class="fas fa-plus"></i> Create Learning Path
-                        </button>
+                        <p class="section-description">Create structured learning paths with course prerequisites. Students must complete courses in sequence.</p>
                     </div>
-                    <div class="empty-state">
-                        <i class="fas fa-route"></i>
-                        <p>Learning paths feature coming soon!</p>
+
+                    <!-- Learning Path Builder -->
+                    <div class="admin-card">
+                        <div class="learning-path-builder">
+                            <div class="path-builder-header">
+                                <h4>Build Learning Path</h4>
+                                <p>Select courses in order to create a learning sequence. Each course will require the previous one to be completed.</p>
+                            </div>
+
+                            <!-- Available Courses -->
+                            <div class="path-builder-content">
+                                <div class="available-courses-section">
+                                    <h5>Available Courses</h5>
+                                    <div class="course-filter-group">
+                                        <select id="path-category-filter" class="filter-select">
+                                            <option value="all">All Categories</option>
+                                            <option value="AI">AI</option>
+                                            <option value="Cybersecurity">Cybersecurity</option>
+                                            <option value="Cloud">Cloud</option>
+                                        </select>
+                                    </div>
+                                    <div id="available-courses-list" class="available-courses-list">
+                                        <div class="loading-message">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                            Loading courses...
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="path-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+
+                                <!-- Learning Path Sequence -->
+                                <div class="learning-path-section">
+                                    <h5>Learning Path Sequence</h5>
+                                    <div class="path-info">
+                                        <i class="fas fa-info-circle"></i>
+                                        <span>Students must complete courses from top to bottom</span>
+                                    </div>
+                                    <div id="learning-path-sequence" class="learning-path-sequence">
+                                        <div class="empty-path-message">
+                                            <i class="fas fa-route"></i>
+                                            <p>Click courses from the left to build your path</p>
+                                        </div>
+                                    </div>
+                                    <div class="path-actions">
+                                        <button id="clear-path-btn" class="btn-secondary" disabled>
+                                            <i class="fas fa-trash"></i> Clear Path
+                                        </button>
+                                        <button id="save-path-btn" class="btn-primary" disabled>
+                                            <i class="fas fa-save"></i> Save Learning Path
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Existing Learning Paths -->
+                    <div class="admin-card" style="margin-top: 24px;">
+                        <h4>Existing Learning Paths</h4>
+                        <p class="card-description">View and manage your existing learning paths</p>
+                        <div id="existing-paths-list" class="existing-paths-list">
+                            <div class="loading-message">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                Loading paths...
+                            </div>
+                        </div>
                     </div>
                 </section>
 

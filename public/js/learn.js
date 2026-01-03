@@ -8,6 +8,8 @@
 
 let allCourses = [];
 let currentCategory = 'all';
+let userCompletedCourses = []; // Store user's completed course slugs
+let currentUser = null;
 
 // ============================================
 // Initialize Page
@@ -15,6 +17,7 @@ let currentCategory = 'all';
 
 document.addEventListener('DOMContentLoaded', async () => {
     await loadUserProfile();
+    await loadUserCompletedCourses();
     await loadCourses();
     setupEventListeners();
 });
@@ -31,6 +34,8 @@ async function loadUserProfile() {
             console.log('No user logged in, using default profile');
             return;
         }
+
+        currentUser = user; // Store current user globally
 
         const { data: profile, error: profileError } = await supabase
             .from('profiles')
@@ -63,6 +68,40 @@ async function loadUserProfile() {
 
     } catch (error) {
         console.error('Unexpected error loading profile:', error);
+    }
+}
+
+// ============================================
+// Load User's Completed Courses
+// ============================================
+
+async function loadUserCompletedCourses() {
+    if (!currentUser) {
+        console.log('No user logged in, skipping completed courses check');
+        return;
+    }
+
+    try {
+        // Get all completed enrollments with course slugs
+        const { data: completedEnrollments, error } = await supabase
+            .from('enrollments')
+            .select('course_id, courses!inner(slug)')
+            .eq('user_id', currentUser.id)
+            .eq('status', 'completed');
+
+        if (error) {
+            console.error('Error loading completed courses:', error);
+            return;
+        }
+
+        // Extract course slugs
+        userCompletedCourses = completedEnrollments
+            ? completedEnrollments.map(e => e.courses.slug)
+            : [];
+
+        console.log('User completed courses:', userCompletedCourses);
+    } catch (error) {
+        console.error('Unexpected error loading completed courses:', error);
     }
 }
 
@@ -130,8 +169,14 @@ function createCourseCard(course) {
     const duration = formatDuration(course.duration_hours);
     const description = course.short_description || course.description || 'Learn essential skills and concepts.';
 
+    // Check prerequisites
+    const prerequisiteCheck = checkPrerequisites(course);
+    const isLocked = !prerequisiteCheck.met;
+    const cardClass = isLocked ? 'course-card course-card-locked' : 'course-card';
+
     return `
-        <div class="course-card" data-category="${categoryClass}">
+        <div class="${cardClass}" data-category="${categoryClass}">
+            ${isLocked ? '<div class="course-lock-overlay"><i class="fas fa-lock"></i></div>' : ''}
             <div class="course-card-image">
                 <img src="${course.thumbnail_url || '/images/courses/default.jpg'}"
                      alt="${course.title}"
@@ -141,13 +186,25 @@ function createCourseCard(course) {
             <div class="course-card-content">
                 <h3 class="course-card-title">${course.title}</h3>
                 <p class="course-card-description">${truncateText(description, 100)}</p>
+                ${isLocked && prerequisiteCheck.missingCourse ? `
+                    <div class="prerequisite-warning">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Complete <strong>${prerequisiteCheck.missingCourse.title}</strong> first</span>
+                    </div>
+                ` : ''}
                 <div class="course-card-footer">
                     <span class="course-duration">
                         <i class="fas fa-clock"></i> ${duration}
                     </span>
-                    <button class="course-card-btn" onclick="enrollInCourse('${course.id}', '${course.slug}')">
-                        Start
-                    </button>
+                    ${isLocked ? `
+                        <button class="course-card-btn course-card-btn-locked" disabled>
+                            <i class="fas fa-lock"></i> Locked
+                        </button>
+                    ` : `
+                        <button class="course-card-btn" onclick="viewCourseDetails('${course.slug}')">
+                            View Course
+                        </button>
+                    `}
                 </div>
             </div>
         </div>
@@ -157,6 +214,28 @@ function createCourseCard(course) {
 // ============================================
 // Helper Functions
 // ============================================
+
+function checkPrerequisites(course) {
+    // If no prerequisites, course is unlocked
+    if (!course.prerequisites || course.prerequisites.length === 0) {
+        return { met: true, missingCourse: null };
+    }
+
+    // Check each prerequisite
+    for (const prerequisiteSlug of course.prerequisites) {
+        if (!userCompletedCourses.includes(prerequisiteSlug)) {
+            // Find the prerequisite course details
+            const prerequisiteCourse = allCourses.find(c => c.slug === prerequisiteSlug);
+            return {
+                met: false,
+                missingCourse: prerequisiteCourse || { title: prerequisiteSlug, slug: prerequisiteSlug }
+            };
+        }
+    }
+
+    // All prerequisites met
+    return { met: true, missingCourse: null };
+}
 
 function formatDuration(hours) {
     if (!hours) return 'Self-paced';
@@ -281,8 +360,18 @@ async function enrollInCourse(courseId, courseSlug) {
     }
 }
 
-// Make it global so onclick can access it
+// ============================================
+// View Course Details (Preview)
+// ============================================
+
+function viewCourseDetails(courseSlug) {
+    // Redirect to learning page in preview mode
+    window.location.href = `learning.html?course=${courseSlug}`;
+}
+
+// Make functions global so onclick can access them
 window.enrollInCourse = enrollInCourse;
+window.viewCourseDetails = viewCourseDetails;
 
 // ============================================
 // Event Listeners

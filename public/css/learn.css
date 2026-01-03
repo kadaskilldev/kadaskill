@@ -526,3 +526,201 @@ body {
         font-size: 1.125rem;
     }
 }
+
+/* ============================================
+   Locked Course Styles
+   ============================================ */
+
+.course-card-locked {
+    position: relative;
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.course-card-locked:hover {
+    transform: none;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.course-lock-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    border-radius: 20px;
+}
+
+.course-lock-overlay i {
+    font-size: 4rem;
+    color: #ffffff;
+    opacity: 0.9;
+}
+
+.prerequisite-warning {
+    background: rgba(251, 191, 36, 0.2);
+    border-left: 3px solid #f59e0b;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #ffffff;
+    font-size: 0.875rem;
+}
+
+.prerequisite-warning i {
+    color: #f59e0b;
+    font-size: 1rem;
+}
+
+.prerequisite-warning strong {
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+.course-card-btn-locked {
+    background: #64748b !important;
+    cursor: not-allowed !important;
+    opacity: 0.6;
+}
+
+.course-card-btn-locked:hover {
+    transform: none !important;
+    box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3) !important;
+}
+
+/* ============================================
+   Prerequisite Error Page
+   ============================================ */
+
+.prerequisite-error {
+    max-width: 600px;
+    margin: 4rem auto;
+    text-align: center;
+    background: white;
+    padding: 3rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.prerequisite-error-icon {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+}
+
+.prerequisite-error-icon i {
+    font-size: 3rem;
+    color: white;
+}
+
+.prerequisite-error h2 {
+    font-size: 2rem;
+    color: #1a202c;
+    margin-bottom: 1rem;
+}
+
+.prerequisite-error p {
+    color: #64748b;
+    font-size: 1.125rem;
+    margin-bottom: 2rem;
+}
+
+.prerequisite-required {
+    background: #f8fafc;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+}
+
+.prerequisite-required h3 {
+    font-size: 1.125rem;
+    color: #1a202c;
+    margin-bottom: 1rem;
+}
+
+.prerequisite-course-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 2px solid #f59e0b;
+}
+
+.prerequisite-course-card i {
+    font-size: 2rem;
+    color: #f59e0b;
+}
+
+.prerequisite-course-card span {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1a202c;
+}
+
+.prerequisite-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btn-back-to-courses,
+.btn-start-prerequisite {
+    padding: 0.875rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s;
+}
+
+.btn-back-to-courses {
+    background: #f1f5f9;
+    color: #1a202c;
+    border: 2px solid #e2e8f0;
+}
+
+.btn-back-to-courses:hover {
+    background: #e2e8f0;
+    transform: translateY(-2px);
+}
+
+.btn-start-prerequisite {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    border: none;
+}
+
+.btn-start-prerequisite:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+}
+
+@media (max-width: 480px) {
+    .prerequisite-actions {
+        flex-direction: column;
+    }
+
+    .btn-back-to-courses,
+    .btn-start-prerequisite {
+        width: 100%;
+        justify-content: center;
+    }
+}

@@ -844,6 +844,8 @@ function switchSection(sectionName) {
         loadCertifications();
     } else if (sectionName === 'exercises') {
         loadExercises();
+    } else if (sectionName === 'learning-paths') {
+        initializeLearningPaths();
     }
 }
 
@@ -1501,13 +1503,22 @@ function renderCoursesTable(courses) {
             // Difficulty badge styling
             const difficultyClass = course.difficulty ? `difficulty-${course.difficulty.toLowerCase()}` : '';
 
+            // Check if course has prerequisites
+            const hasPrerequisites = course.prerequisites && course.prerequisites.length > 0;
+            const prerequisiteText = hasPrerequisites
+                ? `Requires: ${course.prerequisites.length} course${course.prerequisites.length > 1 ? 's' : ''}`
+                : '';
+
             return `
                 <tr class="course-row">
                     <td>
                         <div class="course-cell-content">
                             <img src="${courseImage}" alt="${escapeHtml(course.title)}" class="course-thumbnail" onerror="this.src='images/placeholder-course.jpg'">
                             <div class="course-info">
-                                <h4 class="course-title">${escapeHtml(course.title)}</h4>
+                                <h4 class="course-title">
+                                    ${escapeHtml(course.title)}
+                                    ${hasPrerequisites ? '<span class="prerequisite-indicator" title="' + prerequisiteText + '"><i class="fas fa-lock"></i></span>' : ''}
+                                </h4>
                                 <p class="course-description">${escapeHtml(course.short_description || '').substring(0, 80)}${(course.short_description?.length > 80) ? '...' : ''}</p>
                             </div>
                         </div>
@@ -2222,11 +2233,6 @@ async function editCourse(courseId) {
             showImagePreview('thumbnail', course.thumbnail_url);
         }
 
-        // Prerequisites
-        if (Array.isArray(course.prerequisites)) {
-            document.getElementById('course-prerequisites-edit').value = course.prerequisites.join('\n');
-        }
-
         // Learning objectives
         if (Array.isArray(course.learning_objectives)) {
             document.getElementById('course-objectives-edit').value = course.learning_objectives.join('\n');
@@ -2842,10 +2848,7 @@ async function saveCourseInline() {
         const category = document.getElementById('course-category-edit').value;
         const difficulty = document.getElementById('course-difficulty-edit').value;
         const slug = document.getElementById('course-slug-edit').value.trim();
-        const prerequisites = document.getElementById('course-prerequisites-edit').value
-            .split('\n')
-            .map(p => p.trim())
-            .filter(p => p.length > 0);
+
         const objectives = document.getElementById('course-objectives-edit').value
             .split('\n')
             .map(o => o.trim())
@@ -2893,7 +2896,6 @@ async function saveCourseInline() {
             difficulty,
             slug,
             thumbnail_url: thumbnail || null,
-            prerequisites: prerequisites.length > 0 ? prerequisites : null,
             learning_objectives: objectives.length > 0 ? objectives : null,
             is_published: isPublished,
             is_featured: isFeatured,
@@ -4066,3 +4068,367 @@ window.updateStudyResourceTitle = updateStudyResourceTitle;
 window.updateStudyResourceUrl = updateStudyResourceUrl;
 window.updateStudyResourceType = updateStudyResourceType;
 window.goToCertPage = goToCertPage;
+
+// ============================================
+// Learning Paths Management
+// ============================================
+
+let learningPathCourses = []; // Courses in the current path being built
+let allCoursesForPaths = []; // All available courses
+
+// Initialize Learning Paths tab
+async function initializeLearningPaths() {
+    await loadCoursesForPaths();
+    await loadExistingPaths();
+    setupPathBuilderListeners();
+}
+
+// Load all courses for path building
+async function loadCoursesForPaths() {
+    try {
+        const { data: courses, error } = await supabase
+            .from('courses')
+            .select('id, slug, title, category, difficulty, prerequisites, is_published')
+            .eq('is_published', true)
+            .order('title', { ascending: true });
+
+        if (error) throw error;
+
+        allCoursesForPaths = courses || [];
+        renderAvailableCourses(allCoursesForPaths);
+    } catch (error) {
+        console.error('Error loading courses for paths:', error);
+        document.getElementById('available-courses-list').innerHTML =
+            '<div class="error-message"><i class="fas fa-exclamation-circle"></i>Error loading courses</div>';
+    }
+}
+
+// Render available courses list
+function renderAvailableCourses(courses, filterCategory = 'all') {
+    const container = document.getElementById('available-courses-list');
+
+    let filteredCourses = courses;
+    if (filterCategory !== 'all') {
+        filteredCourses = courses.filter(c => c.category === filterCategory);
+    }
+
+    if (filteredCourses.length === 0) {
+        container.innerHTML = '<div class="empty-message">No courses available</div>';
+        return;
+    }
+
+    container.innerHTML = filteredCourses.map(course => {
+        const isInPath = learningPathCourses.some(c => c.id === course.id);
+        const hasPrereqs = course.prerequisites && course.prerequisites.length > 0;
+
+        return `
+            <div class="available-course-item ${isInPath ? 'in-path' : ''}"
+                 data-course-id="${course.id}"
+                 onclick="addCourseToPath('${course.id}')">
+                <div class="course-item-info">
+                    <h6>${escapeHtml(course.title)}</h6>
+                    <div class="course-item-meta">
+                        <span class="category-badge">${course.category}</span>
+                        <span class="difficulty-badge">${course.difficulty}</span>
+                        ${hasPrereqs ? '<span class="has-prereq-badge"><i class="fas fa-lock"></i></span>' : ''}
+                    </div>
+                </div>
+                ${isInPath ? '<i class="fas fa-check-circle course-added-icon"></i>' : '<i class="fas fa-plus-circle course-add-icon"></i>'}
+            </div>
+        `;
+    }).join('');
+}
+
+// Add course to learning path
+function addCourseToPath(courseId) {
+    const course = allCoursesForPaths.find(c => c.id === courseId);
+    if (!course) return;
+
+    // Check if already in path
+    if (learningPathCourses.some(c => c.id === courseId)) {
+        showToast('Course already in path', 'warning');
+        return;
+    }
+
+    // Add to path
+    learningPathCourses.push(course);
+    renderLearningPathSequence();
+    renderAvailableCourses(allCoursesForPaths, document.getElementById('path-category-filter').value);
+
+    // Enable buttons
+    document.getElementById('clear-path-btn').disabled = false;
+    document.getElementById('save-path-btn').disabled = learningPathCourses.length < 2;
+}
+
+// Remove course from path
+function removeCourseFromPath(courseId) {
+    learningPathCourses = learningPathCourses.filter(c => c.id !== courseId);
+    renderLearningPathSequence();
+    renderAvailableCourses(allCoursesForPaths, document.getElementById('path-category-filter').value);
+
+    // Update buttons
+    document.getElementById('clear-path-btn').disabled = learningPathCourses.length === 0;
+    document.getElementById('save-path-btn').disabled = learningPathCourses.length < 2;
+}
+
+// Move course up in sequence
+function moveCourseUp(index) {
+    if (index === 0) return;
+    [learningPathCourses[index], learningPathCourses[index - 1]] =
+    [learningPathCourses[index - 1], learningPathCourses[index]];
+    renderLearningPathSequence();
+}
+
+// Move course down in sequence
+function moveCourseDown(index) {
+    if (index === learningPathCourses.length - 1) return;
+    [learningPathCourses[index], learningPathCourses[index + 1]] =
+    [learningPathCourses[index + 1], learningPathCourses[index]];
+    renderLearningPathSequence();
+}
+
+// Render learning path sequence
+function renderLearningPathSequence() {
+    const container = document.getElementById('learning-path-sequence');
+
+    if (learningPathCourses.length === 0) {
+        container.innerHTML = `
+            <div class="empty-path-message">
+                <i class="fas fa-route"></i>
+                <p>Click courses from the left to build your path</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = learningPathCourses.map((course, index) => `
+        <div class="path-course-item">
+            <div class="path-course-number">${index + 1}</div>
+            <div class="path-course-info">
+                <h6>${escapeHtml(course.title)}</h6>
+                <div class="path-course-meta">
+                    <span class="category-badge">${course.category}</span>
+                    <span class="difficulty-badge">${course.difficulty}</span>
+                    ${index > 0 ? `<span class="prerequisite-tag">Requires: ${learningPathCourses[index - 1].title}</span>` : '<span class="start-tag">Starting Course</span>'}
+                </div>
+            </div>
+            <div class="path-course-actions">
+                ${index > 0 ? `<button class="btn-icon" onclick="moveCourseUp(${index})" title="Move up"><i class="fas fa-arrow-up"></i></button>` : ''}
+                ${index < learningPathCourses.length - 1 ? `<button class="btn-icon" onclick="moveCourseDown(${index})" title="Move down"><i class="fas fa-arrow-down"></i></button>` : ''}
+                <button class="btn-icon btn-delete" onclick="removeCourseFromPath('${course.id}')" title="Remove"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+        ${index < learningPathCourses.length - 1 ? '<div class="path-arrow-down"><i class="fas fa-arrow-down"></i></div>' : ''}
+    `).join('');
+}
+
+// Clear learning path
+function clearLearningPath() {
+    if (learningPathCourses.length === 0) return;
+
+    if (!confirm('Are you sure you want to clear this learning path?')) return;
+
+    learningPathCourses = [];
+    renderLearningPathSequence();
+    renderAvailableCourses(allCoursesForPaths, document.getElementById('path-category-filter').value);
+
+    document.getElementById('clear-path-btn').disabled = true;
+    document.getElementById('save-path-btn').disabled = true;
+}
+
+// Save learning path
+async function saveLearningPath() {
+    if (learningPathCourses.length < 2) {
+        showToast('Add at least 2 courses to create a learning path', 'error');
+        return;
+    }
+
+    const saveBtn = document.getElementById('save-path-btn');
+    const originalText = saveBtn.innerHTML;
+
+    try {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+        // Update prerequisites for each course in the path
+        for (let i = 0; i < learningPathCourses.length; i++) {
+            const course = learningPathCourses[i];
+            const prerequisites = i === 0 ? [] : [learningPathCourses[i - 1].slug];
+
+            const { error } = await supabase
+                .from('courses')
+                .update({
+                    prerequisites: prerequisites,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', course.id);
+
+            if (error) throw error;
+        }
+
+        showToast(`Learning path saved! ${learningPathCourses.length} courses updated.`, 'success');
+
+        // Clear the path and reload
+        learningPathCourses = [];
+        await loadCoursesForPaths();
+        await loadExistingPaths();
+        renderLearningPathSequence();
+
+        document.getElementById('clear-path-btn').disabled = true;
+        document.getElementById('save-path-btn').disabled = true;
+
+    } catch (error) {
+        console.error('Error saving learning path:', error);
+        showToast('Failed to save learning path: ' + error.message, 'error');
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalText;
+    }
+}
+
+// Load and display existing paths
+async function loadExistingPaths() {
+    try {
+        const { data: courses, error } = await supabase
+            .from('courses')
+            .select('id, slug, title, category, difficulty, prerequisites')
+            .order('title', { ascending: true });
+
+        if (error) throw error;
+
+        // Find courses that are prerequisites for others
+        const paths = extractLearningPaths(courses || []);
+        renderExistingPaths(paths);
+
+    } catch (error) {
+        console.error('Error loading existing paths:', error);
+        document.getElementById('existing-paths-list').innerHTML =
+            '<div class="error-message"><i class="fas fa-exclamation-circle"></i>Error loading paths</div>';
+    }
+}
+
+// Extract learning paths from courses
+function extractLearningPaths(courses) {
+    const paths = [];
+    const processedCourses = new Set();
+
+    courses.forEach(course => {
+        if (processedCourses.has(course.id)) return;
+        if (!course.prerequisites || course.prerequisites.length === 0) return;
+
+        // Build the path chain
+        const path = [course];
+        processedCourses.add(course.id);
+
+        // Trace back prerequisites
+        let currentPrereq = course.prerequisites[0];
+        while (currentPrereq) {
+            const prereqCourse = courses.find(c => c.slug === currentPrereq);
+            if (!prereqCourse) break;
+
+            path.unshift(prereqCourse);
+            processedCourses.add(prereqCourse.id);
+            currentPrereq = prereqCourse.prerequisites && prereqCourse.prerequisites[0];
+        }
+
+        if (path.length > 1) {
+            paths.push(path);
+        }
+    });
+
+    return paths;
+}
+
+// Render existing paths
+function renderExistingPaths(paths) {
+    const container = document.getElementById('existing-paths-list');
+
+    if (paths.length === 0) {
+        container.innerHTML = `
+            <div class="empty-message">
+                <i class="fas fa-route"></i>
+                <p>No learning paths created yet</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = paths.map((path, pathIndex) => `
+        <div class="existing-path-card">
+            <div class="existing-path-header">
+                <h5>Path ${pathIndex + 1}: ${path[0].category} Learning Journey</h5>
+                <span class="path-course-count">${path.length} courses</span>
+            </div>
+            <div class="existing-path-sequence">
+                ${path.map((course, index) => `
+                    <div class="existing-path-item">
+                        <span class="existing-path-number">${index + 1}</span>
+                        <span class="existing-path-title">${escapeHtml(course.title)}</span>
+                        <span class="difficulty-badge">${course.difficulty}</span>
+                    </div>
+                    ${index < path.length - 1 ? '<i class="fas fa-arrow-right existing-path-arrow"></i>' : ''}
+                `).join('')}
+            </div>
+            <button class="btn-delete-path" onclick="deleteLearningPath([${path.map(c => `'${c.id}'`).join(',')}])">
+                <i class="fas fa-trash"></i> Delete Path
+            </button>
+        </div>
+    `).join('');
+}
+
+// Delete learning path
+async function deleteLearningPath(courseIds) {
+    if (!confirm('Delete this learning path? This will remove all prerequisites from these courses.')) return;
+
+    try {
+        for (const courseId of courseIds) {
+            const { error } = await supabase
+                .from('courses')
+                .update({
+                    prerequisites: [],
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', courseId);
+
+            if (error) throw error;
+        }
+
+        showToast('Learning path deleted', 'success');
+        await loadCoursesForPaths();
+        await loadExistingPaths();
+
+    } catch (error) {
+        console.error('Error deleting path:', error);
+        showToast('Failed to delete path: ' + error.message, 'error');
+    }
+}
+
+// Setup event listeners for path builder
+function setupPathBuilderListeners() {
+    // Category filter
+    const categoryFilter = document.getElementById('path-category-filter');
+    if (categoryFilter) {
+        categoryFilter.addEventListener('change', (e) => {
+            renderAvailableCourses(allCoursesForPaths, e.target.value);
+        });
+    }
+
+    // Clear button
+    const clearBtn = document.getElementById('clear-path-btn');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', clearLearningPath);
+    }
+
+    // Save button
+    const saveBtn = document.getElementById('save-path-btn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', saveLearningPath);
+    }
+}
+
+// Make functions global for onclick handlers
+window.addCourseToPath = addCourseToPath;
+window.removeCourseFromPath = removeCourseFromPath;
+window.moveCourseUp = moveCourseUp;
+window.moveCourseDown = moveCourseDown;
+window.deleteLearningPath = deleteLearningPath;

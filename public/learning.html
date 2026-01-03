@@ -67,8 +67,72 @@
         </div>
     </header>
 
+    <!-- Course Preview (shown when not enrolled) -->
+    <section class="course-preview" id="coursePreview" style="display: none;">
+        <div class="container">
+            <div class="preview-content">
+                <div class="preview-main">
+                    <h2>About This Course</h2>
+                    <div class="course-overview" id="courseOverview">
+                        <p id="courseFullDescription">Loading course details...</p>
+                    </div>
+
+                    <div class="course-highlights">
+                        <h3>What You'll Learn</h3>
+                        <ul id="courseHighlights">
+                            <li>Loading...</li>
+                        </ul>
+                    </div>
+
+                    <div class="course-syllabus">
+                        <h3>Course Syllabus</h3>
+                        <div id="syllabusContent">
+                            <div class="syllabus-loading">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Loading syllabus...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-sidebar">
+                    <div class="enrollment-card">
+                        <div class="enrollment-card-header">
+                            <h3>Ready to Start Learning?</h3>
+                        </div>
+                        <div class="enrollment-card-body">
+                            <div class="enrollment-stats">
+                                <div class="stat-item">
+                                    <i class="fas fa-users"></i>
+                                    <span id="enrolledCount">0 students</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span id="enrollDuration">0 hours</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="fas fa-signal"></i>
+                                    <span id="enrollDifficulty">Beginner</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="fas fa-star"></i>
+                                    <span id="enrollXP">0 XP</span>
+                                </div>
+                            </div>
+                            <button class="btn-enroll" id="enrollBtn">
+                                <i class="fas fa-check-circle"></i>
+                                Enroll Now
+                            </button>
+                            <p class="enrollment-note">Free • Full lifetime access</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Main Learning Area -->
-    <main class="learning-main">
+    <main class="learning-main" id="learningMain">
         <div class="learning-container">
             <!-- Left Sidebar: Lessons List -->
             <aside class="lessons-sidebar">
