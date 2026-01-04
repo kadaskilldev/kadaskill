@@ -8,6 +8,8 @@
 
 let allCertifications = [];
 let currentFilter = 'all';
+let userCertifications = {}; // Map of certification_id -> { id, is_pinned }
+let currentUserId = null;
 
 // ============================================
 // Initialize Page
@@ -15,6 +17,7 @@ let currentFilter = 'all';
 
 document.addEventListener('DOMContentLoaded', async () => {
     await loadUserProfile();
+    await loadUserCertificationStatus();
     await loadCertifications();
     setupEventListeners();
 });
@@ -57,6 +60,46 @@ async function loadUserProfile() {
 
     } catch (error) {
         console.error('Unexpected error loading profile:', error);
+    }
+}
+
+// ============================================
+// Load User Certification Status (for pin state)
+// ============================================
+
+async function loadUserCertificationStatus() {
+    try {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            console.log('No user logged in, pin functionality disabled');
+            return;
+        }
+
+        currentUserId = user.id;
+
+        const { data: userCerts, error } = await supabase
+            .from('user_certifications')
+            .select('id, certification_id, is_pinned')
+            .eq('user_id', user.id);
+
+        if (error) {
+            console.error('Error loading user certifications:', error);
+            return;
+        }
+
+        // Build a map for quick lookup
+        userCertifications = {};
+        if (userCerts) {
+            userCerts.forEach(uc => {
+                userCertifications[uc.certification_id] = {
+                    id: uc.id,
+                    is_pinned: uc.is_pinned
+                };
+            });
+        }
+    } catch (error) {
+        console.error('Unexpected error loading user certification status:', error);
     }
 }
 
@@ -121,12 +164,30 @@ function renderCertifications(certifications) {
 function createCertificationCard(cert) {
     // Use category from database
     const category = cert.category || 'cloud';
-    
+
     // Use icon_url from database, fallback to placeholder
     const imageUrl = cert.icon_url || 'images/certifications/placeholder.png';
-    
+
+    // Check if user has started this certification and if it's pinned
+    const userCert = userCertifications[cert.id];
+    const isPinned = userCert?.is_pinned || false;
+    const hasStarted = !!userCert;
+
+    // Only show pin button in "My Certification" tab (filter === 'all') and if user has started the cert
+    const showPinButton = currentFilter === 'all' && hasStarted && currentUserId;
+
+    const pinButtonHtml = showPinButton ? `
+        <button class="pin-button ${isPinned ? 'is-pinned' : ''}" 
+                onclick="togglePin(event, '${cert.id}')" 
+                title="${isPinned ? 'Unpin from profile' : 'Pin to profile'}"
+                aria-label="${isPinned ? 'Unpin certification' : 'Pin certification'}">
+            <i class="fas fa-star"></i>
+        </button>
+    ` : '';
+
     return `
-        <div class="certification-card" data-category="${category}">
+        <div class="certification-card" data-category="${category}" data-cert-id="${cert.id}">
+            ${pinButtonHtml}
             <div class="card-image">
                 <img src="${imageUrl}" 
                      alt="${cert.title}" 
@@ -234,6 +295,94 @@ async function startCertification(certId, certSlug) {
 
 // Make it global so onclick can access it
 window.startCertification = startCertification;
+
+// ============================================
+// Toggle Pin Certification
+// ============================================
+
+async function togglePin(event, certId) {
+    // Prevent card click
+    event.stopPropagation();
+
+    if (!currentUserId) {
+        alert('Please log in to pin certifications.');
+        return;
+    }
+
+    const userCert = userCertifications[certId];
+    if (!userCert) {
+        console.error('User has not started this certification');
+        return;
+    }
+
+    const newPinnedState = !userCert.is_pinned;
+
+    // Check pin limit (max 2 pinned)
+    if (newPinnedState) {
+        const pinnedCount = Object.values(userCertifications).filter(uc => uc.is_pinned).length;
+        if (pinnedCount >= 2) {
+            alert('You can only pin up to 2 certifications. Please unpin one first.');
+            return;
+        }
+    }
+
+    try {
+        const { error } = await supabase
+            .from('user_certifications')
+            .update({ is_pinned: newPinnedState })
+            .eq('id', userCert.id);
+
+        if (error) {
+            console.error('Error updating pin status:', error);
+            alert('Failed to update pin status. Please try again.');
+            return;
+        }
+
+        // Update local state
+        userCertifications[certId].is_pinned = newPinnedState;
+
+        // Update UI
+        const card = document.querySelector(`.certification-card[data-cert-id="${certId}"]`);
+        if (card) {
+            const pinButton = card.querySelector('.pin-button');
+            if (pinButton) {
+                pinButton.classList.toggle('is-pinned', newPinnedState);
+                pinButton.title = newPinnedState ? 'Unpin from profile' : 'Pin to profile';
+                pinButton.setAttribute('aria-label', newPinnedState ? 'Unpin certification' : 'Pin certification');
+            }
+        }
+
+        // Show feedback
+        showPinFeedback(newPinnedState);
+
+    } catch (error) {
+        console.error('Unexpected error toggling pin:', error);
+        alert('An unexpected error occurred.');
+    }
+}
+
+function showPinFeedback(isPinned) {
+    // Create toast notification
+    const toast = document.createElement('div');
+    toast.className = 'pin-toast';
+    toast.innerHTML = `
+        <i class="fas fa-${isPinned ? 'star' : 'star'}"></i>
+        <span>${isPinned ? 'Certification pinned to profile!' : 'Certification unpinned from profile'}</span>
+    `;
+    document.body.appendChild(toast);
+
+    // Animate in
+    setTimeout(() => toast.classList.add('show'), 10);
+
+    // Remove after delay
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 2500);
+}
+
+// Make togglePin global
+window.togglePin = togglePin;
 
 // ============================================
 // Event Listeners

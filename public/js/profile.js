@@ -361,12 +361,23 @@ async function loadPinnedCertifications() {
                 const cert = userCert.certifications;
                 if (!cert) return '';
 
+                // Check if we have a valid image URL (not placeholder)
+                const imageUrl = cert.icon_url || cert.badge_url || '';
+                const hasValidImage = imageUrl &&
+                    !imageUrl.includes('placeholder') &&
+                    imageUrl.startsWith('http');
+
+                const imageHtml = hasValidImage
+                    ? `<img src="${imageUrl}"
+                           alt="${cert.title}"
+                           class="profile-pinned-card__image"
+                           onerror="this.style.opacity='0'" />`
+                    : '';
+
                 return `
                     <article class="profile-pinned-card" aria-label="${cert.title}">
                         <div class="profile-pinned-card__media">
-                            <img src="${cert.icon_url || cert.badge_url || 'images/profile/default-cert.png'}"
-                                 alt="${cert.title}"
-                                 class="profile-pinned-card__image" />
+                            ${imageHtml}
                             <span class="profile-pinned-card__tag">Certification</span>
                         </div>
                         <div class="profile-pinned-card__content">
