@@ -1,0 +1,535 @@
+/* ============================================
+   Learn Page - Course Card Continue Button Override
+   ============================================ */
+
+.course-card-btn.enrolled {
+    background: #ff9500 !important;
+    color: #1a202c !important;
+    border-radius: 50px !important;
+    padding: 0.75rem 2.5rem !important;
+    border: none !important;
+}
+
+.course-card-btn.enrolled:hover {
+    background: #e68500 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 149, 0, 0.4);
+}
+
+.course-card-btn.resume {
+    background: #ff9500 !important;
+    color: #1a202c !important;
+    border-radius: 50px !important;
+    padding: 0.75rem 2.5rem !important;
+    border: none !important;
+}
+
+.course-card-btn.resume:hover {
+    background: #e68500 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 149, 0, 0.4);
+}
+
+
+/* Hide play icon and percentage in continue button */
+
+.course-card-btn.resume i,
+.course-card-btn.enrolled i {
+    display: none !important;
+}
+
+
+/* ============================================
+   Enrollment Page Styles
+   ============================================ */
+
+:root {
+    --primary-dark: #1a3541;
+    --primary-dark-hover: #2d4f5e;
+    --accent-orange: #ff9500;
+    --accent-orange-hover: #e68500;
+    --bg-light: #f5f5f5;
+    --text-dark: #333;
+    --text-medium: #666;
+    --text-light: #999;
+    --border-color: #e0e0e0;
+    --success-green: #28a745;
+    --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/* ============================================
+   Loading State
+   ============================================ */
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.loading-spinner {
+    text-align: center;
+}
+
+.loading-spinner i {
+    font-size: 48px;
+    color: var(--accent-orange);
+    margin-bottom: 16px;
+}
+
+.loading-spinner p {
+    color: var(--text-medium);
+    font-size: 16px;
+}
+
+
+/* ============================================
+   Main Layout
+   ============================================ */
+
+.enroll-main {
+    background-color: var(--bg-light);
+    min-height: calc(100vh - 200px);
+    padding-bottom: 60px;
+}
+
+.enroll-container {
+    /* Remove max-width and margin from here since hero needs full width */
+}
+
+
+/* ============================================
+   Course Hero Section
+   ============================================ */
+
+.course-hero {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-dark-hover) 100%);
+    color: white;
+    padding: 60px 0;
+    margin-bottom: 40px;
+    width: 100%;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+}
+
+.course-hero-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 30px;
+}
+
+.back-link {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    transition: color 0.3s;
+}
+
+.back-link:hover {
+    color: white;
+}
+
+.course-hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 60px;
+    align-items: start;
+}
+
+.course-hero-left {
+    flex: 1;
+}
+
+.course-category {
+    display: inline-block;
+    background-color: rgba(255, 149, 0, 0.2);
+    color: var(--accent-orange);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+}
+
+.course-hero-title {
+    font-size: 40px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+.course-hero-description {
+    font-size: 18px;
+    line-height: 1.6;
+    opacity: 0.9;
+    margin-bottom: 24px;
+    max-width: 700px;
+}
+
+.course-meta-row {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.meta-item i {
+    color: var(--accent-orange);
+}
+
+
+/* ============================================
+   Enrollment Card
+   ============================================ */
+
+.course-hero-right {
+    position: sticky;
+    top: 20px;
+}
+
+.enrollment-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.enrollment-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--text-dark);
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.enrollment-benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 20px;
+    background-color: var(--bg-light);
+    border-radius: 12px;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-dark);
+    font-size: 15px;
+}
+
+.benefit-item i {
+    color: var(--accent-orange);
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+}
+
+
+/* Prerequisites Warning */
+
+.prerequisites-warning {
+    background-color: rgba(255, 149, 0, 0.1);
+    border: 2px solid var(--accent-orange);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 16px;
+}
+
+.prerequisites-warning>i {
+    color: var(--accent-orange);
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.warning-content h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.warning-content p {
+    font-size: 14px;
+    color: var(--text-medium);
+    margin-bottom: 8px;
+}
+
+.warning-content ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.warning-content li {
+    font-size: 14px;
+    color: var(--text-dark);
+    padding: 4px 0;
+}
+
+
+/* Already Enrolled Message */
+
+.already-enrolled {
+    background-color: rgba(40, 167, 69, 0.1);
+    border: 2px solid var(--success-green);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.already-enrolled i {
+    color: var(--success-green);
+    font-size: 24px;
+}
+
+.already-enrolled p {
+    color: var(--success-green);
+    font-weight: 600;
+    margin: 0;
+}
+
+
+/* Enrollment Buttons */
+
+.btn-enroll,
+.btn-continue {
+    width: 100%;
+    padding: 16px 32px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s;
+    border: none;
+    background-color: var(--accent-orange);
+    color: white;
+}
+
+.btn-continue i {
+    display: none;
+}
+
+.btn-enroll:hover,
+.btn-continue:hover {
+    background-color: var(--accent-orange-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 149, 0, 0.3);
+}
+
+.btn-enroll:disabled {
+    background-color: var(--text-light);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-enroll:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+
+/* ============================================
+   Course Details Section
+   ============================================ */
+
+.course-details-section {
+    padding: 0 30px;
+}
+
+.course-details-grid {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    gap: 30px;
+}
+
+.detail-card {
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: var(--card-shadow);
+}
+
+.detail-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--text-dark);
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+
+/* Learning Objectives */
+
+.learning-objectives {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.objective-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    background-color: var(--bg-light);
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.objective-item:hover {
+    background-color: rgba(255, 149, 0, 0.1);
+}
+
+.objective-item i {
+    color: var(--success-green);
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.objective-item span {
+    color: var(--text-dark);
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+
+/* Course Overview */
+
+.course-overview {
+    color: var(--text-dark);
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.course-overview p {
+    margin-bottom: 16px;
+}
+
+.course-overview h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-top: 24px;
+    margin-bottom: 12px;
+}
+
+.course-overview ul,
+.course-overview ol {
+    margin-bottom: 16px;
+    padding-left: 24px;
+}
+
+.course-overview li {
+    margin-bottom: 8px;
+}
+
+.course-overview strong {
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 1200px) {
+    .course-hero-grid {
+        grid-template-columns: 1fr 380px;
+        gap: 40px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .course-hero-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    .course-hero-right {
+        position: static;
+    }
+    .enrollment-card {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    .learning-objectives {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .course-hero {
+        padding: 40px 20px;
+    }
+    .course-hero-title {
+        font-size: 28px;
+    }
+    .course-hero-description {
+        font-size: 16px;
+    }
+    .course-details-section {
+        padding: 0 20px;
+    }
+    .detail-card {
+        padding: 24px;
+    }
+    .enrollment-card {
+        padding: 24px;
+    }
+    .enrollment-title {
+        font-size: 20px;
+    }
+    .course-meta-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .course-hero-title {
+        font-size: 24px;
+    }
+    .detail-title {
+        font-size: 20px;
+    }
+    .btn-enroll,
+    .btn-continue {
+        font-size: 14px;
+        padding: 14px 24px;
+    }
+}

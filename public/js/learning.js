@@ -1,3 +1,5 @@
+// learning.js
+
 // ============================================
 // Learning Page - Database Integration
 // Dynamically loads course lessons from Supabase
@@ -156,7 +158,9 @@ async function loadEnrollment() {
 
         if (existingEnrollment) {
             enrollmentId = existingEnrollment.id;
-            updateProgressCircle(existingEnrollment.progress_percentage || 0);
+            // CLAMP the loaded percentage
+            const safePercentage = Math.max(0, Math.min(100, existingEnrollment.progress_percentage || 0));
+            updateProgressCircle(safePercentage);
             return;
         }
 
@@ -219,10 +223,25 @@ async function loadCompletedLessons() {
 
     if (error) {
         console.error('Error loading lesson progress:', error);
+        completedLessons = []; // Reset on error
         return;
     }
 
-    completedLessons = progress ? progress.map(p => p.lesson_id) : [];
+    // CRITICAL: Use Set to remove duplicates
+    const lessonIds = progress ? progress.map(p => p.lesson_id) : [];
+    const uniqueLessonIds = [...new Set(lessonIds)];
+
+    // SUPER CRITICAL: Only include lessons that actually exist in this course
+    const validLessonIds = allLessons.map(l => l.id);
+    completedLessons = uniqueLessonIds.filter(id => validLessonIds.includes(id));
+
+    console.log('✅ Loaded completed lessons:', {
+        rawCount: lessonIds.length,
+        uniqueCount: uniqueLessonIds.length,
+        validCount: completedLessons.length,
+        totalLessons: allLessons.length,
+        ids: completedLessons
+    });
 }
 
 // ============================================
@@ -410,6 +429,9 @@ async function loadLesson(lessonId) {
     // Update last accessed
     await updateLastAccessed(lessonId);
 
+    // Refresh progress display (in case it changed)
+    await refreshProgressDisplay();
+
     // Start engagement tracking for auto-completion
     startEngagementTracking(lesson);
 }
@@ -536,20 +558,7 @@ function updateReadingProgress(percentage, timeSpent, totalTime) {
     if (progressPercentage) {
         progressPercentage.textContent = `${Math.round(percentage)}%`;
     }
-    
-    if (progressText) {
-        const remainingSeconds = Math.ceil((totalTime - timeSpent) / 1000);
-        const remainingMinutes = Math.ceil(remainingSeconds / 60);
-        
-        if (percentage >= 100) {
-            progressText.innerHTML = '<i class="fas fa-check-circle"></i> Great! Completing lesson...';
-            progressText.style.color = '#10b981';
-        } else if (remainingSeconds > 60) {
-            progressText.textContent = `Keep reading... ${remainingMinutes} minute${remainingMinutes > 1 ? 's' : ''} remaining`;
-        } else {
-            progressText.textContent = `Keep reading... ${remainingSeconds} seconds remaining`;
-        }
-    }
+  
 }
 
 function stopEngagementTracking() {
@@ -576,6 +585,7 @@ function stopEngagementTracking() {
 
 async function autoCompleteLessonIfEligible(trigger = 'manual') {
     if (!currentLesson || completedLessons.includes(currentLesson.id)) {
+        console.log('⏭️ Skipping auto-complete: lesson already completed or not loaded');
         return;
     }
 
@@ -888,17 +898,6 @@ function updateVideoProgress(percentage) {
         progressPercentage.textContent = `${Math.round(percentage)}%`;
         progressPercentage.style.fontSize = "0.85rem"; // smaller %
     }
-    
-    if (progressText) {
-        progressText.style.fontSize = "0.85rem"; // smaller text
-
-        if (percentage >= 80) {
-            progressText.innerHTML = '<i class="fas fa-check-circle"></i> Great! Completing lesson...';
-            progressText.style.color = '#10b981';
-        } else {
-            progressText.textContent = `Watch ${Math.round(80 - percentage)}% more to complete`;
-        }
-    }
 }
 
 // ============================================
@@ -1064,7 +1063,10 @@ async function markLessonComplete(autoTriggered = false) {
 
     const isAlreadyCompleted = completedLessons.includes(currentLesson.id);
 
-    if (isAlreadyCompleted) return;
+    if (isAlreadyCompleted) {
+        console.log('⏭️ Lesson already completed, skipping');
+        return;
+    }
 
     try {
         // Insert or update lesson progress
@@ -1086,8 +1088,8 @@ async function markLessonComplete(autoTriggered = false) {
             return;
         }
 
-        // Add to completed list
-        completedLessons.push(currentLesson.id);
+        // CRITICAL: Reload from database - DON'T manually push
+        await loadCompletedLessons();
 
         // Update UI
         updateMarkCompleteButton();
@@ -1146,12 +1148,33 @@ async function markLessonComplete(autoTriggered = false) {
 // ============================================
 
 async function updateCourseProgress() {
+    // IMPORTANT: Reload completed lessons from database first
+    await loadCompletedLessons();
+    
     const totalLessons = allLessons.length;
-    const completedCount = completedLessons.length;
-    const progressPercentage = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+    
+    // Ensure completedLessons is an array and remove duplicates
+    const uniqueCompletedLessons = [...new Set(completedLessons)];
+    const completedCount = uniqueCompletedLessons.length;
+    
+    // Calculate percentage and STRICTLY CLAMP between 0 and 100
+    let progressPercentage = 0;
+    if (totalLessons > 0) {
+        progressPercentage = (completedCount / totalLessons) * 100;
+        progressPercentage = Math.round(progressPercentage);
+        // Force clamp to ensure it never exceeds 100
+        progressPercentage = Math.max(0, Math.min(100, progressPercentage));
+    }
+
+    console.log('📊 Progress Calculation:', { 
+        completedCount, 
+        totalLessons, 
+        progressPercentage,
+        completedLessonIds: uniqueCompletedLessons 
+    });
 
     try {
-        // Update database
+        // Update database - make sure we store clamped value
         const { error } = await supabase
             .from('enrollments')
             .update({
@@ -1162,20 +1185,74 @@ async function updateCourseProgress() {
 
         if (error) {
             console.error('Error updating course progress:', error);
-            return;
+            return progressPercentage;
         }
 
-        // Update UI
+        // Update UI with the correct percentage IMMEDIATELY
+        console.log('🔄 Updating circle immediately with:', progressPercentage);
         updateProgressCircle(progressPercentage);
 
         // Check if course is complete
-        if (progressPercentage === 100) {
+        if (progressPercentage >= 100) {
             await handleCourseCompletion();
         }
+        
+        return progressPercentage;
     } catch (error) {
         console.error('Error in updateCourseProgress:', error);
+        return progressPercentage;
     }
 }
+
+// Emergency fix function - call this from console if needed
+async function fixBrokenProgress() {
+    if (!enrollmentId || !allLessons.length) {
+        console.error('Cannot fix: missing enrollment or lessons');
+        return;
+    }
+    
+    console.log('🔧 Starting progress fix...');
+    
+    // Reload completed lessons
+    await loadCompletedLessons();
+    
+    const totalLessons = allLessons.length;
+    const validLessonIds = allLessons.map(l => l.id);
+    
+    // Filter to only count lessons that exist in THIS course
+    const validCompleted = completedLessons.filter(id => validLessonIds.includes(id));
+    const completedCount = validCompleted.length;
+    
+    const correctProgress = Math.min(100, Math.max(0, Math.round((completedCount / totalLessons) * 100)));
+    
+    console.log('🔧 Fix Details:', { 
+        totalLessons,
+        rawCompletedCount: completedLessons.length,
+        validCompletedCount: completedCount,
+        correctProgress,
+        validCompletedIds: validCompleted
+    });
+    
+    const { error } = await supabase
+        .from('enrollments')
+        .update({ progress_percentage: correctProgress })
+        .eq('id', enrollmentId);
+    
+    if (error) {
+        console.error('❌ Fix failed:', error);
+    } else {
+        console.log('✅ Progress fixed successfully!');
+        updateProgressCircle(correctProgress);
+        
+        // Also update the completedLessons array
+        completedLessons = validCompleted;
+        
+        location.reload();
+    }
+}
+
+// Make it available globally for debugging
+window.fixBrokenProgress = fixBrokenProgress;
 
 async function handleCourseCompletion() {
     try {
@@ -1198,19 +1275,71 @@ async function handleCourseCompletion() {
 }
 
 function updateProgressCircle(percentage) {
+    // FORCE CLAMP percentage to 0-100 range
+    percentage = Math.max(0, Math.min(100, Math.round(percentage)));
+    
     const circle = document.getElementById('progressCircleFill');
-    const text = document.getElementById('progressText');
+    const text = document.querySelector('.progress-circle-container #progressText') || 
+                 document.querySelector('.progress-text');
 
     if (circle) {
         const circumference = 439.823; // 2 * PI * 70
         const offset = circumference - (percentage / 100) * circumference;
+        
+        // Add smooth transition
+        circle.style.transition = 'stroke-dashoffset 0.6s ease-in-out';
         circle.style.strokeDashoffset = offset;
+        
+        console.log('✅ Updated circle stroke:', { percentage, offset });
+    } else {
+        console.warn('⚠️ progressCircleFill element not found!');
     }
     
     if (text) {
-        text.textContent = `${percentage}%`;
+        // Animate the number counting up
+        const currentPercent = parseInt(text.textContent) || 0;
+        const targetPercent = percentage; // Already clamped above
+        
+        console.log('🔢 Animating progress text:', { 
+            currentPercent, 
+            targetPercent, 
+            element: text,
+            currentText: text.textContent 
+        });
+        
+        if (currentPercent !== targetPercent) {
+            animateValue(text, currentPercent, targetPercent, 600);
+        } else {
+            // Force update even if same value
+            text.textContent = `${targetPercent}%`;
+        }
+    } else {
+        console.warn('⚠️ Progress text element not found!');
     }
 }
+
+// Animate number counting
+function animateValue(element, start, end, duration) {
+    // CLAMP both start and end to 0-100
+    start = Math.max(0, Math.min(100, start));
+    end = Math.max(0, Math.min(100, end));
+    
+    const range = end - start;
+    const increment = range / (duration / 16); // 60 FPS
+    let current = start;
+    
+    const timer = setInterval(() => {
+        current += increment;
+        if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+            current = end;
+            clearInterval(timer);
+        }
+        // Ensure displayed value is clamped
+        const displayValue = Math.max(0, Math.min(100, Math.round(current)));
+        element.textContent = `${displayValue}%`;
+    }, 16);
+}
+
 // ============================================
 // Update Last Accessed
 // ============================================
@@ -1231,16 +1360,54 @@ async function updateLastAccessed(lessonId) {
 }
 
 // ============================================
-// Navigation
+// Refresh Progress Display
 // ============================================
 
+async function refreshProgressDisplay() {
+    try {
+        // Reload completed lessons from database
+        await loadCompletedLessons();
+        
+        // Calculate current progress
+        const totalLessons = allLessons.length;
+        
+        // Remove duplicates from completedLessons
+        const uniqueCompletedLessons = [...new Set(completedLessons)];
+        const completedCount = uniqueCompletedLessons.length;
+        
+        // Calculate and CLAMP percentage
+        let progressPercentage = 0;
+        if (totalLessons > 0) {
+            progressPercentage = (completedCount / totalLessons) * 100;
+            progressPercentage = Math.round(progressPercentage);
+            progressPercentage = Math.max(0, Math.min(100, progressPercentage));
+        }
+        
+        console.log('🔄 Refreshing Progress Display:', { 
+            completedCount, 
+            totalLessons, 
+            progressPercentage 
+        });
+        
+        // Update the circle with current progress
+        updateProgressCircle(progressPercentage);
+    } catch (error) {
+        console.error('Error refreshing progress display:', error);
+    }
+}
+
+// ============================================
+// Navigation
+// ============================================
 function updateNavigationButtons() {
     const prevBtn = document.getElementById('prevLessonBtn');
     const nextBtn = document.getElementById('nextLessonBtn');
+    const completeBtn = document.getElementById('completeCourseBtn');
 
     if (!currentLesson || !prevBtn || !nextBtn) return;
 
     const currentIndex = allLessons.findIndex(l => l.id === currentLesson.id);
+    const isLastLesson = currentIndex === allLessons.length - 1;
 
     // Previous button
     if (currentIndex > 0) {
@@ -1254,8 +1421,24 @@ function updateNavigationButtons() {
         prevBtn.onclick = null;
     }
 
-    // Next button
-    if (currentIndex < allLessons.length - 1) {
+    // Next button and Complete button logic
+    if (isLastLesson) {
+        // On last lesson - hide next, show complete
+        nextBtn.style.display = 'none';
+        
+        if (completeBtn) {
+            completeBtn.style.display = 'flex';
+            completeBtn.onclick = async () => {
+                await completeCourse();
+            };
+        }
+    } else {
+        // Not last lesson - show next, hide complete
+        nextBtn.style.display = 'flex';
+        if (completeBtn) {
+            completeBtn.style.display = 'none';
+        }
+
         const nextLesson = allLessons[currentIndex + 1];
         const isNextUnlocked = isLessonUnlocked(nextLesson);
 
@@ -1265,12 +1448,56 @@ function updateNavigationButtons() {
         } else {
             nextBtn.onclick = null;
         }
-    } else {
-        nextBtn.disabled = true;
-        nextBtn.onclick = null;
+    }
+}
+// ============================================
+// Complete Course Function
+// ============================================
+
+async function completeCourse() {
+    if (!currentUser || !enrollmentId) {
+        showNotification('Unable to complete course', 'error');
+        return;
+    }
+
+    try {
+        // Make sure current lesson is marked complete
+        if (currentLesson && !completedLessons.includes(currentLesson.id)) {
+            await markLessonComplete(false);
+        }
+
+        // Update enrollment to completed
+        const { error } = await supabase
+            .from('enrollments')
+            .update({
+                status: 'completed',
+                completed_at: new Date().toISOString(),
+                progress_percentage: 100
+            })
+            .eq('id', enrollmentId);
+
+        if (error) {
+            console.error('Error completing course:', error);
+            showNotification('Failed to complete course', 'error');
+            return;
+        }
+
+        // Show success message
+        showNotification('🎉 Congratulations! You completed the course!', 'success');
+
+        // Wait a moment then redirect
+        setTimeout(() => {
+            window.location.href = 'learn.html';
+        }, 2000);
+
+    } catch (error) {
+        console.error('Error in completeCourse:', error);
+        showNotification('An error occurred', 'error');
     }
 }
 
+// Make it global
+window.completeCourse = completeCourse;
 // ============================================
 // Event Listeners
 // ============================================
@@ -1589,4 +1816,4 @@ function showNotification(message, type = 'info') {
         }
     `;
     document.head.appendChild(style);
-})();
+})()
