@@ -358,7 +358,6 @@ body {
 .pin-button.is-disabled {
     opacity: 0.4;
     cursor: not-allowed;
-    pointer-events: none;
 }
 
 .pin-button.is-disabled:hover {
