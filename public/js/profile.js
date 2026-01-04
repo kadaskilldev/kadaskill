@@ -174,12 +174,19 @@ async function loadUserStats() {
     try {
         if (!currentUser) return;
 
-        // Get practice exercises completed count
-        const { count: exerciseCount, error: exerciseError } = await supabase
+        // Get unique practice exercises completed count (not counting duplicate attempts)
+        // First, get all passed attempts, then count unique exercise_ids
+        const { data: passedAttempts, error: exerciseError } = await supabase
             .from('practice_attempts')
-            .select('*', { count: 'exact', head: true })
+            .select('exercise_id')
             .eq('user_id', currentUser.id)
             .eq('passed', true);
+
+        // Count unique exercise_ids
+        const uniqueExerciseIds = passedAttempts
+            ? [...new Set(passedAttempts.map(a => a.exercise_id))]
+            : [];
+        const exerciseCount = uniqueExerciseIds.length;
 
         if (exerciseError) console.error('Error loading exercise count:', exerciseError);
 
