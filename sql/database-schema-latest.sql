@@ -62,6 +62,7 @@ CREATE TABLE public.courses (
   created_by uuid,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
+  long_description text,
   CONSTRAINT courses_pkey PRIMARY KEY (id),
   CONSTRAINT courses_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.profiles(id)
 );
@@ -196,9 +197,10 @@ CREATE TABLE public.profiles (
   following_count integer DEFAULT 0,
   is_public boolean DEFAULT true,
   email_notifications boolean DEFAULT true,
-  skills TEXT[] DEFAULT '{}',
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
+  skills ARRAY DEFAULT '{}'::text[],
+  last_visit_date date,
   CONSTRAINT profiles_pkey PRIMARY KEY (id),
   CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
