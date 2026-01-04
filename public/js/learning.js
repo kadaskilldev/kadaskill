@@ -950,9 +950,9 @@ function renderQuizContent(lesson) {
     }
 
     if (!quizData || !quizData.questions) {
-        return '<p>Invalid quiz data.</p>';
+        return '<p>Invalid quiz data.</p>';  // ← THIS IS YOUR ERROR
     }
-
+    
     const { instructions, questions } = quizData;
 
     let quizHtml = `
