@@ -264,6 +264,63 @@ body.has-fixed-header {
     transform: translateY(-2px);
 }
 
+/* Skeleton Loading Animation */
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: calc(200px + 100%) 0;
+    }
+}
+
+.skeleton-text,
+.skeleton-text-sm {
+    display: inline-block;
+    background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+    background-size: 200px 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+    border-radius: 4px;
+}
+
+.skeleton-text {
+    width: 140px;
+    height: 18px;
+}
+
+.skeleton-text-sm {
+    width: 50px;
+    height: 14px;
+}
+
+.practice-card-loading {
+    pointer-events: none;
+}
+
+.practice-card-loading .practice-card-chevron {
+    opacity: 0.3;
+}
+
+/* No Practices Message */
+.no-practices-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.no-practices-message i {
+    font-size: 32px;
+    margin-bottom: 12px;
+    display: block;
+    color: #999;
+}
+
+.no-practices-message p {
+    font-size: 14px;
+    margin: 0;
+}
+
 .practice-label {
     background: #fef3c7;
     color: #d97706;

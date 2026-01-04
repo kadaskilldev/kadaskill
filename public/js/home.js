@@ -194,6 +194,8 @@ async function loadEnrolledCourses() {
 // ============================================
 
 async function loadPracticeExercises() {
+    const practiceGrid = document.querySelector('.practice-review-grid');
+    
     try {
         const { data: exercises, error } = await supabase
             .from('practice_exercises')
@@ -204,31 +206,54 @@ async function loadPracticeExercises() {
 
         if (error) {
             console.error('Error loading practice exercises:', error);
+            showNoPracticesMessage(practiceGrid, 'Failed to load practices');
             return;
         }
 
-        if (exercises && exercises.length > 0) {
-            const practiceCards = document.querySelectorAll('.practice-card');
-
-            exercises.forEach((exercise, index) => {
-                if (practiceCards[index]) {
-                    const titleEl = practiceCards[index].querySelector('.practice-card-title');
-                    const xpEl = practiceCards[index].querySelector('.practice-card-xp');
-
-                    if (titleEl) titleEl.textContent = exercise.title;
-                    if (xpEl) xpEl.textContent = `${exercise.xp_reward || 0} XP`;
-
-                    // Make card clickable
-                    practiceCards[index].style.cursor = 'pointer';
-                    practiceCards[index].onclick = () => {
-                        window.location.href = `practice-exercise.html?exercise=${exercise.slug}`;
-                    };
-                }
-            });
+        if (!exercises || exercises.length === 0) {
+            showNoPracticesMessage(practiceGrid, 'No practices available');
+            return;
         }
+
+        // Clear loading skeletons and render real cards
+        practiceGrid.innerHTML = exercises.map(exercise => `
+            <article class="practice-card" style="cursor: pointer;" data-exercise-id="${exercise.id}">
+                <div class="practice-card-body">
+                    <span class="practice-card-label">Practice</span>
+                    <h3 class="practice-card-title">${exercise.title}</h3>
+                </div>
+                <div class="practice-card-meta">
+                    <span class="practice-card-xp">${exercise.xp_reward || 0} XP</span>
+                    <span class="practice-card-chevron" aria-hidden="true"></span>
+                </div>
+            </article>
+        `).join('');
+
+        // Add click handlers
+        practiceGrid.querySelectorAll('.practice-card').forEach((card, index) => {
+            card.onclick = () => {
+                const exercise = exercises[index];
+                const targetUrl = exercise.id
+                    ? `practice-session.html?id=${exercise.id}`
+                    : `practice-session.html?slug=${encodeURIComponent(exercise.slug)}`;
+                window.location.href = targetUrl;
+            };
+        });
 
     } catch (error) {
         console.error('Unexpected error loading practice exercises:', error);
+        showNoPracticesMessage(practiceGrid, 'An error occurred');
+    }
+}
+
+function showNoPracticesMessage(container, message) {
+    if (container) {
+        container.innerHTML = `
+            <div class="no-practices-message">
+                <i class="fas fa-dumbbell"></i>
+                <p>${message}</p>
+            </div>
+        `;
     }
 }
 
