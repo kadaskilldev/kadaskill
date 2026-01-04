@@ -392,8 +392,8 @@ async function loadPinnedCertifications() {
         } else {
             // No pinned certifications
             pinnedContainer.innerHTML = `
-                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
-                    <p style="font-size: 16px; margin-bottom: 16px;">No pinned certifications yet.</p>
+                <div style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; color: #666;">
+                    <p style="font-size: 16px; margin: 0 0 16px 0;">No pinned certifications yet.</p>
                     <a href="certification.html" class="cta-pill" style="display: inline-block;">Browse Certifications</a>
                 </div>
             `;
