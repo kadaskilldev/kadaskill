@@ -140,6 +140,9 @@ async function loadEnrolledCourses() {
             return;
         }
 
+        const courseCard = document.querySelector('.learning-card-course');
+        const trackCard = document.querySelector('.learning-card-track');
+
         if (enrollments && enrollments.length > 0) {
             // Update current course card
             const currentCourse = enrollments[0];
@@ -147,6 +150,8 @@ async function loadEnrolledCourses() {
             if (courseTitle && currentCourse.courses) {
                 courseTitle.textContent = currentCourse.courses.title;
             }
+            // Remove loading state
+            if (courseCard) courseCard.classList.remove('learning-card-loading');
 
             // Update continue button to redirect to actual course
             const continueBtn = document.querySelector('.learning-action-continue');
@@ -168,6 +173,13 @@ async function loadEnrolledCourses() {
                 if (trackLink && trackCourse.courses) {
                     trackLink.href = `learning.html?course=${trackCourse.courses.slug}`;
                 }
+                // Remove loading state
+                if (trackCard) trackCard.classList.remove('learning-card-loading');
+            } else {
+                // No second course - show placeholder
+                const trackTitle = document.querySelector('.learning-card-track .learning-card-title');
+                if (trackTitle) trackTitle.textContent = 'No track enrolled';
+                if (trackCard) trackCard.classList.remove('learning-card-loading');
             }
         } else {
             // No enrolled courses - show message
@@ -175,6 +187,12 @@ async function loadEnrolledCourses() {
             if (courseTitle) {
                 courseTitle.textContent = 'No courses yet';
             }
+            if (courseCard) courseCard.classList.remove('learning-card-loading');
+
+            // Also update track card
+            const trackTitle = document.querySelector('.learning-card-track .learning-card-title');
+            if (trackTitle) trackTitle.textContent = 'No track enrolled';
+            if (trackCard) trackCard.classList.remove('learning-card-loading');
 
             const continueBtn = document.querySelector('.learning-action-continue');
             if (continueBtn) {

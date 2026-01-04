@@ -301,6 +301,15 @@ body.has-fixed-header {
     opacity: 0.3;
 }
 
+/* Learning Card Loading State */
+.learning-card-loading {
+    pointer-events: none;
+}
+
+.learning-card-loading .learning-card-actions {
+    opacity: 0.5;
+}
+
 /* No Practices Message */
 .no-practices-message {
     grid-column: 1 / -1;
