@@ -15,6 +15,9 @@ let userProfile = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
     await loadUserData();
+    await trackDailyLogin(); // Track login and update streak
+    setupWeekNavigation(); // Setup week navigation buttons
+    await loadWeeklyProgress(); // Update weekly progress tracker UI
     await loadEnrolledCourses();
     await loadPracticeExercises();
     await loadCertificationCallouts();
@@ -38,19 +41,30 @@ async function loadUserData() {
 
         currentUser = user;
 
-        const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .single();
+        // Load profile and badge count in parallel
+        const [profileResult, badgeCountResult] = await Promise.all([
+            supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single(),
+            supabase
+                .from('user_badges')
+                .select('id', { count: 'exact', head: true })
+                .eq('user_id', user.id)
+        ]);
 
-        if (profileError) {
-            console.error('Error loading profile:', profileError);
+        if (profileResult.error) {
+            console.error('Error loading profile:', profileResult.error);
             return;
         }
 
+        // Add badge count to profile object
+        const profile = profileResult.data;
+        profile.badge_count = badgeCountResult.count || 0;
+
         userProfile = profile;
-        updateProfileUI(profile);
+        updateProfileUI(user, profile);
 
     } catch (error) {
         console.error('Unexpected error loading user data:', error);
@@ -58,54 +72,449 @@ async function loadUserData() {
 }
 
 // ============================================
+// Get Google Avatar from Auth User
+// ============================================
+
+function getProviderAvatarUrl(user) {
+    if (!user || !user.app_metadata || user.app_metadata.provider !== 'google') {
+        return null;
+    }
+    const metadata = user.user_metadata || {};
+    if (typeof metadata.avatar_url === 'string' && metadata.avatar_url) {
+        return metadata.avatar_url;
+    }
+    if (typeof metadata.picture === 'string' && metadata.picture) {
+        return metadata.picture;
+    }
+    const identities = Array.isArray(user.identities) ? user.identities : [];
+    for (let i = 0; i < identities.length; i++) {
+        const identity = identities[i];
+        if (identity && identity.provider === 'google' && identity.identity_data) {
+            const data = identity.identity_data;
+            if (typeof data.avatar_url === 'string' && data.avatar_url) {
+                return data.avatar_url;
+            }
+            if (typeof data.picture === 'string' && data.picture) {
+                return data.picture;
+            }
+        }
+    }
+    return null;
+}
+
+// ============================================
 // Update Profile UI
 // ============================================
 
-function updateProfileUI(profile) {
+function updateProfileUI(user, profile) {
     // Update welcome message
     const welcomeName = document.querySelector('.text-wrapper-37');
     if (welcomeName) {
         welcomeName.textContent = profile.full_name || profile.username || 'Learner!';
     }
 
-    // Update sidebar profile
-    const sidebarUsername = document.querySelector('.profile-content .text-wrapper');
+    // Update sidebar profile username
+    const sidebarUsername = document.getElementById('profile-username');
     if (sidebarUsername) {
         sidebarUsername.textContent = `@${profile.username}`;
+        sidebarUsername.classList.remove('skeleton-text');
     }
 
-    // Update avatar
-    const avatarImages = document.querySelectorAll('.profile-icon');
-    avatarImages.forEach(img => {
-        if (profile.avatar_url) {
-            img.src = profile.avatar_url;
-        }
-    });
+    // Update avatar - use profile.avatar_url first, fallback to Google provider avatar
+    const avatarSkeleton = document.getElementById('profile-avatar-skeleton');
+    const avatarImg = document.getElementById('profile-avatar');
+    if (avatarImg && avatarSkeleton) {
+        const providerAvatarUrl = getProviderAvatarUrl(user);
+        const avatarUrl = profile.avatar_url || providerAvatarUrl || 'images/profile/default-avatar.svg';
+        avatarImg.src = avatarUrl;
+        avatarImg.style.display = '';
+        avatarSkeleton.style.display = 'none';
+    }
 
     // Update level (calculated as floor(sqrt(total_xp / 100)))
     const level = Math.floor(Math.sqrt(profile.total_xp / 100)) || 1;
-    const levelElement = document.querySelector('.text-wrapper-2');
+    const levelElement = document.getElementById('profile-level');
     if (levelElement) {
         levelElement.textContent = `Level ${level}`;
+        levelElement.classList.remove('skeleton-text');
     }
 
     // Update total XP
-    const xpElement = document.querySelector('.text-wrapper-3');
+    const xpElement = document.getElementById('profile-xp');
     if (xpElement) {
         xpElement.textContent = formatNumber(profile.total_xp || 0);
+        xpElement.classList.remove('skeleton-text');
     }
 
     // Update streak
-    const streakElement = document.querySelector('.text-wrapper-9');
+    const streakElement = document.getElementById('profile-streak');
     if (streakElement) {
         streakElement.textContent = profile.current_streak || 0;
+        streakElement.classList.remove('skeleton-text');
     }
 
     // Update rank (based on level)
     const rank = getRankFromLevel(level);
-    const rankElement = document.querySelector('.text-wrapper-5');
+    const rankElement = document.getElementById('profile-rank');
     if (rankElement) {
         rankElement.textContent = rank;
+        rankElement.classList.remove('skeleton-text');
+    }
+
+    // Update rank icon
+    const rankIconSkeleton = document.getElementById('profile-rank-icon-skeleton');
+    const rankIcon = document.getElementById('profile-rank-icon');
+    if (rankIcon && rankIconSkeleton) {
+        rankIcon.src = getRankIconFromLevel(level);
+        rankIcon.style.display = '';
+        rankIconSkeleton.style.display = 'none';
+    }
+
+    // Update badges count
+    const badgesElement = document.getElementById('profile-badges');
+    if (badgesElement) {
+        badgesElement.textContent = profile.badge_count || 0;
+        badgesElement.classList.remove('skeleton-text');
+    }
+}
+
+// ============================================
+// Philippine Time Utility
+// ============================================
+
+function getPhilippineDate() {
+    // Get current date in Philippine Time (UTC+8)
+    const now = new Date();
+    const philippineOffset = 8 * 60; // UTC+8 in minutes
+    const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const philippineTime = new Date(utcTime + (philippineOffset * 60000));
+    return philippineTime;
+}
+
+function formatDateString(date) {
+    // Format as YYYY-MM-DD
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function getYesterdayPHT() {
+    const pht = getPhilippineDate();
+    pht.setDate(pht.getDate() - 1);
+    return formatDateString(pht);
+}
+
+// ============================================
+// Track Daily Login & Update Streak
+// ============================================
+
+async function trackDailyLogin() {
+    if (!currentUser) return;
+
+    try {
+        const todayPHT = formatDateString(getPhilippineDate());
+        
+        // Check if already logged in today
+        const { data: existingLogin, error: checkError } = await supabase
+            .from('daily_activities')
+            .select('id')
+            .eq('user_id', currentUser.id)
+            .eq('activity_date', todayPHT)
+            .single();
+
+        if (checkError && checkError.code !== 'PGRST116') {
+            // PGRST116 = no rows found, which is expected for first login
+            console.error('Error checking daily login:', checkError);
+            return;
+        }
+
+        if (existingLogin) {
+            // Already logged in today, no need to update streak
+            console.log('Already logged in today:', todayPHT);
+            return;
+        }
+
+        // Insert today's login record
+        const { error: insertError } = await supabase
+            .from('daily_activities')
+            .insert({
+                user_id: currentUser.id,
+                activity_date: todayPHT,
+                activities_completed: 1, // Login counts as an activity
+                xp_earned: 0,
+                lessons_completed: 0,
+                exercises_completed: 0
+            });
+
+        if (insertError) {
+            console.error('Error inserting daily login:', insertError);
+            return;
+        }
+
+        console.log('Daily login recorded for:', todayPHT);
+
+        // Now update streak
+        await updateStreak(todayPHT);
+
+    } catch (error) {
+        console.error('Unexpected error in trackDailyLogin:', error);
+    }
+}
+
+async function updateStreak(todayPHT) {
+    if (!currentUser || !userProfile) return;
+
+    try {
+        const yesterdayPHT = getYesterdayPHT();
+        const lastVisitDate = userProfile.last_visit_date;
+        let currentStreak = userProfile.current_streak || 0;
+        let longestStreak = userProfile.longest_streak || 0;
+        let newStreak;
+
+        // Debug logging
+        console.log('Streak Debug:', {
+            todayPHT,
+            yesterdayPHT,
+            lastVisitDate,
+            lastVisitDateType: typeof lastVisitDate,
+            currentStreak,
+            comparison: lastVisitDate === yesterdayPHT
+        });
+
+        if (lastVisitDate === todayPHT) {
+            // Already visited today - no change needed
+            console.log('Streak already counted for today');
+            return;
+        } else if (lastVisitDate === yesterdayPHT) {
+            // Consecutive day - increment streak
+            newStreak = currentStreak + 1;
+            console.log(`Streak incremented: ${currentStreak} → ${newStreak}`);
+        } else {
+            // Missed a day (or first visit ever) - reset to 1
+            newStreak = 1;
+            console.log(`Streak reset to 1 (last visit: ${lastVisitDate || 'never'})`);
+        }
+
+        // Update longest streak if needed
+        if (newStreak > longestStreak) {
+            longestStreak = newStreak;
+        }
+
+        // Update profile in database
+        const { error: updateError } = await supabase
+            .from('profiles')
+            .update({
+                current_streak: newStreak,
+                longest_streak: longestStreak,
+                last_visit_date: todayPHT,
+                last_activity_date: todayPHT
+            })
+            .eq('id', currentUser.id);
+
+        if (updateError) {
+            console.error('Error updating streak:', updateError);
+            return;
+        }
+
+        // Update local profile reference
+        userProfile.current_streak = newStreak;
+        userProfile.longest_streak = longestStreak;
+        userProfile.last_visit_date = todayPHT;
+
+        // Update streak UI
+        const streakElement = document.querySelector('.text-wrapper-9');
+        if (streakElement) {
+            streakElement.textContent = newStreak;
+        }
+
+        // Also update profile status card if exists
+        const profileStreakCard = document.querySelector('.profile-status-card[aria-label="Daily streak"] .profile-status-card__value');
+        if (profileStreakCard) {
+            profileStreakCard.textContent = newStreak;
+        }
+
+    } catch (error) {
+        console.error('Unexpected error in updateStreak:', error);
+    }
+}
+
+// ============================================
+// Weekly Progress Tracker with Navigation
+// ============================================
+
+let currentWeekOffset = 0; // 0 = current week, -1 = last week, etc.
+
+async function loadWeeklyProgress(weekOffset = 0) {
+    if (!currentUser) return;
+
+    currentWeekOffset = weekOffset;
+
+    try {
+        const pht = getPhilippineDate();
+        const todayDayIndex = pht.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+        
+        // Calculate the week based on offset
+        const referenceDate = new Date(pht);
+        referenceDate.setDate(referenceDate.getDate() + (weekOffset * 7));
+        
+        // Calculate start of that week (Sunday)
+        const weekStart = new Date(referenceDate);
+        weekStart.setDate(referenceDate.getDate() - referenceDate.getDay());
+        
+        // Calculate end of that week (Saturday)
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 6);
+
+        const weekStartStr = formatDateString(weekStart);
+        const weekEndStr = formatDateString(weekEnd);
+
+        // Query daily_activities for this week
+        const { data: activities, error } = await supabase
+            .from('daily_activities')
+            .select('activity_date')
+            .eq('user_id', currentUser.id)
+            .gte('activity_date', weekStartStr)
+            .lte('activity_date', weekEndStr);
+
+        // Debug logging
+        console.log('Weekly Progress Debug:', {
+            weekOffset,
+            todayDayIndex,
+            weekStartStr,
+            weekEndStr,
+            activities,
+            error
+        });
+
+        if (error) {
+            console.error('Error loading weekly progress:', error);
+            return;
+        }
+
+        // Create a set of active day indices for quick lookup
+        const activeDays = new Set();
+        if (activities) {
+            activities.forEach(activity => {
+                const activityDate = new Date(activity.activity_date + 'T00:00:00');
+                const dayIndex = activityDate.getDay();
+                console.log('Activity date parsed:', activity.activity_date, '→ dayIndex:', dayIndex);
+                activeDays.add(dayIndex);
+            });
+        }
+
+        console.log('Active days this week:', [...activeDays]);
+
+        // Determine which day is "today" for this week view
+        // If viewing current week, use actual today; if past week, all days are "past"
+        const effectiveTodayIndex = weekOffset === 0 ? todayDayIndex : 7; // 7 means all days are past
+
+        // Update the UI
+        updateWeeklyProgressUI(activeDays, effectiveTodayIndex);
+        updateWeekLabel(weekStart, weekEnd, weekOffset);
+        updateWeekNavButtons(weekOffset);
+
+    } catch (error) {
+        console.error('Unexpected error in loadWeeklyProgress:', error);
+    }
+}
+
+function updateWeeklyProgressUI(activeDays, todayDayIndex) {
+    const tracker = document.getElementById('weekly-progress-tracker');
+    if (!tracker) return;
+
+    const dayItems = tracker.querySelectorAll('.day-item');
+    
+    dayItems.forEach(item => {
+        const dayIndex = parseInt(item.getAttribute('data-day-index'), 10);
+        const circle = item.querySelector('.day-circle');
+        
+        if (!circle) return;
+
+        // Remove loading and skeleton classes
+        item.classList.remove('day-loading');
+        circle.classList.remove('skeleton-circle', 'ellipse-8', 'ellipse-9', 'ellipse-10');
+
+        if (activeDays.has(dayIndex)) {
+            // User was active on this day - orange gradient
+            circle.classList.add('ellipse-9');
+        } else if (dayIndex > todayDayIndex) {
+            // Future day (not yet reached) - white
+            circle.classList.add('ellipse-8');
+        } else {
+            // Past day that was skipped (not logged in) - dark/black
+            circle.classList.add('ellipse-10');
+        }
+
+        // Mark current day (only for current week)
+        if (dayIndex === todayDayIndex && currentWeekOffset === 0) {
+            item.setAttribute('aria-current', 'true');
+        } else {
+            item.removeAttribute('aria-current');
+        }
+    });
+}
+
+function updateWeekLabel(weekStart, weekEnd, weekOffset) {
+    const weekLabel = document.getElementById('week-label');
+    if (!weekLabel) return;
+
+    const options = { month: 'short', day: 'numeric' };
+    const startStr = weekStart.toLocaleDateString('en-US', options);
+    const endStr = weekEnd.toLocaleDateString('en-US', options);
+    const year = weekEnd.getFullYear();
+
+    if (weekOffset === 0) {
+        weekLabel.textContent = `This Week (${startStr} - ${endStr}, ${year})`;
+    } else if (weekOffset === -1) {
+        weekLabel.textContent = `Last Week (${startStr} - ${endStr}, ${year})`;
+    } else {
+        weekLabel.textContent = `${startStr} - ${endStr}, ${year}`;
+    }
+}
+
+function updateWeekNavButtons(weekOffset) {
+    const prevBtn = document.getElementById('week-nav-prev');
+    const nextBtn = document.getElementById('week-nav-next');
+
+    // Allow going back up to 12 weeks
+    if (prevBtn) {
+        prevBtn.disabled = weekOffset <= -12;
+    }
+
+    // Can only go forward if not on current week
+    if (nextBtn) {
+        nextBtn.disabled = weekOffset >= 0;
+    }
+}
+
+function setupWeekNavigation() {
+    const prevBtn = document.getElementById('week-nav-prev');
+    const nextBtn = document.getElementById('week-nav-next');
+    const daysContainer = document.querySelector('.weekly-tracker-container .days');
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (daysContainer && !daysContainer.classList.contains('animating')) {
+                daysContainer.classList.add('animating', 'slide-left');
+                setTimeout(() => {
+                    loadWeeklyProgress(currentWeekOffset - 1);
+                    daysContainer.classList.remove('slide-left', 'animating');
+                }, 300);
+            }
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            if (currentWeekOffset < 0 && daysContainer && !daysContainer.classList.contains('animating')) {
+                daysContainer.classList.add('animating', 'slide-right');
+                setTimeout(() => {
+                    loadWeeklyProgress(currentWeekOffset + 1);
+                    daysContainer.classList.remove('slide-right', 'animating');
+                }, 300);
+            }
+        });
     }
 }
 
@@ -465,4 +874,14 @@ function getRankFromLevel(level) {
     if (level >= 25) return 'Rare';
     if (level >= 10) return 'Uncommon';
     return 'Common';
+}
+
+function getRankIconFromLevel(level) {
+    // Map rank to corresponding icon
+    if (level >= 100) return 'images/home/rank-mythical.png';
+    if (level >= 75) return 'images/home/rank-legendary.png';
+    if (level >= 50) return 'images/home/rank-epic.png';
+    if (level >= 25) return 'images/home/rank-rare.png';
+    if (level >= 10) return 'images/home/rank-uncommon.png';
+    return 'images/home/Untitled design (18) 1.png'; // Common rank icon
 }

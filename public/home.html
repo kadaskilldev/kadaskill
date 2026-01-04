@@ -35,36 +35,45 @@
                                 <span class="span">Welcome Back, </span><span class="text-wrapper-37">Learner!</span>
                             </h1>
                             <p class="text-wrapper-38">Weekly goal progress tracker:</p>
-                            <div class="days" role="list" aria-label="Weekly progress">
-                                <div class="group-27" role="listitem">
-                                    <div class="ellipse-8" data-day="S" aria-hidden="true"></div>
-                                    <span class="day-label">S</span>
+                            <div class="weekly-tracker-container">
+                                <button class="week-nav-btn week-nav-prev" id="week-nav-prev" aria-label="Previous week">
+                                    <img src="images/home/Vector-4.svg" alt="" aria-hidden="true" />
+                                </button>
+                                <div class="days" role="list" aria-label="Weekly progress" id="weekly-progress-tracker">
+                                    <div class="day-item day-loading" role="listitem" data-day-index="0">
+                                        <div class="day-circle skeleton-circle" aria-hidden="true"></div>
+                                        <span class="day-label">S</span>
+                                    </div>
+                                    <div class="day-item day-loading" role="listitem" data-day-index="1">
+                                        <div class="day-circle skeleton-circle" aria-hidden="true"></div>
+                                        <span class="day-label">M</span>
+                                    </div>
+                                    <div class="day-item day-loading" role="listitem" data-day-index="2">
+                                        <div class="day-circle skeleton-circle" aria-hidden="true"></div>
+                                        <span class="day-label">T</span>
+                                    </div>
+                                    <div class="day-item day-loading" role="listitem" data-day-index="3">
+                                        <div class="day-circle skeleton-circle" aria-hidden="true"></div>
+                                        <span class="day-label">W</span>
+                                    </div>
+                                    <div class="day-item day-loading" role="listitem" data-day-index="4">
+                                        <div class="day-circle skeleton-circle" aria-hidden="true"></div>
+                                        <span class="day-label">T</span>
+                                    </div>
+                                    <div class="day-item day-loading" role="listitem" data-day-index="5">
+                                        <div class="day-circle skeleton-circle" aria-hidden="true"></div>
+                                        <span class="day-label">F</span>
+                                    </div>
+                                    <div class="day-item day-loading" role="listitem" data-day-index="6">
+                                        <div class="day-circle skeleton-circle" aria-hidden="true"></div>
+                                        <span class="day-label">S</span>
+                                    </div>
                                 </div>
-                                <div class="group-29" role="listitem" aria-current="true">
-                                    <div class="ellipse-9" data-day="M" aria-hidden="true"></div>
-                                    <span class="day-label">M</span>
-                                </div>
-                                <div class="group-30" role="listitem">
-                                    <div class="ellipse-10" data-day="T" aria-hidden="true"></div>
-                                    <span class="day-label">T</span>
-                                </div>
-                                <div class="group-30" role="listitem">
-                                    <div class="ellipse-10" data-day="W" aria-hidden="true"></div>
-                                    <span class="day-label">W</span>
-                                </div>
-                                <div class="group-30" role="listitem">
-                                    <div class="ellipse-10" data-day="T" aria-hidden="true"></div>
-                                    <span class="day-label">T</span>
-                                </div>
-                                <div class="group-30" role="listitem">
-                                    <div class="ellipse-10" data-day="F" aria-hidden="true"></div>
-                                    <span class="day-label">F</span>
-                                </div>
-                                <div class="group-27" role="listitem">
-                                    <div class="ellipse-8" data-day="S" aria-hidden="true"></div>
-                                    <span class="day-label">S</span>
-                                </div>
+                                <button class="week-nav-btn week-nav-next" id="week-nav-next" aria-label="Next week" disabled>
+                                    <img src="images/home/Vector-1.svg" alt="" aria-hidden="true" />
+                                </button>
                             </div>
+                            <p class="week-label" id="week-label"></p>
                         </div>
                     </div>
                     <section class="greeting-learn" aria-label="Learn navigation">
@@ -189,35 +198,37 @@
                     <div class="profile-content">
                         <img class="vector" src="images/home/Vector-6.svg" alt="Badge icon" />
                         <div class="div">
-                            <img class="profile-icon" src="images/profile/default-avatar.svg" alt="Learner avatar" />
+                            <div id="profile-avatar-skeleton" class="profile-icon skeleton-avatar"></div>
+                            <img id="profile-avatar" class="profile-icon" src="images/profile/default-avatar.svg" alt="Learner avatar" style="display: none;" />
                             <div class="group-2">
-                                <span class="text-wrapper">@username</span>
-                                <span class="text-wrapper-2">Level 143</span>
+                                <span id="profile-username" class="text-wrapper skeleton-text">@username</span>
+                                <span id="profile-level" class="text-wrapper-2 skeleton-text">Level 0</span>
                             </div>
                         </div>
                         <div class="group-wrapper">
                             <div class="group-3">
-                                <span class="text-wrapper-3">0</span>
+                                <span id="profile-xp" class="text-wrapper-3 skeleton-text">--</span>
                                 <span class="text-wrapper-4">Total XP</span>
                             </div>
                         </div>
                         <div class="div-wrapper">
-                            <img class="rank-icon" src="images/home/Untitled design (18) 1.png" alt="Rank icon" />
+                            <div id="profile-rank-icon-skeleton" class="rank-icon skeleton-rank-icon"></div>
+                            <img id="profile-rank-icon" class="rank-icon" src="images/home/Untitled design (18) 1.png" alt="Rank icon" style="display: none;" />
                             <div class="group-4">
-                                <span class="text-wrapper-5">Mythical</span>
+                                <span id="profile-rank" class="text-wrapper-5 skeleton-text">----</span>
                                 <span class="text-wrapper-6">Rank</span>
                             </div>
                         </div>
                         <div class="group-5">
                             <div class="group-6">
-                                <span class="text-wrapper-7">32</span>
+                                <span id="profile-badges" class="text-wrapper-7 skeleton-text">-</span>
                                 <span class="text-wrapper-8">Badge</span>
                             </div>
                         </div>
                         <div class="group-7">
                             <img class="img" src="images/home/Vector-5.svg" alt="Streak icon" />
                             <div class="group-8">
-                                <span class="text-wrapper-9">4</span>
+                                <span id="profile-streak" class="text-wrapper-9 skeleton-text">-</span>
                                 <span class="text-wrapper-10">Day streak</span>
                             </div>
                         </div>

@@ -716,7 +716,20 @@
             }
 
             if (profile) {
-                const providerAvatarUrl = typeof getProviderAvatarUrl === 'function' ? getProviderAvatarUrl(user) : null;
+                // Get Google avatar from auth user metadata
+                let providerAvatarUrl = null;
+                if (user.app_metadata && user.app_metadata.provider === 'google') {
+                    const metadata = user.user_metadata || {};
+                    providerAvatarUrl = metadata.avatar_url || metadata.picture || null;
+                    if (!providerAvatarUrl && Array.isArray(user.identities)) {
+                        for (const identity of user.identities) {
+                            if (identity.provider === 'google' && identity.identity_data) {
+                                providerAvatarUrl = identity.identity_data.avatar_url || identity.identity_data.picture || null;
+                                if (providerAvatarUrl) break;
+                            }
+                        }
+                    }
+                }
                 const finalAvatar = profile.avatar_url || providerAvatarUrl || null;
                 if (finalAvatar) {
                     document.getElementById('profileImagePreview').src = finalAvatar;

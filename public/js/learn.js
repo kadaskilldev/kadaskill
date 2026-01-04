@@ -16,7 +16,7 @@ let currentUser = null;
 document.addEventListener('DOMContentLoaded', async() => {
     await checkAuthentication();
     await loadUserProfile();
-    await updateStreak(); // Update streak on page load
+    // Streak tracking is now handled by home.js
     await loadUserEnrollments();
     await loadCourses();
     setupEventListeners();
@@ -80,67 +80,6 @@ async function loadUserProfile() {
 
     } catch (error) {
         console.error('Unexpected error loading profile:', error);
-    }
-}
-
-// ============================================
-// Update Streak System
-// ============================================
-
-async function updateStreak() {
-    if (!currentUser) return;
-
-    try {
-        // Get current profile data
-        const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('current_streak, last_visit_date')
-            .eq('id', currentUser.id)
-            .single();
-
-        if (profileError) {
-            console.error('Error fetching profile for streak:', profileError);
-            return;
-        }
-
-        // Get today's date in YYYY-MM-DD format (local timezone)
-        const today = new Date();
-        const todayString = today.toISOString().split('T')[0];
-
-        const lastVisitDate = profile.last_visit_date;
-        const currentStreak = profile.current_streak || 0;
-
-        // If last visit date is null or not today, increment streak
-        if (!lastVisitDate || lastVisitDate !== todayString) {
-            const newStreak = currentStreak + 1;
-
-            // Update profile with new streak and today's date
-            const { error: updateError } = await supabase
-                .from('profiles')
-                .update({
-                    current_streak: newStreak,
-                    last_visit_date: todayString
-                })
-                .eq('id', currentUser.id);
-
-            if (updateError) {
-                console.error('Error updating streak:', updateError);
-                return;
-            }
-
-            // Update UI with new streak
-            const streakNumber = document.querySelector('.streak-number');
-            if (streakNumber) {
-                streakNumber.textContent = newStreak;
-            }
-
-            console.log(`Streak updated: ${currentStreak} → ${newStreak}`);
-        } else {
-            console.log('Already visited today, streak unchanged:', currentStreak);
-        }
-
-    } catch (error) {
-        console.error('Unexpected error in updateStreak:', error);
     }
 }
 

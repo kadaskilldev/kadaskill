@@ -48,7 +48,7 @@ async function loadUserProfile() {
         }
 
         userProfile = profile;
-        updateProfileHero(profile);
+        updateProfileHero(user, profile);
         updateBioSection(profile);
         updateSkillsSection(profile); // Load skills dynamically
 
@@ -92,11 +92,25 @@ function updateSkillsSection(profile) {
 // Update Profile Hero Section
 // ============================================
 
-function updateProfileHero(profile) {
-    // Update avatar
+function updateProfileHero(user, profile) {
+    // Update avatar - use profile.avatar_url first, fallback to Google provider avatar
     const avatarImg = document.querySelector('.profile-hero__avatar-image');
-    if (avatarImg && profile.avatar_url) {
-        avatarImg.src = profile.avatar_url;
+    if (avatarImg) {
+        let providerAvatarUrl = null;
+        if (user && user.app_metadata && user.app_metadata.provider === 'google') {
+            const metadata = user.user_metadata || {};
+            providerAvatarUrl = metadata.avatar_url || metadata.picture || null;
+            if (!providerAvatarUrl && Array.isArray(user.identities)) {
+                for (const identity of user.identities) {
+                    if (identity.provider === 'google' && identity.identity_data) {
+                        providerAvatarUrl = identity.identity_data.avatar_url || identity.identity_data.picture || null;
+                        if (providerAvatarUrl) break;
+                    }
+                }
+            }
+        }
+        const finalAvatar = profile.avatar_url || providerAvatarUrl || 'images/profile/default-avatar.svg';
+        avatarImg.src = finalAvatar;
         avatarImg.alt = `${profile.username} avatar`;
     }
 
