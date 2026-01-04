@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadUserData();
     await loadEnrolledCourses();
     await loadPracticeExercises();
+    await loadCertificationCallouts();
     await loadUserBadges();
     await loadLeaderboard();
 });
@@ -194,6 +195,8 @@ async function loadEnrolledCourses() {
 // ============================================
 
 async function loadPracticeExercises() {
+    const practiceGrid = document.querySelector('.practice-review-grid');
+    
     try {
         const { data: exercises, error } = await supabase
             .from('practice_exercises')
@@ -204,31 +207,117 @@ async function loadPracticeExercises() {
 
         if (error) {
             console.error('Error loading practice exercises:', error);
+            showNoPracticesMessage(practiceGrid, 'Failed to load practices');
             return;
         }
 
-        if (exercises && exercises.length > 0) {
-            const practiceCards = document.querySelectorAll('.practice-card');
-
-            exercises.forEach((exercise, index) => {
-                if (practiceCards[index]) {
-                    const titleEl = practiceCards[index].querySelector('.practice-card-title');
-                    const xpEl = practiceCards[index].querySelector('.practice-card-xp');
-
-                    if (titleEl) titleEl.textContent = exercise.title;
-                    if (xpEl) xpEl.textContent = `${exercise.xp_reward || 0} XP`;
-
-                    // Make card clickable
-                    practiceCards[index].style.cursor = 'pointer';
-                    practiceCards[index].onclick = () => {
-                        window.location.href = `practice-exercise.html?exercise=${exercise.slug}`;
-                    };
-                }
-            });
+        if (!exercises || exercises.length === 0) {
+            showNoPracticesMessage(practiceGrid, 'No practices available');
+            return;
         }
+
+        // Clear loading skeletons and render real cards
+        practiceGrid.innerHTML = exercises.map(exercise => `
+            <article class="practice-card" style="cursor: pointer;" data-exercise-id="${exercise.id}">
+                <div class="practice-card-body">
+                    <span class="practice-card-label">Practice</span>
+                    <h3 class="practice-card-title">${exercise.title}</h3>
+                </div>
+                <div class="practice-card-meta">
+                    <span class="practice-card-xp">${exercise.xp_reward || 0} XP</span>
+                    <span class="practice-card-chevron" aria-hidden="true"></span>
+                </div>
+            </article>
+        `).join('');
+
+        // Add click handlers
+        practiceGrid.querySelectorAll('.practice-card').forEach((card, index) => {
+            card.onclick = () => {
+                const exercise = exercises[index];
+                const targetUrl = exercise.id
+                    ? `practice-session.html?id=${exercise.id}`
+                    : `practice-session.html?slug=${encodeURIComponent(exercise.slug)}`;
+                window.location.href = targetUrl;
+            };
+        });
 
     } catch (error) {
         console.error('Unexpected error loading practice exercises:', error);
+        showNoPracticesMessage(practiceGrid, 'An error occurred');
+    }
+}
+
+function showNoPracticesMessage(container, message) {
+    if (container) {
+        container.innerHTML = `
+            <div class="no-practices-message">
+                <i class="fas fa-dumbbell"></i>
+                <p>${message}</p>
+            </div>
+        `;
+    }
+}
+
+// ============================================
+// Load Certification Callouts (Featured)
+// ============================================
+
+async function loadCertificationCallouts() {
+    const certContainer = document.querySelector('.certification-callouts');
+    
+    try {
+        const { data: certifications, error } = await supabase
+            .from('certifications')
+            .select('id, slug, title, description, badge_url, icon_url')
+            .eq('is_active', true)
+            .order('updated_at', { ascending: false })
+            .limit(2);
+
+        if (error) {
+            console.error('Error loading certifications:', error);
+            showNoCertificationsMessage(certContainer, 'Failed to load certifications');
+            return;
+        }
+
+        if (!certifications || certifications.length === 0) {
+            showNoCertificationsMessage(certContainer, 'No certifications available');
+            return;
+        }
+
+        // Clear loading skeletons and render real cards
+        certContainer.innerHTML = certifications.map(cert => {
+            // Use icon_url from database (same as certification.html), fallback to badge_url, then placeholder
+            const imageUrl = cert.icon_url || cert.badge_url || 'images/certifications/placeholder.png';
+            return `
+                <article class="certification-callout">
+                    <div class="certification-callout__media">
+                        <img src="${imageUrl}" alt="${cert.title} badge" class="certification-callout__image" onerror="this.src='images/certifications/placeholder.png'; this.onerror=null;">
+                    </div>
+                    <div class="certification-callout__content">
+                        <h3 class="certification-callout__title">${cert.title}</h3>
+                        <p class="certification-callout__description">${cert.description || ''}</p>
+                        <a href="cert-guide.html?cert=${cert.slug}" class="certification-callout__cta">
+                            <span>Get Started</span>
+                        </a>
+                    </div>
+                </article>
+            `;
+        }).join('');
+
+    } catch (error) {
+        console.error('Unexpected error loading certifications:', error);
+        showNoCertificationsMessage(certContainer, 'An error occurred');
+    }
+}
+
+function showNoCertificationsMessage(container, message) {
+    if (container) {
+        container.innerHTML = `
+            <div class="no-certifications-message">
+                <i class="fas fa-certificate"></i>
+                <p>${message}</p>
+            </div>
+        `;
     }
 }
 
