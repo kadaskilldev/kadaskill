@@ -154,7 +154,43 @@ function renderCertifications(certifications) {
         return;
     }
 
-    certificationsGrid.innerHTML = certifications.map(cert => createCertificationCard(cert)).join('');
+    // In "My Certification" tab (all filter), group pinned certifications at the top
+    if (currentFilter === 'all' && currentUserId) {
+        const pinnedCerts = certifications.filter(cert => userCertifications[cert.id]?.is_pinned);
+        const unpinnedCerts = certifications.filter(cert => !userCertifications[cert.id]?.is_pinned);
+
+        let html = '';
+
+        // Render pinned section if there are pinned certifications
+        if (pinnedCerts.length > 0) {
+            html += `
+                <div class="pinned-section-header" style="grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                    <i class="fas fa-star" style="color: #f59e0b; font-size: 18px;"></i>
+                    <span style="font-weight: 600; color: #1f2937; font-size: 1.1rem;">Pinned Certifications</span>
+                    <div style="flex: 1; height: 1px; background: linear-gradient(to right, #e5e7eb, transparent);"></div>
+                </div>
+            `;
+            html += pinnedCerts.map(cert => createCertificationCard(cert)).join('');
+
+            // Add separator between pinned and unpinned
+            if (unpinnedCerts.length > 0) {
+                html += `
+                    <div class="section-divider" style="grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; margin: 24px 0 8px 0;">
+                        <span style="font-weight: 600; color: #6b7280; font-size: 1rem;">All Certifications</span>
+                        <div style="flex: 1; height: 1px; background: linear-gradient(to right, #e5e7eb, transparent);"></div>
+                    </div>
+                `;
+            }
+        }
+
+        // Render unpinned certifications
+        html += unpinnedCerts.map(cert => createCertificationCard(cert)).join('');
+
+        certificationsGrid.innerHTML = html;
+    } else {
+        // For filtered views (AI, Cybersecurity, Cloud), just render normally
+        certificationsGrid.innerHTML = certifications.map(cert => createCertificationCard(cert)).join('');
+    }
 }
 
 // ============================================
@@ -173,17 +209,32 @@ function createCertificationCard(cert) {
     const isPinned = userCert?.is_pinned || false;
     const hasStarted = !!userCert;
 
-    // Only show pin button in "My Certification" tab (filter === 'all') and if user has started the cert
-    const showPinButton = currentFilter === 'all' && hasStarted && currentUserId;
+    // Count current pinned certifications
+    const pinnedCount = Object.values(userCertifications).filter(uc => uc.is_pinned).length;
+    const isPinLimitReached = pinnedCount >= 2;
 
-    const pinButtonHtml = showPinButton ? `
-        <button class="pin-button ${isPinned ? 'is-pinned' : ''}" 
-                onclick="togglePin(event, '${cert.id}')" 
-                title="${isPinned ? 'Unpin from profile' : 'Pin to profile'}"
-                aria-label="${isPinned ? 'Unpin certification' : 'Pin certification'}">
-            <i class="fas fa-star"></i>
-        </button>
-    ` : '';
+    // Show pin button in "My Certification" tab (filter === 'all') for logged in users
+    const showPinButton = currentFilter === 'all' && currentUserId;
+
+    // Determine button state
+    const isDisabled = !isPinned && isPinLimitReached;
+
+    let pinButtonHtml = '';
+    if (showPinButton) {
+        const disabledClass = isDisabled ? 'is-disabled' : '';
+        const pinnedClass = isPinned ? 'is-pinned' : '';
+        const notStartedClass = !hasStarted ? 'not-started' : '';
+
+        pinButtonHtml = `
+            <button class="pin-button ${pinnedClass} ${disabledClass} ${notStartedClass}" 
+                    onclick="togglePin(event, '${cert.id}', '${cert.slug}')" 
+                    title="${isDisabled ? 'Pin limit reached (max 2)' : (isPinned ? 'Unpin from profile' : 'Pin to profile')}"
+                    aria-label="${isPinned ? 'Unpin certification' : 'Pin certification'}"
+                    ${isDisabled ? 'disabled' : ''}>
+                <i class="fas fa-star"></i>
+            </button>
+        `;
+    }
 
     return `
         <div class="certification-card" data-category="${category}" data-cert-id="${cert.id}">
@@ -300,7 +351,7 @@ window.startCertification = startCertification;
 // Toggle Pin Certification
 // ============================================
 
-async function togglePin(event, certId) {
+async function togglePin(event, certId, certSlug) {
     // Prevent card click
     event.stopPropagation();
 
@@ -309,10 +360,47 @@ async function togglePin(event, certId) {
         return;
     }
 
-    const userCert = userCertifications[certId];
+    let userCert = userCertifications[certId];
+
+    // If user hasn't started this certification, create the record first
     if (!userCert) {
-        console.error('User has not started this certification');
-        return;
+        try {
+            const { data: newCert, error: insertError } = await supabase
+                .from('user_certifications')
+                .insert({
+                    user_id: currentUserId,
+                    certification_id: certId,
+                    status: 'in_progress',
+                    is_pinned: true  // Pin it directly
+                })
+                .select('id, certification_id, is_pinned')
+                .single();
+
+            if (insertError) {
+                console.error('Error starting certification:', insertError);
+                alert('Failed to start certification. Please try again.');
+                return;
+            }
+
+            // Update local state with new record
+            userCertifications[certId] = {
+                id: newCert.id,
+                is_pinned: true
+            };
+
+            // Re-render the grid
+            if (currentFilter === 'all') {
+                renderCertifications(allCertifications);
+            }
+
+            showPinFeedback(true);
+            return;
+
+        } catch (error) {
+            console.error('Error creating certification record:', error);
+            alert('An unexpected error occurred.');
+            return;
+        }
     }
 
     const newPinnedState = !userCert.is_pinned;
@@ -341,14 +429,20 @@ async function togglePin(event, certId) {
         // Update local state
         userCertifications[certId].is_pinned = newPinnedState;
 
-        // Update UI
-        const card = document.querySelector(`.certification-card[data-cert-id="${certId}"]`);
-        if (card) {
-            const pinButton = card.querySelector('.pin-button');
-            if (pinButton) {
-                pinButton.classList.toggle('is-pinned', newPinnedState);
-                pinButton.title = newPinnedState ? 'Unpin from profile' : 'Pin to profile';
-                pinButton.setAttribute('aria-label', newPinnedState ? 'Unpin certification' : 'Pin certification');
+        // Re-render the grid to move the card to/from the pinned section
+        // Only re-render if we're in the "My Certification" tab (all filter)
+        if (currentFilter === 'all') {
+            renderCertifications(allCertifications);
+        } else {
+            // Just update the button state for filtered views
+            const card = document.querySelector(`.certification-card[data-cert-id="${certId}"]`);
+            if (card) {
+                const pinButton = card.querySelector('.pin-button');
+                if (pinButton) {
+                    pinButton.classList.toggle('is-pinned', newPinnedState);
+                    pinButton.title = newPinnedState ? 'Unpin from profile' : 'Pin to profile';
+                    pinButton.setAttribute('aria-label', newPinnedState ? 'Unpin certification' : 'Pin certification');
+                }
             }
         }
 
