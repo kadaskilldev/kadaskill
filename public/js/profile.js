@@ -114,28 +114,37 @@ function updateProfileHero(user, profile) {
         avatarImg.alt = `${profile.username} avatar`;
     }
 
-    // Update name
+    // Update name and remove skeleton
     const nameEl = document.querySelector('.profile-hero__name');
     if (nameEl) {
         nameEl.textContent = profile.full_name || profile.username;
+        nameEl.classList.remove('skeleton-text');
     }
 
-    // Update handle
+    // Update handle and remove skeleton
     const handleEl = document.querySelector('.profile-hero__handle');
     if (handleEl) {
         handleEl.textContent = `@${profile.username}`;
+        handleEl.classList.remove('skeleton-text');
     }
 
-    // Note: followers/following will be implemented later if we add social features
-    // For now, we'll hide or show as 0
+    // Update followers/following stats and remove skeleton
     const followersEl = document.querySelector('.profile-hero__stat');
     if (followersEl) {
         followersEl.textContent = '0 followers';
+        followersEl.classList.remove('skeleton-text');
+    }
+
+    // Show the divider
+    const dividerEl = document.querySelector('.profile-hero__divider');
+    if (dividerEl) {
+        dividerEl.classList.remove('skeleton-hidden');
     }
 
     const followingStats = document.querySelectorAll('.profile-hero__stat');
     if (followingStats[1]) {
         followingStats[1].textContent = '0 following';
+        followingStats[1].classList.remove('skeleton-text');
     }
 }
 
@@ -148,21 +157,25 @@ function updateBioSection(profile) {
     const level = Math.floor(Math.sqrt(profile.total_xp / 100)) || 1;
     const rank = getRankFromLevel(level);
 
-    // Update badge level
+    // Update badge label and remove skeleton
     const badgeLabel = document.querySelector('.profile-bio-card__badge-label');
     if (badgeLabel) {
         badgeLabel.textContent = rank;
+        badgeLabel.classList.remove('skeleton-text');
     }
 
+    // Update badge level and remove skeleton
     const badgeLevel = document.querySelector('.profile-bio-card__badge-level');
     if (badgeLevel) {
         badgeLevel.textContent = `level ${level}`;
+        badgeLevel.classList.remove('skeleton-text');
     }
 
-    // Update bio text
+    // Update bio text and remove skeleton
     const bioText = document.querySelector('.profile-bio-card__copy');
     if (bioText) {
         bioText.textContent = profile.bio || 'No bio yet. Add one from your profile settings.';
+        bioText.classList.remove('skeleton-text');
     }
 }
 

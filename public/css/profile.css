@@ -126,6 +126,36 @@ body {
   text-decoration: none;
 }
 
+/* Profile Hero Skeleton Loading */
+.profile-hero__name.skeleton-text,
+.profile-hero__handle.skeleton-text,
+.profile-hero__stat.skeleton-text {
+  color: transparent !important;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.15) 25%, rgba(255, 255, 255, 0.35) 50%, rgba(255, 255, 255, 0.15) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.profile-hero__name.skeleton-text {
+  min-width: 200px;
+  min-height: 2.4rem;
+}
+
+.profile-hero__handle.skeleton-text {
+  min-width: 120px;
+  min-height: 1rem;
+}
+
+.profile-hero__stat.skeleton-text {
+  min-width: 80px;
+  min-height: 1rem;
+}
+
+.profile-hero__divider.skeleton-hidden {
+  visibility: hidden;
+}
+
 /* Bio & Pinned */
 .profile-bio-pinned {
   display: block;
@@ -194,6 +224,45 @@ body {
   font-size: 0.95rem;
   line-height: 1.6;
   color: rgba(29, 25, 43, 0.85);
+}
+
+/* Bio Card Skeleton Loading */
+.profile-bio-card__badge-label.skeleton-text,
+.profile-bio-card__badge-level.skeleton-text,
+.profile-bio-card__copy.skeleton-text {
+  color: transparent !important;
+  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+.profile-bio-card__badge-label.skeleton-text {
+  min-width: 80px;
+  min-height: 1rem;
+  display: inline-block;
+}
+
+.profile-bio-card__badge-level.skeleton-text {
+  min-width: 60px;
+  min-height: 0.85rem;
+  display: inline-block;
+}
+
+.profile-bio-card__copy.skeleton-text {
+  min-width: 200px;
+  min-height: 1.5rem;
+  display: block;
+}
+
+/* Skills Card Skeleton Loading */
+.profile-skills-card__chip.skeleton-text {
+  color: transparent !important;
+  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  min-width: 80px;
+  min-height: 32px;
 }
 
 .profile-pinned {
@@ -480,6 +549,7 @@ body {
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -690,6 +760,44 @@ body {
 
 .profile-course-card__cta:focus-visible {
   outline: none;
+}
+
+/* Course Card Skeleton Loading */
+.profile-course-card.skeleton-loading {
+  pointer-events: none;
+}
+
+.profile-course-card__eyebrow.skeleton-text,
+.profile-course-card__title.skeleton-text {
+  color: transparent !important;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.15) 25%, rgba(255, 255, 255, 0.35) 50%, rgba(255, 255, 255, 0.15) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.profile-course-card__eyebrow.skeleton-text {
+  min-width: 140px;
+  min-height: 1rem;
+  display: inline-block;
+}
+
+.profile-course-card__title.skeleton-text {
+  min-width: 180px;
+  min-height: 1.45rem;
+  display: block;
+}
+
+.profile-course-card__cta.skeleton-loading {
+  color: transparent !important;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.15) 25%, rgba(255, 255, 255, 0.35) 50%, rgba(255, 255, 255, 0.15) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.profile-course-card__cta.skeleton-loading::before {
+  display: none;
 }
 
 @media (max-width: 960px) {

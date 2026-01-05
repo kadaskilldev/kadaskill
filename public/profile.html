@@ -28,12 +28,12 @@
           <img src="images/profile/default-avatar.svg" alt="Learner avatar" class="profile-hero__avatar-image" />
         </div>
         <div class="profile-hero__details">
-          <h1 id="profile-heading" class="profile-hero__name">Learner Name</h1>
-          <p class="profile-hero__handle">@username</p>
+          <h1 id="profile-heading" class="profile-hero__name skeleton-text">&nbsp;</h1>
+          <p class="profile-hero__handle skeleton-text">&nbsp;</p>
           <div class="profile-hero__stats" aria-label="Profile stats">
-            <span class="profile-hero__stat">40k followers</span>
-            <span class="profile-hero__divider" aria-hidden="true">•</span>
-            <span class="profile-hero__stat">4.5k following</span>
+            <span class="profile-hero__stat skeleton-text">&nbsp;</span>
+            <span class="profile-hero__divider skeleton-hidden" aria-hidden="true">•</span>
+            <span class="profile-hero__stat skeleton-text">&nbsp;</span>
           </div>
         </div>
       </div>
@@ -48,13 +48,11 @@
               <img src="images/profile/Untitled design (18) 1.png" alt="Mythical level badge"
                 class="profile-bio-card__badge-image" />
               <div class="profile-bio-card__badge-text">
-                <span class="profile-bio-card__badge-label">Mythical</span>
-                <span class="profile-bio-card__badge-level">level 256</span>
+                <span class="profile-bio-card__badge-label skeleton-text">&nbsp;</span>
+                <span class="profile-bio-card__badge-level skeleton-text">&nbsp;</span>
               </div>
             </div>
-            <p class="profile-bio-card__copy">
-              No bio yet. Add one from your profile settings.
-            </p>
+            <p class="profile-bio-card__copy skeleton-text">&nbsp;</p>
           </div>
         </article>
 
@@ -80,7 +78,10 @@
           <article class="profile-skills-card" aria-label="Skills">
             <h2 class="profile-skills-card__title">Skills</h2>
             <div class="profile-skills-card__list" id="profileSkillsList" role="list">
-              <!-- Skills will be loaded dynamically from Supabase -->
+              <!-- Skeleton placeholders shown during loading -->
+              <span class="profile-skills-card__chip skeleton-text" role="listitem">&nbsp;</span>
+              <span class="profile-skills-card__chip skeleton-text" role="listitem">&nbsp;</span>
+              <span class="profile-skills-card__chip skeleton-text" role="listitem">&nbsp;</span>
             </div>
           </article>
           <figure class="profile-skills-illustration" aria-hidden="true">
@@ -129,12 +130,23 @@
             <div class="profile-courses__viewport">
               <div class="profile-courses__track">
                 <div class="profile-courses__grid profile-courses__slide" data-profile-slide-index="0">
-                  <!-- Courses will be loaded dynamically from Supabase -->
-                  <div
-                    style="grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; padding: 40px; color: #666;">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-right: 12px;"></i>
-                    <span>Loading courses...</span>
-                  </div>
+                  <!-- Skeleton course cards shown during loading -->
+                  <article class="profile-course-card skeleton-loading" aria-label="Loading course">
+                    <div class="profile-course-card__background"></div>
+                    <div class="profile-course-card__content">
+                      <span class="profile-course-card__eyebrow skeleton-text">&nbsp;</span>
+                      <h3 class="profile-course-card__title skeleton-text">&nbsp;</h3>
+                      <span class="profile-course-card__cta cta-pill skeleton-loading">&nbsp;</span>
+                    </div>
+                  </article>
+                  <article class="profile-course-card skeleton-loading" aria-label="Loading course">
+                    <div class="profile-course-card__background"></div>
+                    <div class="profile-course-card__content">
+                      <span class="profile-course-card__eyebrow skeleton-text">&nbsp;</span>
+                      <h3 class="profile-course-card__title skeleton-text">&nbsp;</h3>
+                      <span class="profile-course-card__cta cta-pill skeleton-loading">&nbsp;</span>
+                    </div>
+                  </article>
                 </div>
               </div>
             </div>
