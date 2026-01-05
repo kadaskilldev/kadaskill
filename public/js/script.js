@@ -253,7 +253,7 @@ function loadNavigation() {
                             </span>
                             <span class="user-menu__label">Profile</span>
                         </a>
-                        <a href="profile.html" class="user-menu__item" role="menuitem">
+                        <a href="edit_profile.html" class="user-menu__item" role="menuitem">
                             <span class="user-menu__icon-wrap">
                                 <img src="images/profile/icon-settings.svg" alt="" class="user-menu__icon" />
                             </span>
