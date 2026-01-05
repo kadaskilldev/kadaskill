@@ -14,6 +14,8 @@ let allExercises = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
     await loadPracticeExercises();
+    setupFilters();
+    setupStickyFilter();
 });
 
 // ============================================
@@ -183,6 +185,87 @@ async function startExercise(exerciseId, exerciseSlug) {
         alert('An unexpected error occurred.');
     }
 }
+
+
+function setupFilters() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // 1. Remove 'active' class from all buttons
+            filterBtns.forEach(b => b.classList.remove('active'));
+            
+            // 2. Add 'active' class to the clicked button
+            btn.classList.add('active');
+
+            // 3. Get the category to filter by
+            const category = btn.getAttribute('data-category');
+            
+            // 4. Call the filter function
+            filterExercises(category);
+        });
+    });
+}
+
+
+// ============================================
+// Filter Logic
+// ============================================
+function filterExercises(category) {
+    if (category === 'all') {
+        // If 'All', show everything
+        renderExercises(allExercises);
+    } else {
+        // Filter the array based on the category
+        // We use .includes() to handle cases like "AI" vs "Artificial Intelligence" nicely if needed, 
+        // but exact match is usually safer for categories.
+        const filtered = allExercises.filter(exercise => 
+            exercise.category === category || 
+            (category === 'Artificial Intelligence' && exercise.category === 'AI') // Handle abbreviation
+        );
+        renderExercises(filtered);
+    }
+}
+
+// ============================================
+// Sticky Filter Logic
+// ============================================
+
+function setupStickyFilter() {
+    const filterSection = document.getElementById('filter-section');
+    const placeholder = document.getElementById('filter-placeholder');
+    const heroSection = document.querySelector('.practice-hero-section');
+    
+    if (!filterSection || !heroSection || !placeholder) return;
+
+    // Use IntersectionObserver for performance (better than scroll listener)
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            // If the Hero section is NOT visible (we scrolled past it)
+            if (!entry.isIntersecting) {
+                // Get the position relative to viewport
+                const rect = heroSection.getBoundingClientRect();
+                
+                // Only activate if we scrolled DOWN past it (top is negative)
+                if (rect.top < 0) {
+                    filterSection.classList.add('is-sticky');
+                    placeholder.style.display = 'block'; // Take up the empty space
+                }
+            } else {
+                // If Hero is back in view, revert to normal
+                filterSection.classList.remove('is-sticky');
+                placeholder.style.display = 'none';
+            }
+        });
+    }, {
+        root: null,
+        threshold: 0, // Trigger as soon as even 1px is out/in
+        rootMargin: "-80px 0px 0px 0px" // Offset slightly for the navbar
+    });
+
+    observer.observe(heroSection);
+}
+
 
 // Make it global so onclick can access it
 window.startExercise = startExercise;

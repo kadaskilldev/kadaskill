@@ -882,6 +882,119 @@ body {
     background-color: #FFFFFF;
 }
 
+
+/* --- Filter Section Styles --- */
+.practice-filter-section {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+.filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    background: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px; /* Pill shape container */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.filter-btn {
+    background: transparent;
+    border: 2px solid transparent;
+    padding: 0.5rem 1.25rem;
+    border-radius: 50px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    color: #1a202c;
+    background-color: #f1f5f9;
+}
+
+/* Active State (Selected) */
+.filter-btn.active {
+    background-color: #f59e0b; /*  Orange Theme Color */
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+/* --- Sticky Side Filter Styles --- */
+
+/* When the .is-sticky class is added by JavaScript: */
+.practice-filter-section.is-sticky {
+    position: fixed;
+    top: 50%; /* Center vertically on the screen */
+    left: 2rem; /* Stick to the left side */
+    transform: translateY(-50%); /* Adjust centering */
+    z-index: 100;
+    width: 250px; /* Fixed width for sidebar */
+    
+    /* Animation for smooth entry */
+    animation: slideInLeft 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.practice-filter-section.is-sticky .filter-container {
+    flex-direction: column; /* Stack buttons vertically */
+    width: 100%;
+    padding: 1.5rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95); /* Slight transparency */
+    backdrop-filter: blur(10px); /* Glassmorphism effect */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.practice-filter-section.is-sticky .filter-btn {
+    width: 100%;
+    text-align: left; /* Align text to left in sidebar mode */
+    padding: 0.75rem 1rem;
+}
+
+/* Add a slide-in animation */
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translate(-100px, -50%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(0, -50%);
+    }
+}
+
+/* On mobile screens, disable this feature */
+@media (max-width: 1024px) {
+    .practice-filter-section.is-sticky {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        width: auto;
+        animation: none;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .practice-filter-section.is-sticky .filter-container {
+        flex-direction: row;
+        background: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    
+    #filter-placeholder {
+        display: none !important;
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 1400px) {
     .practice-container {
