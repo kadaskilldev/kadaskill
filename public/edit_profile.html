@@ -85,13 +85,154 @@
         }
 
         .robot-container {
+            position: absolute;
+            left: 0;
+            right: 0;
             text-align: center;
-            margin-top: 20px;
+            top: 120px;
+            /* Start just below Account section */
+            transition: top 0.3s ease-out;
+            z-index: 10;
+        }
+
+        /* Rainbow trail behind robot */
+        .robot-container::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: -20px;
+            width: 100px;
+            height: 80px;
+            background: linear-gradient(180deg,
+                    rgba(255, 0, 0, 0.6) 0%,
+                    rgba(255, 154, 0, 0.6) 16%,
+                    rgba(208, 222, 33, 0.6) 32%,
+                    rgba(79, 220, 74, 0.6) 48%,
+                    rgba(63, 218, 216, 0.6) 64%,
+                    rgba(47, 107, 236, 0.6) 80%,
+                    rgba(139, 92, 246, 0.6) 100%);
+            border-radius: 50px 50px 20px 20px;
+            filter: blur(8px);
+            opacity: 0;
+            animation: rainbow-pulse 2s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes rainbow-pulse {
+
+            0%,
+            100% {
+                opacity: 0;
+                height: 60px;
+            }
+
+            50% {
+                opacity: 0.7;
+                height: 100px;
+            }
+        }
+
+        @keyframes robot-bob {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
         }
 
         .robot-img {
             width: 180px;
             height: auto;
+            position: relative;
+            z-index: 1;
+            animation: robot-bob 2s ease-in-out infinite;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        .robot-img:hover {
+            transform: scale(1.05);
+        }
+
+        .robot-img:active {
+            transform: scale(0.95);
+        }
+
+        /* Speech bubble styles */
+        .robot-speech-bubble {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border: 2px solid #FF9900;
+            border-radius: 16px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1d192b;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 100;
+        }
+
+        .robot-speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
+        }
+
+        .robot-speech-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -13px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 12px solid #FF9900;
+        }
+
+        .robot-speech-bubble.visible {
+            opacity: 1;
+            visibility: visible;
+            animation: bubble-pop 0.3s ease-out;
+        }
+
+        @keyframes bubble-pop {
+            0% {
+                transform: translateX(-50%) scale(0.5);
+                opacity: 0;
+            }
+
+            50% {
+                transform: translateX(-50%) scale(1.1);
+            }
+
+            100% {
+                transform: translateX(-50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Sidebar needs position relative for absolute robot */
+        .sidebar {
+            position: relative;
+            min-height: 100vh;
         }
 
         /* Right Content */
@@ -576,31 +717,11 @@
                 <div class="menu-item active">
                     <span class="menu-icon">▶</span> Edit Profile
                 </div>
-                <div class="menu-item">
-                    <span class="menu-icon">👥</span> Socials
-                </div>
-                <div class="menu-item">
-                    <span class="menu-icon">🔒</span> Access Control
-                </div>
             </div>
 
-            <div class="sidebar-section">
-                <h2 class="section-title">Skills</h2>
-                <div class="skills-display">
-                    <span class="skill-tag">Data Preparation</span>
-                    <span class="skill-tag">Ethics</span>
-                    <span class="skill-tag">Infrastructure as Code</span>
-                    <span class="skill-tag">Machine Learning Algorithms</span>
-                    <span class="skill-tag">Cloud Computing</span>
-                    <span class="skill-tag">Github</span>
-                    <span class="skill-tag">Cost Management</span>
-                    <span class="skill-tag">Git</span>
-                    <span class="skill-tag">Problem Solving</span>
-                    <span class="skill-tag">MLOps</span>
-                </div>
-                <div class="robot-container">
-                    <img src="images/robot-hero.png" alt="Robot" class="robot-img">
-                </div>
+            <div class="robot-container">
+                <div class="robot-speech-bubble" id="robotSpeechBubble"></div>
+                <img src="images/robot-hero.png" alt="Robot" class="robot-img" id="robotMascot">
             </div>
         </div>
 
@@ -948,9 +1069,8 @@
                 showToast('There was an error saving your profile. Please try again.', 'error');
             } else {
                 showToast('Profile updated successfully!', 'success');
-                // IMPORTANT: We need to clear the session storage so the next page load
-                // will get the fresh data. The easiest way is to go back through the loading page.
-                window.location.href = 'loading.html';
+                // Update session storage with new data so profile page reflects changes
+                sessionStorage.removeItem('userProfile');
             }
         });
 
@@ -1098,6 +1218,101 @@
                 });
             }
         }); // End of DOMContentLoaded for image upload
+
+        // --- ROBOT SCROLL ANIMATION ---
+        document.addEventListener('DOMContentLoaded', function () {
+            const robotContainer = document.querySelector('.robot-container');
+            const sidebar = document.querySelector('.sidebar');
+            const sidebarSection = document.querySelector('.sidebar-section');
+            if (!robotContainer || !sidebar || !sidebarSection) return;
+
+            // Calculate minimum position based on sidebar-section height
+            const sidebarSectionRect = sidebarSection.getBoundingClientRect();
+            const sidebarRect = sidebar.getBoundingClientRect();
+            const minPosition = sidebarSectionRect.bottom - sidebarRect.top + 20; // 20px gap below Account section
+
+            let lastScrollY = window.scrollY;
+            let robotPosition = minPosition; // Start just below Account section
+            const maxPosition = Math.max(600, sidebar.offsetHeight - 250); // Dynamic max based on sidebar height
+            const scrollMultiplier = 1.2; // How much the robot moves per scroll pixel
+
+            // Set initial position
+            robotContainer.style.top = robotPosition + 'px';
+
+            function updateRobotPosition() {
+                const currentScrollY = window.scrollY;
+                const scrollDelta = currentScrollY - lastScrollY;
+
+                // Move robot based on scroll direction
+                robotPosition += scrollDelta * scrollMultiplier;
+
+                // Clamp position within bounds (never overlap sidebar-section)
+                robotPosition = Math.max(minPosition, Math.min(maxPosition, robotPosition));
+
+                // Apply new position with smooth transition
+                robotContainer.style.top = robotPosition + 'px';
+
+                lastScrollY = currentScrollY;
+            }
+
+            // Throttle scroll events for performance
+            let ticking = false;
+            window.addEventListener('scroll', function () {
+                if (!ticking) {
+                    requestAnimationFrame(function () {
+                        updateRobotPosition();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+        });
+
+        // --- ROBOT CLICK SPEECH BUBBLE ---
+        document.addEventListener('DOMContentLoaded', function () {
+            const robotImg = document.getElementById('robotMascot');
+            const speechBubble = document.getElementById('robotSpeechBubble');
+            if (!robotImg || !speechBubble) return;
+
+            // 10 different greetings in various languages
+            const greetings = [
+                { text: 'Hello! 👋', lang: 'English' },
+                { text: 'Kamusta! 🇵🇭', lang: 'Tagalog' },
+                { text: 'Hola! 🇪🇸', lang: 'Spanish' },
+                { text: 'Bonjour! 🇫🇷', lang: 'French' },
+                { text: 'こんにちは! 🇯🇵', lang: 'Japanese' },
+                { text: '안녕하세요! 🇰🇷', lang: 'Korean' },
+                { text: 'Ciao! 🇮🇹', lang: 'Italian' },
+                { text: 'Guten Tag! 🇩🇪', lang: 'German' },
+                { text: '你好! 🇨🇳', lang: 'Chinese' },
+                { text: 'Olá! 🇧🇷', lang: 'Portuguese' }
+            ];
+
+            let bubbleTimeout = null;
+
+            robotImg.addEventListener('click', function () {
+                // Get random greeting
+                const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+
+                // Update bubble text
+                speechBubble.textContent = randomGreeting.text;
+
+                // Clear any existing timeout
+                if (bubbleTimeout) {
+                    clearTimeout(bubbleTimeout);
+                }
+
+                // Show the bubble with animation
+                speechBubble.classList.remove('visible');
+                void speechBubble.offsetWidth; // Force reflow for animation restart
+                speechBubble.classList.add('visible');
+
+                // Hide after 2 seconds
+                bubbleTimeout = setTimeout(() => {
+                    speechBubble.classList.remove('visible');
+                }, 2000);
+            });
+        });
     </script>
 </body>
 
