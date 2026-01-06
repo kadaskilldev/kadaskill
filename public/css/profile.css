@@ -342,16 +342,18 @@ body {
 
 .profile-pinned-card__tag {
   position: absolute;
-  top: 16px;
-  left: 16px;
-  padding: 4px 12px;
-  border-radius: 999px;
-  background: #ff9900;
-  color: #f8f7fc;
-  font-weight: 600;
+  top: 12px;
+  left: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
   font-size: 0.75rem;
-  letter-spacing: 0.04em;
+  font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: white;
+  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+  z-index: 5;
 }
 
 .profile-pinned-card__content {
