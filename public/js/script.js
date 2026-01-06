@@ -23,8 +23,6 @@ function getSupabaseClient() {
             signInWithOAuth: async () => ({ error: { message: 'Supabase Mock: Library not loaded.' } }),
         }
     };
-    }
-    return supabaseClient;
 }
 
 // DON'T use 'const supabase' - it conflicts with the CDN!

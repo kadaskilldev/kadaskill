@@ -201,8 +201,16 @@ function createCertificationCard(cert) {
     // Use category from database
     const category = cert.category || 'cloud';
 
-    // Use icon_url from database, fallback to placeholder
-    const imageUrl = cert.icon_url || 'images/certifications/placeholder.png';
+    // Fix image URL - handle both relative and absolute paths
+    let imageUrl = cert.icon_url || 'images/certifications/placeholder.png';
+    // If URL is from database and doesn't start with http/https or /, prepend base path
+    if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('/') && !imageUrl.startsWith('images/')) {
+        imageUrl = 'images/certifications/' + imageUrl;
+    }
+
+    // Get certification level (foundational, associate, professional)
+    const level = cert.level || 'foundational';
+    const levelLabel = level.charAt(0).toUpperCase() + level.slice(1);
 
     // Check if user has started this certification and if it's pinned
     const userCert = userCertifications[cert.id];
@@ -244,12 +252,13 @@ function createCertificationCard(cert) {
                      alt="${cert.title}" 
                      class="cert-image"
                      onerror="this.src='images/certifications/placeholder.png'; this.onerror=null;">
+                <div class="cert-level-badge ${level}">${levelLabel}</div>
             </div>
             <div class="card-content">
                 <h3 class="card-title">${cert.title}</h3>
                 <p class="card-description">${truncateText(cert.description, 150)}</p>
                 <button class="card-button" onclick="startCertification('${cert.id}', '${cert.slug}')">
-                    Get Started
+                    <span>Get Started</span>
                 </button>
             </div>
         </div>

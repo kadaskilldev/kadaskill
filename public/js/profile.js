@@ -568,11 +568,14 @@ async function loadPinnedCertifications() {
                 const cert = userCert.certifications;
                 if (!cert) return '';
 
+                // Get the image URL - handle both absolute URLs (http) and relative paths (/images/...)
+                let imageUrl = cert.icon_url || cert.badge_url || '';
+
                 // Check if we have a valid image URL (not placeholder)
-                const imageUrl = cert.icon_url || cert.badge_url || '';
+                // Valid if: starts with http, starts with /, or starts with images/
                 const hasValidImage = imageUrl &&
                     !imageUrl.includes('placeholder') &&
-                    imageUrl.startsWith('http');
+                    (imageUrl.startsWith('http') || imageUrl.startsWith('/') || imageUrl.startsWith('images/'));
 
                 const imageHtml = hasValidImage
                     ? `<img src="${imageUrl}"
