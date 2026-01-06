@@ -679,6 +679,23 @@ function setupEventListeners() {
         });
     }
 
+    // Course Performance filters
+    const coursePerformanceSort = document.getElementById('course-performance-sort');
+    if (coursePerformanceSort) {
+        coursePerformanceSort.addEventListener('change', (e) => {
+            coursePerformanceFilters.sort = e.target.value;
+            renderCoursePerformance();
+        });
+    }
+
+    const coursePerformanceStatus = document.getElementById('course-performance-status');
+    if (coursePerformanceStatus) {
+        coursePerformanceStatus.addEventListener('change', (e) => {
+            coursePerformanceFilters.status = e.target.value;
+            renderCoursePerformance();
+        });
+    }
+
     // Pagination buttons
     const usersPrevBtn = document.getElementById('users-prev-btn');
     if (usersPrevBtn) {
@@ -940,11 +957,15 @@ async function loadDashboardStats() {
 
 async function loadRecentActivity() {
     try {
+        console.log('Loading recent activity...');
+
         const { data: recentEnrollments, error } = await supabase
             .from('enrollments')
             .select(`
                 id,
                 enrolled_at,
+                user_id,
+                course_id,
                 profiles (username, full_name),
                 courses (title)
             `)
@@ -953,11 +974,17 @@ async function loadRecentActivity() {
 
         if (error) {
             console.error('Error loading recent activity:', error);
-            return;
+            console.error('Error details:', JSON.stringify(error, null, 2));
         }
 
+        console.log('Recent activity data:', recentEnrollments);
+        console.log('Number of enrollments found:', recentEnrollments?.length || 0);
+
         const activityContainer = document.getElementById('recent-activity');
-        if (!activityContainer) return;
+        if (!activityContainer) {
+            console.error('Element "recent-activity" not found');
+            return;
+        }
 
         if (recentEnrollments && recentEnrollments.length > 0) {
             activityContainer.innerHTML = recentEnrollments.map(enrollment => {
@@ -978,11 +1005,23 @@ async function loadRecentActivity() {
                 `;
             }).join('');
         } else {
-            activityContainer.innerHTML = '<p style="text-align: center; color: #666;">No recent activity</p>';
+            activityContainer.innerHTML = `
+                <div class="empty-state-small">
+                    <i class="fas fa-inbox" style="font-size: 48px; color: #d1d5db; margin-bottom: 12px;"></i>
+                    <p style="text-align: center; color: #6b7280; margin: 0;">No recent enrollments yet</p>
+                    <p style="text-align: center; color: #9ca3af; font-size: 14px; margin-top: 4px;">Activity will appear here when users enroll in courses</p>
+                </div>
+            `;
         }
+
+        console.log('Recent activity loaded successfully');
 
     } catch (error) {
         console.error('Error loading recent activity:', error);
+        const activityContainer = document.getElementById('recent-activity');
+        if (activityContainer) {
+            activityContainer.innerHTML = '<p style="text-align: center; color: #ef4444;">Error loading activity</p>';
+        }
     }
 }
 
@@ -992,6 +1031,8 @@ async function loadRecentActivity() {
 
 async function loadEngagementChart() {
     try {
+        console.log('Loading engagement chart...');
+
         // Get last 7 days of enrollment data
         const days = [];
         const enrollmentCounts = [];
@@ -1004,18 +1045,27 @@ async function loadEngagementChart() {
             const nextDate = new Date(date);
             nextDate.setDate(nextDate.getDate() + 1);
 
-            const { count } = await supabase
+            const { count, error } = await supabase
                 .from('enrollments')
                 .select('*', { count: 'exact', head: true })
                 .gte('enrolled_at', date.toISOString())
                 .lt('enrolled_at', nextDate.toISOString());
 
+            if (error) {
+                console.error('Error fetching enrollment count for date:', date, error);
+            }
+
             days.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
             enrollmentCounts.push(count || 0);
         }
 
+        console.log('Engagement data:', { days, enrollmentCounts });
+
         const ctx = document.getElementById('engagement-chart');
-        if (!ctx) return;
+        if (!ctx) {
+            console.error('Canvas element "engagement-chart" not found');
+            return;
+        }
 
         if (engagementChart) {
             engagementChart.destroy();
@@ -1026,7 +1076,7 @@ async function loadEngagementChart() {
             data: {
                 labels: days,
                 datasets: [{
-                    label: 'Daily Active Users',
+                    label: 'Daily Enrollments',
                     data: enrollmentCounts,
                     borderColor: '#3b82f6',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -1075,6 +1125,8 @@ async function loadEngagementChart() {
             }
         });
 
+        console.log('Engagement chart loaded successfully');
+
     } catch (error) {
         console.error('Error loading engagement chart:', error);
     }
@@ -1086,6 +1138,8 @@ async function loadEngagementChart() {
 
 async function loadCategoryChart() {
     try {
+        console.log('Loading category chart...');
+
         const { data: enrollments, error } = await supabase
             .from('enrollments')
             .select(`
@@ -1095,8 +1149,12 @@ async function loadCategoryChart() {
 
         if (error) {
             console.error('Error loading category data:', error);
-            return;
+            console.error('Error details:', JSON.stringify(error, null, 2));
+            // Still render empty chart
         }
+
+        console.log('Category enrollments data:', enrollments);
+        console.log('Number of enrollments for categories:', enrollments?.length || 0);
 
         const categoryCounts = {};
         enrollments?.forEach(enrollment => {
@@ -1104,19 +1162,33 @@ async function loadCategoryChart() {
             categoryCounts[category] = (categoryCounts[category] || 0) + 1;
         });
 
-        const categories = Object.keys(categoryCounts);
-        const counts = Object.values(categoryCounts);
+        let categories = Object.keys(categoryCounts);
+        let counts = Object.values(categoryCounts);
+
+        // If no data, show empty state
+        if (categories.length === 0) {
+            console.log('No enrollment data, showing empty chart');
+            categories = ['No Data'];
+            counts = [1];
+        }
+
+        console.log('Category counts:', categoryCounts);
 
         const colors = [
-            '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#ec4899'
+            '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#ec4899', '#d1d5db'
         ];
 
         const ctx = document.getElementById('category-chart');
-        if (!ctx) return;
+        if (!ctx) {
+            console.error('Canvas element "category-chart" not found');
+            return;
+        }
 
         if (categoryChart) {
             categoryChart.destroy();
         }
+
+        const isEmpty = categories.length === 1 && categories[0] === 'No Data';
 
         categoryChart = new Chart(ctx, {
             type: 'doughnut',
@@ -1124,7 +1196,7 @@ async function loadCategoryChart() {
                 labels: categories.map(c => c.charAt(0).toUpperCase() + c.slice(1)),
                 datasets: [{
                     data: counts,
-                    backgroundColor: colors.slice(0, categories.length),
+                    backgroundColor: isEmpty ? ['#e5e7eb'] : colors.slice(0, categories.length),
                     borderWidth: 2,
                     borderColor: '#fff'
                 }]
@@ -1142,6 +1214,7 @@ async function loadCategoryChart() {
                         }
                     },
                     tooltip: {
+                        enabled: !isEmpty,
                         backgroundColor: 'rgba(0, 0, 0, 0.8)',
                         padding: 12,
                         titleFont: { size: 14, weight: '600' },
@@ -1159,6 +1232,8 @@ async function loadCategoryChart() {
                 }
             }
         });
+
+        console.log('Category chart loaded successfully');
 
     } catch (error) {
         console.error('Error loading category chart:', error);
@@ -1214,11 +1289,23 @@ async function loadTopPerformers() {
 }
 
 // ============================================
+// Course Performance State
+// ============================================
+
+let allCoursePerformance = [];
+let coursePerformanceFilters = {
+    sort: 'enrollments-desc',
+    status: 'all'
+};
+
+// ============================================
 // Load Course Performance
 // ============================================
 
 async function loadCoursePerformance() {
     try {
+        console.log('Loading course performance...');
+
         const { data: courses, error } = await supabase
             .from('courses')
             .select(`
@@ -1231,53 +1318,128 @@ async function loadCoursePerformance() {
                     status
                 )
             `)
-            .order('created_at', { ascending: false })
-            .limit(10);
+            .order('created_at', { ascending: false });
 
         if (error) {
             console.error('Error loading course performance:', error);
-            return;
+            console.error('Error details:', JSON.stringify(error, null, 2));
         }
 
-        const tableBody = document.getElementById('course-performance-body');
-        if (!tableBody) return;
+        console.log('Course performance data:', courses);
+        console.log('Number of courses found:', courses?.length || 0);
 
+        // Process and store course performance data
         if (courses && courses.length > 0) {
-            tableBody.innerHTML = courses.map(course => {
+            allCoursePerformance = courses.map(course => {
                 const enrollments = course.enrollments || [];
                 const enrollmentCount = enrollments.length;
                 const avgProgress = enrollmentCount > 0
-                    ? (enrollments.reduce((sum, e) => sum + (e.progress_percentage || 0), 0) / enrollmentCount).toFixed(1)
+                    ? (enrollments.reduce((sum, e) => sum + (e.progress_percentage || 0), 0) / enrollmentCount)
                     : 0;
                 const completedCount = enrollments.filter(e => e.status === 'completed').length;
                 const completionRate = enrollmentCount > 0
-                    ? ((completedCount / enrollmentCount) * 100).toFixed(1)
+                    ? ((completedCount / enrollmentCount) * 100)
                     : 0;
 
-                return `
-                    <tr>
-                        <td>${course.title}</td>
-                        <td>${enrollmentCount}</td>
-                        <td>${avgProgress}%</td>
-                        <td>
-                            <span style="color: ${completionRate >= 50 ? '#10b981' : completionRate >= 25 ? '#f59e0b' : '#ef4444'}; font-weight: 600;">
-                                ${completionRate}%
-                            </span>
-                        </td>
-                        <td>
-                            <span style="color: ${course.is_published ? '#10b981' : '#6b7280'}; font-weight: 600;">
-                                ${course.is_published ? 'Published' : 'Draft'}
-                            </span>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+                return {
+                    ...course,
+                    enrollmentCount,
+                    avgProgress,
+                    completionRate
+                };
+            });
         } else {
-            tableBody.innerHTML = '<tr><td colspan="5" class="loading-cell">No course data available</td></tr>';
+            allCoursePerformance = [];
         }
+
+        renderCoursePerformance();
+        console.log('Course performance loaded successfully');
 
     } catch (error) {
         console.error('Error loading course performance:', error);
+        const tableBody = document.getElementById('course-performance-body');
+        if (tableBody) {
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #ef4444; padding: 20px;">Error loading course data</td></tr>';
+        }
+    }
+}
+
+// ============================================
+// Render Course Performance Table
+// ============================================
+
+function renderCoursePerformance() {
+    const tableBody = document.getElementById('course-performance-body');
+    if (!tableBody) {
+        console.error('Element "course-performance-body" not found');
+        return;
+    }
+
+    // Apply filters
+    let filteredCourses = [...allCoursePerformance];
+
+    // Filter by status
+    if (coursePerformanceFilters.status === 'published') {
+        filteredCourses = filteredCourses.filter(c => c.is_published);
+    } else if (coursePerformanceFilters.status === 'draft') {
+        filteredCourses = filteredCourses.filter(c => !c.is_published);
+    }
+
+    // Apply sorting
+    const [sortBy, sortOrder] = coursePerformanceFilters.sort.split('-');
+
+    filteredCourses.sort((a, b) => {
+        let comparison = 0;
+
+        switch (sortBy) {
+            case 'enrollments':
+                comparison = a.enrollmentCount - b.enrollmentCount;
+                break;
+            case 'completion':
+                comparison = a.completionRate - b.completionRate;
+                break;
+            case 'progress':
+                comparison = a.avgProgress - b.avgProgress;
+                break;
+            case 'name':
+                comparison = a.title.localeCompare(b.title);
+                break;
+        }
+
+        return sortOrder === 'desc' ? -comparison : comparison;
+    });
+
+    // Render table
+    if (filteredCourses.length > 0) {
+        tableBody.innerHTML = filteredCourses.map(course => {
+            return `
+                <tr>
+                    <td>${course.title}</td>
+                    <td>${course.enrollmentCount}</td>
+                    <td>${course.avgProgress.toFixed(1)}%</td>
+                    <td>
+                        <span style="color: ${course.completionRate >= 50 ? '#10b981' : course.completionRate >= 25 ? '#f59e0b' : '#ef4444'}; font-weight: 600;">
+                            ${course.completionRate.toFixed(1)}%
+                        </span>
+                    </td>
+                    <td>
+                        <span style="color: ${course.is_published ? '#10b981' : '#6b7280'}; font-weight: 600;">
+                            ${course.is_published ? 'Published' : 'Draft'}
+                        </span>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } else {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 40px;">
+                    <i class="fas fa-book-open" style="font-size: 48px; color: #d1d5db; display: block; margin-bottom: 12px;"></i>
+                    <p style="color: #6b7280; margin: 0;">No courses match the selected filters</p>
+                    <p style="color: #9ca3af; font-size: 14px; margin-top: 4px;">Try adjusting your filters</p>
+                </td>
+            </tr>
+        `;
     }
 }
 
@@ -4342,38 +4504,96 @@ function extractLearningPaths(courses) {
 // Render existing paths
 function renderExistingPaths(paths) {
     const container = document.getElementById('existing-paths-list');
+    const deleteAllBtn = document.getElementById('delete-all-paths-btn');
 
     if (paths.length === 0) {
         container.innerHTML = `
-            <div class="empty-message">
-                <i class="fas fa-route"></i>
-                <p>No learning paths created yet</p>
+            <div class="empty-message" style="text-align: center; padding: 60px 20px; color: #9ca3af;">
+                <i class="fas fa-route" style="font-size: 64px; color: #d1d5db; margin-bottom: 16px;"></i>
+                <p style="font-size: 18px; font-weight: 600; color: #6b7280; margin-bottom: 8px;">No learning paths created yet</p>
+                <p style="font-size: 14px; margin: 0;">Create your first learning path using the builder above</p>
             </div>
         `;
+        if (deleteAllBtn) deleteAllBtn.style.display = 'none';
         return;
     }
 
-    container.innerHTML = paths.map((path, pathIndex) => `
-        <div class="existing-path-card">
-            <div class="existing-path-header">
-                <h5>Path ${pathIndex + 1}: ${path[0].category} Learning Journey</h5>
-                <span class="path-course-count">${path.length} courses</span>
-            </div>
-            <div class="existing-path-sequence">
-                ${path.map((course, index) => `
-                    <div class="existing-path-item">
-                        <span class="existing-path-number">${index + 1}</span>
-                        <span class="existing-path-title">${escapeHtml(course.title)}</span>
-                        <span class="difficulty-badge">${course.difficulty}</span>
+    // Show delete all button
+    if (deleteAllBtn) deleteAllBtn.style.display = 'flex';
+
+    const categoryColors = {
+        'AI': '#8b5cf6',
+        'Cloud': '#3b82f6',
+        'Cybersecurity': '#ef4444',
+        'Data': '#10b981'
+    };
+
+    const categoryIcons = {
+        'AI': 'fa-brain',
+        'Cloud': 'fa-cloud',
+        'Cybersecurity': 'fa-shield-halved',
+        'Data': 'fa-database'
+    };
+
+    container.innerHTML = paths.map((path, pathIndex) => {
+        const category = path[0].category;
+        const color = categoryColors[category] || '#6b7280';
+        const icon = categoryIcons[category] || 'fa-book';
+
+        return `
+        <div class="existing-path-card" style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; margin-bottom: 20px; transition: all 0.2s;">
+            <div class="existing-path-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 48px; height: 48px; border-radius: 12px; background: ${color}15; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas ${icon}" style="font-size: 24px; color: ${color};"></i>
                     </div>
-                    ${index < path.length - 1 ? '<i class="fas fa-arrow-right existing-path-arrow"></i>' : ''}
+                    <div>
+                        <h5 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 700; color: #111827;">
+                            ${category} Learning Journey
+                        </h5>
+                        <p style="margin: 0; font-size: 14px; color: #6b7280;">
+                            <i class="fas fa-layer-group" style="margin-right: 4px;"></i>
+                            ${path.length} courses • Path ${pathIndex + 1}
+                        </p>
+                    </div>
+                </div>
+                <button class="btn-danger btn-sm" onclick="deleteLearningPath([${path.map(c => `'${c.id}'`).join(',')}])"
+                        style="opacity: 0.8;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+
+            <div class="existing-path-sequence" style="display: flex; flex-direction: column; gap: 12px;">
+                ${path.map((course, index) => `
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="flex-shrink: 0; width: 32px; height: 32px; border-radius: 8px; background: ${color}; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
+                            ${index + 1}
+                        </div>
+                        <div style="flex: 1; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-weight: 600; color: #111827; margin-bottom: 4px;">
+                                    ${escapeHtml(course.title)}
+                                </div>
+                                <div style="font-size: 12px; color: #6b7280;">
+                                    <span style="display: inline-flex; align-items: center; gap: 4px; background: white; padding: 2px 8px; border-radius: 4px; border: 1px solid #e5e7eb;">
+                                        <i class="fas fa-signal" style="font-size: 10px;"></i>
+                                        ${course.difficulty}
+                                    </span>
+                                </div>
+                            </div>
+                            ${index === 0 ? '<span style="background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;"><i class="fas fa-flag"></i> Start Here</span>' : ''}
+                            ${index === path.length - 1 ? '<span style="background: #dcfce7; color: #15803d; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;"><i class="fas fa-trophy"></i> Final</span>' : ''}
+                        </div>
+                    </div>
+                    ${index < path.length - 1 ? `
+                        <div style="margin-left: 16px; padding-left: 16px; border-left: 2px dashed ${color}; height: 16px; display: flex; align-items: center;">
+                            <i class="fas fa-arrow-down" style="color: ${color}; font-size: 16px; margin-left: -9px;"></i>
+                        </div>
+                    ` : ''}
                 `).join('')}
             </div>
-            <button class="btn-delete-path" onclick="deleteLearningPath([${path.map(c => `'${c.id}'`).join(',')}])">
-                <i class="fas fa-trash"></i> Delete Path
-            </button>
         </div>
-    `).join('');
+    `}).join('');
 }
 
 // Delete learning path
@@ -4403,8 +4623,73 @@ async function deleteLearningPath(courseIds) {
     }
 }
 
+// Delete all learning paths
+async function deleteAllLearningPaths() {
+    const confirmed = confirm(
+        '⚠️ WARNING: This will delete ALL learning paths and remove all course prerequisites.\n\n' +
+        'This action cannot be undone. Are you sure you want to continue?'
+    );
+
+    if (!confirmed) return;
+
+    const doubleConfirm = confirm(
+        'Please confirm one more time:\n\n' +
+        'Delete ALL learning paths permanently?'
+    );
+
+    if (!doubleConfirm) return;
+
+    const deleteBtn = document.getElementById('delete-all-paths-btn');
+    const originalText = deleteBtn.innerHTML;
+
+    try {
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+
+        // Get all courses with prerequisites
+        const { data: courses, error: fetchError } = await supabase
+            .from('courses')
+            .select('id, prerequisites')
+            .not('prerequisites', 'is', null);
+
+        if (fetchError) throw fetchError;
+
+        // Clear prerequisites from all courses
+        const updates = courses
+            .filter(c => c.prerequisites && c.prerequisites.length > 0)
+            .map(course =>
+                supabase
+                    .from('courses')
+                    .update({
+                        prerequisites: [],
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', course.id)
+            );
+
+        await Promise.all(updates);
+
+        showToast(`Successfully deleted all learning paths (${updates.length} courses updated)`, 'success');
+        await loadCoursesForPaths();
+        await loadExistingPaths();
+
+    } catch (error) {
+        console.error('Error deleting all paths:', error);
+        showToast('Failed to delete all paths: ' + error.message, 'error');
+    } finally {
+        deleteBtn.disabled = false;
+        deleteBtn.innerHTML = originalText;
+    }
+}
+
 // Setup event listeners for path builder
 function setupPathBuilderListeners() {
+    // Delete all paths button
+    const deleteAllBtn = document.getElementById('delete-all-paths-btn');
+    if (deleteAllBtn) {
+        deleteAllBtn.addEventListener('click', deleteAllLearningPaths);
+    }
+
     // Category filter
     const categoryFilter = document.getElementById('path-category-filter');
     if (categoryFilter) {

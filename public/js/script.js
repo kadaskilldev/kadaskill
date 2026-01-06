@@ -23,10 +23,13 @@ function getSupabaseClient() {
             signInWithOAuth: async () => ({ error: { message: 'Supabase Mock: Library not loaded.' } }),
         }
     };
+    }
+    return supabaseClient;
 }
 
 // DON'T use 'const supabase' - it conflicts with the CDN!
-// Just use supabaseClient throughout the code
+// Initialize the Supabase client by calling the function
+supabaseClient = getSupabaseClient();
 console.log('✓ Supabase client initialized:', supabaseClient ? 'Success' : 'Failed');
 
 // Create alias for backward compatibility

@@ -189,7 +189,26 @@
 
                     <!-- Course Performance -->
                     <div class="admin-card" style="margin-top: 24px;">
-                        <h3 class="admin-card__title">Course Performance</h3>
+                        <div class="admin-card__header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h3 class="admin-card__title" style="margin: 0;">Course Performance</h3>
+                            <div style="display: flex; gap: 12px; align-items: center;">
+                                <select id="course-performance-sort" class="filter-select" style="min-width: 200px;">
+                                    <option value="enrollments-desc">Most Enrollments</option>
+                                    <option value="enrollments-asc">Least Enrollments</option>
+                                    <option value="completion-desc">Highest Completion Rate</option>
+                                    <option value="completion-asc">Lowest Completion Rate</option>
+                                    <option value="progress-desc">Highest Avg. Progress</option>
+                                    <option value="progress-asc">Lowest Avg. Progress</option>
+                                    <option value="name-asc">Name (A-Z)</option>
+                                    <option value="name-desc">Name (Z-A)</option>
+                                </select>
+                                <select id="course-performance-status" class="filter-select">
+                                    <option value="all">All Status</option>
+                                    <option value="published">Published Only</option>
+                                    <option value="draft">Draft Only</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="table-container">
                             <table class="admin-table">
                                 <thead>
@@ -608,8 +627,15 @@
 
                     <!-- Existing Learning Paths -->
                     <div class="admin-card" style="margin-top: 24px;">
-                        <h4>Existing Learning Paths</h4>
-                        <p class="card-description">View and manage your existing learning paths</p>
+                        <div class="admin-card__header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <div>
+                                <h4 style="margin: 0 0 4px 0;">Existing Learning Paths</h4>
+                                <p class="card-description" style="margin: 0; color: #6b7280; font-size: 14px;">View and manage your existing learning paths</p>
+                            </div>
+                            <button id="delete-all-paths-btn" class="btn-danger btn-sm" style="display: none;">
+                                <i class="fas fa-trash-alt"></i> Delete All Paths
+                            </button>
+                        </div>
                         <div id="existing-paths-list" class="existing-paths-list">
                             <div class="loading-message">
                                 <i class="fas fa-spinner fa-spin"></i>

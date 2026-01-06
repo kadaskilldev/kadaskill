@@ -144,7 +144,7 @@ async function loadCourses() {
 
 // ============================================
 // Check Prerequisites for All Courses
-// IMPROVED LOGIC - Now supports difficulty-based progression
+// Uses ONLY Learning Path prerequisites (no difficulty-based fallback)
 // ============================================
 
 async function checkCoursesPrerequisites() {
@@ -164,10 +164,10 @@ async function checkCoursesPrerequisites() {
 
     console.log('✅ Completed Course IDs:', completedCourseIds);
 
-    // Check each course
+    // Check each course - ONLY using Learning Path prerequisites
     for (const course of allCourses) {
         try {
-            // Strategy 1: Check specific prerequisites (if set in database)
+            // Check if course has prerequisites from learning paths
             if (course.prerequisites && course.prerequisites.length > 0) {
                 const prerequisiteIds = typeof course.prerequisites === 'string' ?
                     JSON.parse(course.prerequisites) :
@@ -184,106 +184,29 @@ async function checkCoursesPrerequisites() {
 
                     // Get unmet prerequisite details for display
                     if (!allMet) {
+                        const unmetPrereqIds = prerequisiteIds.filter(id => !completedCourseIds.includes(id));
+
                         const { data: unmetCourses } = await supabase
                             .from('courses')
-                            .select('id, title')
-                            .in('id', prerequisiteIds.filter(id => !completedCourseIds.includes(id)));
+                            .select('id, title, slug')
+                            .in('id', unmetPrereqIds);
 
                         course.unmetPrerequisites = unmetCourses || [];
                     }
 
-                    console.log(`🔒 Course "${course.title}" - Locked: ${course.isLocked} (Specific Prerequisites)`);
+                    console.log(`🔒 Course "${course.title}" - Locked: ${course.isLocked} (Learning Path Prerequisites)`);
                     continue;
                 }
             }
 
-            // Strategy 2: Difficulty-based progression (if no specific prerequisites)
-            // Beginner courses are always unlocked
-            if (course.difficulty.toLowerCase() === 'beginner') {
-                course.prerequisitesMet = true;
-                course.isLocked = false;
-                console.log(`🟢 Course "${course.title}" - Unlocked (Beginner)`);
-                continue;
-            }
-
-            // Intermediate courses require at least 1 beginner course completed
-            if (course.difficulty.toLowerCase() === 'intermediate') {
-                const beginnerCoursesInCategory = allCourses.filter(c =>
-                    c.difficulty.toLowerCase() === 'beginner' &&
-                    c.category === course.category
-                );
-
-                const completedBeginnerInCategory = beginnerCoursesInCategory.filter(c =>
-                    completedCourseIds.includes(c.id)
-                );
-
-                course.prerequisitesMet = completedBeginnerInCategory.length > 0;
-                course.isLocked = !course.prerequisitesMet;
-
-                if (course.isLocked) {
-                    course.unmetPrerequisites = [{
-                        title: `Complete at least 1 Beginner course in ${course.category}`
-                    }];
-                }
-
-                console.log(`🟡 Course "${course.title}" - Locked: ${course.isLocked} (Intermediate - needs ${completedBeginnerInCategory.length}/1 beginner)`);
-                continue;
-            }
-
-            // Advanced courses require at least 1 intermediate course completed
-            if (course.difficulty.toLowerCase() === 'advanced') {
-                const intermediateCoursesInCategory = allCourses.filter(c =>
-                    c.difficulty.toLowerCase() === 'intermediate' &&
-                    c.category === course.category
-                );
-
-                const completedIntermediateInCategory = intermediateCoursesInCategory.filter(c =>
-                    completedCourseIds.includes(c.id)
-                );
-
-                course.prerequisitesMet = completedIntermediateInCategory.length > 0;
-                course.isLocked = !course.prerequisitesMet;
-
-                if (course.isLocked) {
-                    course.unmetPrerequisites = [{
-                        title: `Complete at least 1 Intermediate course in ${course.category}`
-                    }];
-                }
-
-                console.log(`🔴 Course "${course.title}" - Locked: ${course.isLocked} (Advanced - needs ${completedIntermediateInCategory.length}/1 intermediate)`);
-                continue;
-            }
-
-            // Expert courses require at least 1 advanced course completed
-            if (course.difficulty.toLowerCase() === 'expert') {
-                const advancedCoursesInCategory = allCourses.filter(c =>
-                    c.difficulty.toLowerCase() === 'advanced' &&
-                    c.category === course.category
-                );
-
-                const completedAdvancedInCategory = advancedCoursesInCategory.filter(c =>
-                    completedCourseIds.includes(c.id)
-                );
-
-                course.prerequisitesMet = completedAdvancedInCategory.length > 0;
-                course.isLocked = !course.prerequisitesMet;
-
-                if (course.isLocked) {
-                    course.unmetPrerequisites = [{
-                        title: `Complete at least 1 Advanced course in ${course.category}`
-                    }];
-                }
-
-                console.log(`⚫ Course "${course.title}" - Locked: ${course.isLocked} (Expert - needs ${completedAdvancedInCategory.length}/1 advanced)`);
-                continue;
-            }
-
-            // Default: Unlock the course
+            // No prerequisites set - course is unlocked
             course.prerequisitesMet = true;
             course.isLocked = false;
+            console.log(`🟢 Course "${course.title}" - Unlocked (No Prerequisites)`);
 
         } catch (error) {
             console.error('Error checking prerequisites for course:', course.id, error);
+            // On error, unlock the course (fail open)
             course.prerequisitesMet = true;
             course.isLocked = false;
         }
