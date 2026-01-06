@@ -3,14 +3,18 @@ console.log('🚀 KadaSkill script.js loaded - Version 2025-01-22');
 const SUPABASE_URL = 'https://kbpbubsnadnhebgdggdy.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImticGJ1YnNuYWRuaGViZ2RnZ2R5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMjA4MTksImV4cCI6MjA3MzU5NjgxOX0.4O8ZLeZ2iR786MZ8JS_55nzhn-5WxqabMtDQuAoZkAA';
 
-// Initialize Supabase client
+// Initialize Supabase client (Singleton Pattern for Performance)
 let supabaseClient;
 
-// Check if the Supabase client library has been loaded (usually as window.supabase)
-if (window.supabase && window.supabase.createClient) {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-} else {
-    console.error("Supabase client library not found on the window object. Did you include the CDN link in index.html?");
+// Performance Optimization: Only create client once
+function getSupabaseClient() {
+    if (supabaseClient) return supabaseClient;
+    
+    if (window.supabase && window.supabase.createClient) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        return supabaseClient;
+    } else {
+        console.error("Supabase client library not found on the window object. Did you include the CDN link in index.html?");
     // Mock for environments without the library loaded, to prevent immediate fatal errors in auth functions
     supabaseClient = {
         auth: {

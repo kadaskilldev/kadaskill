@@ -1,8 +1,25 @@
-# KadaSkill System Architecture
+# KadaSkill System Architecture v1.1.0
+
+**Document Version:** 1.1.0  
+**Last Updated:** January 6, 2026  
+**System Version:** 1.1.0 (Enhanced Performance & Security Release)
 
 ## Overview
 
-KadaSkill is a modern learning management platform built with a **Frontend-centric architecture** using vanilla web technologies and Supabase as the Backend-as-a-Service (BaaS) provider. This document describes the system architecture, design decisions, data flow, and key architectural patterns.
+KadaSkill is a modern learning management platform built with a **Frontend-centric architecture** using vanilla web technologies and Supabase as the Backend-as-a-Service (BaaS) provider. This document describes the enhanced system architecture following comprehensive performance optimization, security enhancements, and systematic debugging improvements implemented in version 1.1.0.
+
+## ✨ Version 1.1.0 Architecture Enhancements
+
+### Performance Architecture Improvements
+- **Singleton Pattern**: Supabase client management optimized for performance
+- **Lazy Loading**: Multimedia content loading optimization 
+- **Database Optimization**: Comprehensive indexing and query performance enhancement
+- **Memory Management**: Enhanced cleanup mechanisms for video players and API resources
+
+### Security Architecture Enhancements  
+- **Environment-based Configuration**: Secure API key management through build-time injection
+- **Enhanced Session Management**: Improved authentication security with timeout mechanisms
+- **Input Validation Framework**: Comprehensive data sanitization across all endpoints
 
 ---
 

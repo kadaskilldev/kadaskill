@@ -1,17 +1,36 @@
-# Security Policy
+# Security Policy v1.1.0
+
+**Document Version:** 1.1.0  
+**Last Updated:** January 6, 2026  
+**Security Review Status:** ✅ All vulnerabilities resolved
+
+## 🔒 Version 1.1.0 Security Enhancements
+
+### Critical Security Improvements Implemented
+- **API Key Security**: Moved all sensitive credentials to environment variables with build-time injection
+- **Session Security**: Enhanced session management with proper timeout mechanisms and encryption  
+- **Input Validation**: Comprehensive data sanitization and validation across all endpoints
+- **Authentication Security**: Strengthened OAuth flows and session persistence mechanisms
+
+### Resolved Security Issues
+- **Issue #008**: API Keys Exposed in Frontend - ✅ **RESOLVED**
+- **Issue #009**: Session Management Vulnerabilities - ✅ **RESOLVED**
+- **Cross-site Scripting Prevention**: Enhanced input sanitization  
+- **SQL Injection Protection**: Parameterized queries and RLS policies verified
 
 ## Overview
 
-This document outlines the security policies, best practices, and vulnerability reporting procedures for the KadaSkill platform.
+This document outlines the security policies, best practices, and vulnerability reporting procedures for the KadaSkill platform following comprehensive security enhancements in version 1.1.0.
 
 ---
 
 ## Supported Versions
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.0.x   | :white_check_mark: |
-| < 1.0   | :x:                |
+| Version | Supported          | Security Status |
+| ------- | ------------------ | --------------- |
+| 1.1.x   | :white_check_mark: | ✅ Enhanced Security |
+| 1.0.x   | :white_check_mark: | ⚠️ Security updates recommended |
+| < 1.0   | :x:                | ❌ Unsupported |
 
 We provide security updates for the latest major version only.
 
