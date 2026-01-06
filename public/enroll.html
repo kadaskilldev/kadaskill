@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- enroll.html -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enroll in Course - KadaSkill</title>
+    <link rel="icon" type="image/svg+xml" href="images/loading/favicon.svg">
+    <link rel="apple-touch-icon" href="images/loading/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/enroll.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <!-- Navigation Placeholder -->
+    <div id="navigation"></div>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading course details...</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="enroll-main" id="enrollMain" style="display: none;">
+        <div class="enroll-container">
+
+            <!-- Course Hero Section -->
+            <section class="course-hero">
+                <div class="course-hero-content">
+                    <a href="learn.html" class="back-link">
+                        <i class="fas fa-arrow-left"></i> Back to Courses
+                    </a>
+
+                    <div class="course-hero-grid">
+                        <div class="course-hero-left">
+                            <div class="course-category" id="courseCategory">Cloud Computing</div>
+                            <h1 class="course-hero-title" id="courseTitle">Loading...</h1>
+                            <p class="course-hero-description" id="courseDescription">Loading course details...</p>
+
+                            <div class="course-meta-row">
+                                <span class="meta-item" id="metaDifficulty">
+                                    <i class="fas fa-signal"></i> Beginner
+                                </span>
+                                <span class="meta-item" id="metaDuration">
+                                    <i class="fas fa-clock"></i> 30 hours
+                                </span>
+                                <span class="meta-item" id="metaXP">
+                                    <i class="fas fa-star"></i> 0 XP
+                                </span>
+                                <span class="meta-item" id="metaStudents">
+                                    <i class="fas fa-users"></i> 3410 students
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="course-hero-right">
+                            <div class="enrollment-card">
+                                <h2 class="enrollment-title">Ready to Start Learning?</h2>
+
+                                <div class="enrollment-benefits">
+                                    <div class="benefit-item">
+                                        <i class="fas fa-infinity"></i>
+                                        <span>Full lifetime access</span>
+                                    </div>
+                                    <div class="benefit-item">
+                                        <i class="fas fa-mobile-alt"></i>
+                                        <span>Access on mobile and desktop</span>
+                                    </div>
+                                    <div class="benefit-item">
+                                        <i class="fas fa-certificate"></i>
+                                        <span>Certificate of completion</span>
+                                    </div>
+                                </div>
+
+                                <!-- Prerequisites Warning (if needed) -->
+                                <div id="prerequisitesWarning" class="prerequisites-warning" style="display: none;">
+                                    <i class="fas fa-lock"></i>
+                                    <div class="warning-content">
+                                        <h3>Prerequisites Required</h3>
+                                        <p>You must complete these courses first:</p>
+                                        <ul id="prerequisitesList"></ul>
+                                    </div>
+                                </div>
+
+                                <!-- Already Enrolled Message -->
+                                <div id="alreadyEnrolled" class="already-enrolled" style="display: none;">
+                                    <i class="fas fa-check-circle"></i>
+                                    <p>You're already enrolled in this course!</p>
+                                </div>
+
+                                <button class="btn-enroll" id="enrollBtn">
+                                    <i class="fas fa-graduation-cap"></i>
+                                    Enroll Now - Free
+                                </button>
+
+                                <button class="btn-continue" id="continueBtn" style="display: none;">
+                                    <i class="fas fa-play"></i>
+                                    Continue Learning
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Course Details Section -->
+            <section class="course-details-section">
+                <div class="course-details-grid">
+
+                    <!-- What You'll Learn -->
+                    <div class="detail-card">
+                        <h2 class="detail-title">What You'll Learn</h2>
+                        <div class="learning-objectives" id="learningObjectives">
+                            <div class="objective-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Loading objectives...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Overview -->
+                    <div class="detail-card">
+                        <h2 class="detail-title">About This Course</h2>
+                        <div class="course-overview" id="courseOverview">
+                            <p>Loading course overview...</p>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer Placeholder -->
+    <div id="footer"></div>
+
+    <script src="js/script.js"></script>
+    <script src="js/enroll.js"></script>
+</body>
+
+</html>

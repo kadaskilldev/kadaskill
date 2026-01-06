@@ -48,7 +48,7 @@ async function loadUserProfile() {
         }
 
         userProfile = profile;
-        updateProfileHero(profile);
+        updateProfileHero(user, profile);
         updateBioSection(profile);
         updateSkillsSection(profile); // Load skills dynamically
 
@@ -92,36 +92,59 @@ function updateSkillsSection(profile) {
 // Update Profile Hero Section
 // ============================================
 
-function updateProfileHero(profile) {
-    // Update avatar
+function updateProfileHero(user, profile) {
+    // Update avatar - use profile.avatar_url first, fallback to Google provider avatar
     const avatarImg = document.querySelector('.profile-hero__avatar-image');
-    if (avatarImg && profile.avatar_url) {
-        avatarImg.src = profile.avatar_url;
+    if (avatarImg) {
+        let providerAvatarUrl = null;
+        if (user && user.app_metadata && user.app_metadata.provider === 'google') {
+            const metadata = user.user_metadata || {};
+            providerAvatarUrl = metadata.avatar_url || metadata.picture || null;
+            if (!providerAvatarUrl && Array.isArray(user.identities)) {
+                for (const identity of user.identities) {
+                    if (identity.provider === 'google' && identity.identity_data) {
+                        providerAvatarUrl = identity.identity_data.avatar_url || identity.identity_data.picture || null;
+                        if (providerAvatarUrl) break;
+                    }
+                }
+            }
+        }
+        const finalAvatar = profile.avatar_url || providerAvatarUrl || 'images/profile/default-avatar.svg';
+        avatarImg.src = finalAvatar;
         avatarImg.alt = `${profile.username} avatar`;
     }
 
-    // Update name
+    // Update name and remove skeleton
     const nameEl = document.querySelector('.profile-hero__name');
     if (nameEl) {
         nameEl.textContent = profile.full_name || profile.username;
+        nameEl.classList.remove('skeleton-text');
     }
 
-    // Update handle
+    // Update handle and remove skeleton
     const handleEl = document.querySelector('.profile-hero__handle');
     if (handleEl) {
         handleEl.textContent = `@${profile.username}`;
+        handleEl.classList.remove('skeleton-text');
     }
 
-    // Note: followers/following will be implemented later if we add social features
-    // For now, we'll hide or show as 0
+    // Update followers/following stats and remove skeleton
     const followersEl = document.querySelector('.profile-hero__stat');
     if (followersEl) {
         followersEl.textContent = '0 followers';
+        followersEl.classList.remove('skeleton-text');
+    }
+
+    // Show the divider
+    const dividerEl = document.querySelector('.profile-hero__divider');
+    if (dividerEl) {
+        dividerEl.classList.remove('skeleton-hidden');
     }
 
     const followingStats = document.querySelectorAll('.profile-hero__stat');
     if (followingStats[1]) {
         followingStats[1].textContent = '0 following';
+        followingStats[1].classList.remove('skeleton-text');
     }
 }
 
@@ -134,21 +157,25 @@ function updateBioSection(profile) {
     const level = Math.floor(Math.sqrt(profile.total_xp / 100)) || 1;
     const rank = getRankFromLevel(level);
 
-    // Update badge level
+    // Update badge label and remove skeleton
     const badgeLabel = document.querySelector('.profile-bio-card__badge-label');
     if (badgeLabel) {
         badgeLabel.textContent = rank;
+        badgeLabel.classList.remove('skeleton-text');
     }
 
+    // Update badge level and remove skeleton
     const badgeLevel = document.querySelector('.profile-bio-card__badge-level');
     if (badgeLevel) {
         badgeLevel.textContent = `level ${level}`;
+        badgeLevel.classList.remove('skeleton-text');
     }
 
-    // Update bio text
+    // Update bio text and remove skeleton
     const bioText = document.querySelector('.profile-bio-card__copy');
     if (bioText) {
         bioText.textContent = profile.bio || 'No bio yet. Add one from your profile settings.';
+        bioText.classList.remove('skeleton-text');
     }
 }
 
@@ -160,12 +187,19 @@ async function loadUserStats() {
     try {
         if (!currentUser) return;
 
-        // Get practice exercises completed count
-        const { count: exerciseCount, error: exerciseError } = await supabase
+        // Get unique practice exercises completed count (not counting duplicate attempts)
+        // First, get all passed attempts, then count unique exercise_ids
+        const { data: passedAttempts, error: exerciseError } = await supabase
             .from('practice_attempts')
-            .select('*', { count: 'exact', head: true })
+            .select('exercise_id')
             .eq('user_id', currentUser.id)
             .eq('passed', true);
+
+        // Count unique exercise_ids
+        const uniqueExerciseIds = passedAttempts
+            ? [...new Set(passedAttempts.map(a => a.exercise_id))]
+            : [];
+        const exerciseCount = uniqueExerciseIds.length;
 
         if (exerciseError) console.error('Error loading exercise count:', exerciseError);
 
@@ -185,6 +219,7 @@ async function loadUserStats() {
             const exercisesValue = statusCards[0].querySelector('.profile-status-card__value');
             if (exercisesValue) {
                 exercisesValue.textContent = exerciseCount || 0;
+                exercisesValue.classList.remove('skeleton-text');
             }
         }
 
@@ -193,6 +228,7 @@ async function loadUserStats() {
             const xpValue = statusCards[1].querySelector('.profile-status-card__value');
             if (xpValue) {
                 xpValue.textContent = formatNumber(userProfile?.total_xp || 0);
+                xpValue.classList.remove('skeleton-text');
             }
         }
 
@@ -201,6 +237,7 @@ async function loadUserStats() {
             const badgesValue = statusCards[2].querySelector('.profile-status-card__value');
             if (badgesValue) {
                 badgesValue.textContent = badgeCount || 0;
+                badgesValue.classList.remove('skeleton-text');
             }
         }
 
@@ -209,6 +246,7 @@ async function loadUserStats() {
             const streakValue = statusCards[3].querySelector('.profile-status-card__value');
             if (streakValue) {
                 streakValue.textContent = userProfile?.current_streak || 0;
+                streakValue.classList.remove('skeleton-text');
             }
         }
 
@@ -225,64 +263,247 @@ async function loadUserCourses() {
     try {
         if (!currentUser) return;
 
-        const { data: enrollments, error } = await supabase
-            .from('enrollments')
-            .select(`
-                id,
-                progress_percentage,
-                status,
-                courses (
-                    id,
-                    title,
-                    slug,
-                    thumbnail_url
-                )
-            `)
-            .eq('user_id', currentUser.id)
-            .eq('status', 'active')
-            .order('last_accessed_at', { ascending: false })
-            .limit(6);
+        // Load all published courses
+        const { data: allCourses, error: coursesError } = await supabase
+            .from('courses')
+            .select('*')
+            .eq('is_published', true);
 
-        if (error) {
-            console.error('Error loading enrollments:', error);
+        if (coursesError) {
+            console.error('Error loading courses:', coursesError);
             return;
         }
 
-        if (enrollments && enrollments.length > 0) {
-            const coursesGrid = document.querySelector('.profile-courses__grid');
-            if (!coursesGrid) return;
+        // Load user enrollments to get progress and check completed courses
+        const { data: enrollments, error: enrollError } = await supabase
+            .from('enrollments')
+            .select('course_id, status, progress_percentage')
+            .eq('user_id', currentUser.id);
 
-            coursesGrid.innerHTML = enrollments.map(enrollment => {
-                const course = enrollment.courses;
-                if (!course) return '';
+        if (enrollError) {
+            console.error('Error loading enrollments:', enrollError);
+            return;
+        }
 
-                return `
-                    <article class="profile-course-card" aria-label="${course.title} course">
-                        <div class="profile-course-card__background"></div>
-                        <div class="profile-course-card__content">
-                            <span class="profile-course-card__eyebrow">Course - ${enrollment.progress_percentage}% complete</span>
-                            <h3 class="profile-course-card__title">${course.title}</h3>
-                            <a href="learning.html?course=${course.slug}" class="profile-course-card__cta cta-pill" role="button">Continue</a>
-                        </div>
-                    </article>
-                `;
-            }).join('');
-        } else {
-            // No enrolled courses
-            const coursesGrid = document.querySelector('.profile-courses__grid');
-            if (coursesGrid) {
-                coursesGrid.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
-                        <p style="font-size: 16px; margin-bottom: 16px;">You haven't enrolled in any courses yet.</p>
-                        <a href="learn.html" class="cta-pill" style="display: inline-block;">Browse Courses</a>
+        const userEnrollments = enrollments || [];
+
+        // Get completed course IDs for prerequisite checking
+        const completedCourseIds = userEnrollments
+            .filter(e => e.status === 'completed' && e.progress_percentage === 100)
+            .map(e => e.course_id);
+
+        // Check which courses are unlocked based on prerequisites/difficulty
+        const unlockedCourses = [];
+
+        for (const course of allCourses) {
+            let isLocked = false;
+
+            // Check specific prerequisites
+            if (course.prerequisites && course.prerequisites.length > 0) {
+                const prerequisiteIds = typeof course.prerequisites === 'string'
+                    ? JSON.parse(course.prerequisites)
+                    : course.prerequisites;
+
+                if (Array.isArray(prerequisiteIds) && prerequisiteIds.length > 0) {
+                    isLocked = !prerequisiteIds.every(prereqId => completedCourseIds.includes(prereqId));
+                }
+            } else {
+                // Difficulty-based progression
+                const difficulty = (course.difficulty || '').toLowerCase();
+
+                if (difficulty === 'beginner') {
+                    isLocked = false;
+                } else if (difficulty === 'intermediate') {
+                    // Need at least 1 completed beginner course in same category
+                    const completedBeginnerInCategory = allCourses.filter(c =>
+                        c.difficulty?.toLowerCase() === 'beginner' &&
+                        c.category === course.category &&
+                        completedCourseIds.includes(c.id)
+                    );
+                    isLocked = completedBeginnerInCategory.length === 0;
+                } else if (difficulty === 'advanced') {
+                    // Need at least 1 completed intermediate course in same category
+                    const completedIntermediateInCategory = allCourses.filter(c =>
+                        c.difficulty?.toLowerCase() === 'intermediate' &&
+                        c.category === course.category &&
+                        completedCourseIds.includes(c.id)
+                    );
+                    isLocked = completedIntermediateInCategory.length === 0;
+                } else if (difficulty === 'expert') {
+                    // Need at least 1 completed advanced course in same category
+                    const completedAdvancedInCategory = allCourses.filter(c =>
+                        c.difficulty?.toLowerCase() === 'advanced' &&
+                        c.category === course.category &&
+                        completedCourseIds.includes(c.id)
+                    );
+                    isLocked = completedAdvancedInCategory.length === 0;
+                }
+            }
+
+            // Only include unlocked courses
+            if (!isLocked) {
+                // Add enrollment info for sorting
+                const enrollment = userEnrollments.find(e => e.course_id === course.id);
+                course.progress = enrollment ? enrollment.progress_percentage : 0;
+                course.isEnrolled = !!enrollment;
+                unlockedCourses.push(course);
+            }
+        }
+
+        // Sort: by progress descending, then alphabetically by title (A first)
+        unlockedCourses.sort((a, b) => {
+            // First by progress (descending)
+            if (b.progress !== a.progress) {
+                return b.progress - a.progress;
+            }
+            // Then alphabetically by title (A first = ascending)
+            return a.title.localeCompare(b.title);
+        });
+
+        // Render to paginated slides (4 courses per slide - 2x2 grid)
+        const coursesTrack = document.querySelector('.profile-courses__track');
+        if (!coursesTrack) return;
+
+        if (unlockedCourses.length > 0) {
+            // Create slides with 4 courses each
+            const COURSES_PER_SLIDE = 4;
+            const totalSlides = Math.ceil(unlockedCourses.length / COURSES_PER_SLIDE);
+
+            let slidesHtml = '';
+
+            for (let slideIndex = 0; slideIndex < totalSlides; slideIndex++) {
+                const startIdx = slideIndex * COURSES_PER_SLIDE;
+                const slideCourses = unlockedCourses.slice(startIdx, startIdx + COURSES_PER_SLIDE);
+
+                const courseCardsHtml = slideCourses.map(course => {
+                    // Only show progress and Continue if enrolled AND has actual progress > 0
+                    const hasProgress = course.isEnrolled && course.progress > 0;
+                    const progressText = hasProgress
+                        ? `Course - ${course.progress}% complete`
+                        : 'Course';
+                    const buttonText = hasProgress ? 'Continue' : 'Start';
+                    const buttonHref = hasProgress
+                        ? `learning.html?course=${course.slug}`
+                        : `enroll.html?course=${course.slug}`;
+
+                    return `
+                        <article class="profile-course-card" aria-label="${course.title} course">
+                            <div class="profile-course-card__background"></div>
+                            <div class="profile-course-card__content">
+                                <span class="profile-course-card__eyebrow">${progressText}</span>
+                                <h3 class="profile-course-card__title">${course.title}</h3>
+                                <a href="${buttonHref}" class="profile-course-card__cta cta-pill" role="button">${buttonText}</a>
+                            </div>
+                        </article>
+                    `;
+                }).join('');
+
+                slidesHtml += `
+                    <div class="profile-courses__grid profile-courses__slide" data-profile-slide-index="${slideIndex}" aria-hidden="${slideIndex !== 0}">
+                        ${courseCardsHtml}
                     </div>
                 `;
             }
+
+            coursesTrack.innerHTML = slidesHtml;
+
+            // Setup chevron navigation
+            setupCourseNavigation(totalSlides);
+        } else {
+            coursesTrack.innerHTML = `
+                <div class="profile-courses__grid profile-courses__slide" data-profile-slide-index="0">
+                    <div style="grid-column: 1 / -1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; color: #666;">
+                        <p style="font-size: 16px; margin: 0 0 16px 0;">No courses available yet.</p>
+                        <a href="learn.html" class="cta-pill" style="display: inline-block;">Browse Courses</a>
+                    </div>
+                </div>
+            `;
+            // Hide chevrons
+            setupCourseNavigation(1);
         }
 
     } catch (error) {
         console.error('Unexpected error loading courses:', error);
     }
+}
+
+// Current slide index for course navigation
+let currentCourseSlide = 0;
+
+// Setup Course Navigation (Chevron Arrows)
+function setupCourseNavigation(totalSlides) {
+    const prevChevron = document.querySelector('.profile-courses__chevron--prev');
+    const nextChevron = document.querySelector('.profile-courses__chevron--next');
+
+    if (!prevChevron || !nextChevron) return;
+
+    currentCourseSlide = 0;
+
+    // Hide both chevrons if only 1 slide
+    if (totalSlides <= 1) {
+        prevChevron.classList.add('is-hidden');
+        nextChevron.classList.add('is-hidden');
+        return;
+    }
+
+    // Initial state: hide prev, show next
+    updateChevronState(prevChevron, nextChevron, totalSlides);
+
+    // Add click handlers
+    prevChevron.onclick = () => {
+        if (currentCourseSlide > 0) {
+            // Flash yellow on click
+            prevChevron.classList.add('is-active');
+            setTimeout(() => prevChevron.classList.remove('is-active'), 200);
+
+            currentCourseSlide--;
+            slideToCourse(currentCourseSlide);
+            updateChevronState(prevChevron, nextChevron, totalSlides);
+        }
+    };
+
+    nextChevron.onclick = () => {
+        if (currentCourseSlide < totalSlides - 1) {
+            // Flash yellow on click
+            nextChevron.classList.add('is-active');
+            setTimeout(() => nextChevron.classList.remove('is-active'), 200);
+
+            currentCourseSlide++;
+            slideToCourse(currentCourseSlide);
+            updateChevronState(prevChevron, nextChevron, totalSlides);
+        }
+    };
+}
+
+function updateChevronState(prevChevron, nextChevron, totalSlides) {
+    // Update prev chevron visibility (is-active is set by click, not here)
+    if (currentCourseSlide === 0) {
+        prevChevron.classList.add('is-hidden');
+    } else {
+        prevChevron.classList.remove('is-hidden');
+    }
+
+    // Update next chevron visibility
+    if (currentCourseSlide >= totalSlides - 1) {
+        nextChevron.classList.add('is-hidden');
+    } else {
+        nextChevron.classList.remove('is-hidden');
+    }
+}
+
+function slideToCourse(slideIndex) {
+    const track = document.querySelector('.profile-courses__track');
+    if (!track) return;
+
+    // Move the track to show the correct slide
+    const translateX = -(slideIndex * 100);
+    track.style.transform = `translateX(${translateX}%)`;
+
+    // Update aria-hidden on slides
+    const slides = track.querySelectorAll('.profile-courses__slide');
+    slides.forEach((slide, idx) => {
+        slide.setAttribute('aria-hidden', idx !== slideIndex);
+    });
 }
 
 // ============================================
@@ -347,12 +568,23 @@ async function loadPinnedCertifications() {
                 const cert = userCert.certifications;
                 if (!cert) return '';
 
+                // Check if we have a valid image URL (not placeholder)
+                const imageUrl = cert.icon_url || cert.badge_url || '';
+                const hasValidImage = imageUrl &&
+                    !imageUrl.includes('placeholder') &&
+                    imageUrl.startsWith('http');
+
+                const imageHtml = hasValidImage
+                    ? `<img src="${imageUrl}"
+                           alt="${cert.title}"
+                           class="profile-pinned-card__image"
+                           onerror="this.style.opacity='0'" />`
+                    : '';
+
                 return `
                     <article class="profile-pinned-card" aria-label="${cert.title}">
                         <div class="profile-pinned-card__media">
-                            <img src="${cert.icon_url || cert.badge_url || 'images/profile/default-cert.png'}"
-                                 alt="${cert.title}"
-                                 class="profile-pinned-card__image" />
+                            ${imageHtml}
                             <span class="profile-pinned-card__tag">Certification</span>
                         </div>
                         <div class="profile-pinned-card__content">
@@ -367,8 +599,8 @@ async function loadPinnedCertifications() {
         } else {
             // No pinned certifications
             pinnedContainer.innerHTML = `
-                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
-                    <p style="font-size: 16px; margin-bottom: 16px;">No pinned certifications yet.</p>
+                <div style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; color: #666;">
+                    <p style="font-size: 16px; margin: 0 0 16px 0;">No pinned certifications yet.</p>
                     <a href="certification.html" class="cta-pill" style="display: inline-block;">Browse Certifications</a>
                 </div>
             `;

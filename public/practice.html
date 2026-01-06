@@ -25,7 +25,7 @@
     <main class="practice-main-content">
         <div class="practice-container">
             <!-- Hero Section -->
-            <section class="practice-hero-section">
+            <section class="practice-hero-section" id="hero-section">
                 <div class="practice-hero-content">
                     <div class="practice-robot">
                         <img src="images/practice-robot.png" alt="Practice Robot" onerror="this.style.display='none';">
@@ -36,6 +36,18 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Filter Section -->
+            <section class="practice-filter-section" id="filter-section">
+                <div class="filter-container">
+                    <button class="filter-btn active" data-category="all">All</button>
+                    <button class="filter-btn" data-category="Artificial Intelligence">Artificial Intelligence</button>
+                    <button class="filter-btn" data-category="Cybersecurity">Cybersecurity</button>
+                    <button class="filter-btn" data-category="Cloud Computing">Cloud Computing</button>
+                </div>
+            </section>
+
+            <div id="filter-placeholder" style="display: none; height: 80px;"></div>
 
             <!-- Practice Cards Grid -->
             <section class="practice-cards-section">

@@ -67,7 +67,8 @@ body {
 }
 
 .section-title {
-    font-size: 1.25rem; /* Smaller font size */
+    font-size: 1.25rem;
+    /* Smaller font size */
     font-weight: 600;
     color: #1f2937;
     margin-bottom: 1rem;
@@ -115,13 +116,15 @@ body {
 }
 
 .course-title {
-    font-size: 1.25rem; /* Smaller font size */
+    font-size: 1.25rem;
+    /* Smaller font size */
     font-weight: 600;
     margin-bottom: 0.5rem;
 }
 
 .course-time {
-    font-size: 0.875rem; /* Smaller font size */
+    font-size: 0.875rem;
+    /* Smaller font size */
     opacity: 0.9;
     display: flex;
     align-items: center;
@@ -150,33 +153,39 @@ body {
 .certify-section {
     margin-bottom: 0;
     padding-top: 1rem;
-    padding-bottom: 1rem; /* Reduce bottom padding */
-    border-bottom: 1px solid #e5e7eb; /* Light gray divider */
+    padding-bottom: 1rem;
+    /* Reduce bottom padding */
+    border-bottom: 1px solid #e5e7eb;
+    /* Light gray divider */
 }
 
 .certify-section .section-title {
     font-size: 2rem;
     font-weight: 700;
-    margin-bottom: 0.75rem; /* Reduced from 1rem */
+    margin-bottom: 0.75rem;
+    /* Reduced from 1rem */
 }
 
 .section-description {
     color: #0a0a0aff;
     font-size: 1rem;
     line-height: 1.6;
-    margin-bottom: 1rem; /* Reduced from 3rem */
+    margin-bottom: 1rem;
+    /* Reduced from 3rem */
     max-width: none;
 }
 
 /* Filter Section */
 .filter-section {
     margin-bottom: 2rem;
-    padding-top: 0.75rem; /* Reduce top padding to bring tabs closer to border */
+    padding-top: 0.75rem;
+    /* Reduce top padding to bring tabs closer to border */
 }
 
 .filter-tabs {
     display: flex;
-    gap: 1rem; /* Increased gap */
+    gap: 1rem;
+    /* Increased gap */
     margin-bottom: 1.5rem;
     justify-content: space-between;
     width: 100%;
@@ -185,7 +194,8 @@ body {
 .filter-tab {
     background: #f59e0b;
     border: none;
-    padding: 0.75rem 2rem; /* Increased horizontal padding */
+    padding: 0.75rem 2rem;
+    /* Increased horizontal padding */
     border-radius: 12px;
     font-weight: 600;
     cursor: pointer;
@@ -194,13 +204,16 @@ body {
     font-size: 0.875rem;
     outline: none;
     box-shadow: none;
-    flex: 1; /* Make buttons equal width and fill container */
-    text-align: center; /* Center text in wider buttons */
+    flex: 1;
+    /* Make buttons equal width and fill container */
+    text-align: center;
+    /* Center text in wider buttons */
 }
 
 .filter-tab:hover {
     background: #ea580c;
-    transform: translateY(-1px); /* Same hover effect as continue button */
+    transform: translateY(-1px);
+    /* Same hover effect as continue button */
 }
 
 .filter-tab.active {
@@ -212,7 +225,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem; /* Reduced from 2rem */
+    margin-bottom: 1.5rem;
+    /* Reduced from 2rem */
 }
 
 .certification-count {
@@ -260,11 +274,130 @@ body {
     display: flex;
     flex-direction: column;
     height: 100%;
+    position: relative;
 }
 
 .certification-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Pin Button Styles */
+.pin-button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+}
+
+.pin-button i {
+    font-size: 18px;
+    color: #9ca3af;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pin-button:hover {
+    transform: scale(1.1);
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.pin-button:hover i {
+    color: #f59e0b;
+}
+
+.pin-button.is-pinned {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+.pin-button.is-pinned i {
+    color: white;
+}
+
+.pin-button.is-pinned:hover {
+    background: linear-gradient(135deg, #f59e0b, #ea580c);
+    transform: scale(1.1);
+}
+
+.pin-button:active {
+    transform: scale(0.95);
+}
+
+/* Pin Animation */
+@keyframes pinPop {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.pin-button.is-pinned i {
+    animation: pinPop 0.4s ease;
+}
+
+/* Disabled state when pin limit reached */
+.pin-button.is-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.pin-button.is-disabled:hover {
+    transform: none;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.pin-button.is-disabled i {
+    color: #d1d5db;
+}
+
+/* Toast Notification */
+.pin-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: linear-gradient(135deg, #1f2937, #111827);
+    color: white;
+    padding: 14px 24px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+}
+
+.pin-toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.pin-toast i {
+    color: #f59e0b;
+    font-size: 16px;
 }
 
 /* Card Image */
@@ -306,7 +439,8 @@ body {
     color: #111827;
     margin-bottom: 12px;
     line-height: 1.4;
-    min-height: 2.8em; /* Ensures 2 lines of space */
+    min-height: 2.8em;
+    /* Ensures 2 lines of space */
 }
 
 .card-description {
@@ -314,7 +448,8 @@ body {
     color: #6b7280;
     line-height: 1.6;
     margin-bottom: 20px;
-    flex: 1; /* Takes up remaining space */
+    flex: 1;
+    /* Takes up remaining space */
 }
 
 .card-button {
@@ -328,7 +463,8 @@ body {
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s;
-    margin-top: auto; /* Pushes button to bottom */
+    margin-top: auto;
+    /* Pushes button to bottom */
 }
 
 .card-button:hover {
@@ -350,12 +486,12 @@ body {
         grid-template-columns: repeat(2, 1fr);
         gap: 1.5rem;
     }
-    
+
     .filter-tabs {
         flex-wrap: wrap;
         gap: 0.5rem;
     }
-    
+
     .search-and-count {
         flex-direction: column;
         gap: 1rem;
@@ -368,16 +504,16 @@ body {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
-    
+
     .profile-greeting {
         flex-direction: column;
         text-align: center;
     }
-    
+
     .greeting-text {
         font-size: 2rem;
     }
-    
+
     .continue-card {
         flex-direction: column;
         gap: 1.5rem;
@@ -395,11 +531,13 @@ body {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
+
 .devops-subtitle {
     font-size: 1.2rem;
     font-weight: 500;
@@ -452,6 +590,7 @@ body {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -463,33 +602,33 @@ body {
     .hero-title {
         font-size: 2rem;
     }
-    
+
     .hero-description {
         font-size: 1rem;
         padding: 0 1rem;
     }
-    
+
     .certifications-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
-    
+
     .filter-tabs {
         flex-wrap: wrap;
         justify-content: center;
         gap: 0.5rem;
     }
-    
+
     .filter-tab {
         padding: 0.5rem 1rem;
         font-size: 0.875rem;
     }
-    
+
     .nav {
         flex-wrap: wrap;
         gap: 1rem;
     }
-    
+
     .nav-menu {
         order: 3;
         width: 100%;
@@ -497,19 +636,19 @@ body {
         margin-top: 1rem;
         gap: 1rem;
     }
-    
+
     .search-input {
         width: 200px;
     }
-    
+
     .card-content {
         padding: 1.5rem;
     }
-    
+
     .card-header {
         padding: 1.5rem;
     }
-    
+
     .card-footer {
         padding: 0 1.5rem 1.5rem;
     }
