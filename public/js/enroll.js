@@ -371,12 +371,24 @@ async function handleEnrollment() {
             throw error;
         }
 
+        // Check and award badges
+        if (typeof checkAndAwardBadges === 'function') {
+            const newBadges = await checkAndAwardBadges(currentUser.id);
+            if (newBadges && newBadges.length > 0) {
+                newBadges.forEach(badge => {
+                    if (typeof showBadgeNotification === 'function') {
+                        showBadgeNotification(badge);
+                    }
+                });
+            }
+        }
+
         // Success - redirect to learning page
         showNotification('Successfully enrolled! Loading course...', 'success');
 
         setTimeout(() => {
             window.location.href = `learning.html?course=${currentCourse.slug}`;
-        }, 1000);
+        }, 1500);
 
     } catch (error) {
         console.error('Error enrolling:', error);

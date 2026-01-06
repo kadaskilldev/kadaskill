@@ -863,6 +863,8 @@ function switchSection(sectionName) {
         loadExercises();
     } else if (sectionName === 'learning-paths') {
         initializeLearningPaths();
+    } else if (sectionName === 'gamification') {
+        initializeGamification();
     }
 }
 
@@ -4717,3 +4719,374 @@ window.removeCourseFromPath = removeCourseFromPath;
 window.moveCourseUp = moveCourseUp;
 window.moveCourseDown = moveCourseDown;
 window.deleteLearningPath = deleteLearningPath;
+
+// ============================================
+// Badge Management System
+// ============================================
+
+let allBadges = [];
+
+// Initialize badges when gamification section is loaded
+async function initializeGamification() {
+    await loadBadges();
+    setupBadgeEventListeners();
+}
+
+// Load all badges
+async function loadBadges() {
+    try {
+        const { data: badges, error } = await supabase
+            .from('badges')
+            .select('*')
+            .order('created_at', { ascending: false});
+
+        if (error) throw error;
+
+        allBadges = badges || [];
+        renderBadges();
+
+    } catch (error) {
+        console.error('Error loading badges:', error);
+        showToast('Failed to load badges', 'error');
+    }
+}
+
+// Render badges grid
+function renderBadges() {
+    const tbody = document.getElementById('badges-table-body');
+    if (!tbody) return;
+
+    if (allBadges.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" style="text-align: center; padding: 40px;">
+                    <i class="fas fa-trophy" style="font-size: 48px; color: #d1d5db; display: block; margin-bottom: 12px;"></i>
+                    <p style="color: #6b7280; margin: 0;">No badges created yet</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    const rarityColors = {
+        common: '#6b7280',
+        rare: '#3b82f6',
+        epic: '#8b5cf6',
+        legendary: '#fbbf24'
+    };
+
+    tbody.innerHTML = allBadges.map(badge => {
+        const rarityColor = rarityColors[badge.rarity] || '#6b7280';
+        const iconDisplay = badge.icon_url ?
+            `<img src="${badge.icon_url}" alt="${badge.name}" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover;">` :
+            `<div style="width: 48px; height: 48px; border-radius: 8px; background: ${badge.color}15; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-trophy" style="color: ${badge.color}; font-size: 24px;"></i>
+            </div>`;
+
+        return `
+            <tr>
+                <td>${iconDisplay}</td>
+                <td style="font-weight: 600;">${badge.name}</td>
+                <td style="max-width: 250px;">${badge.description}</td>
+                <td style="font-size: 13px; color: #6b7280;">${getCriteriaDescription(badge)}</td>
+                <td>
+                    <span style="display: inline-flex; align-items: center; gap: 4px; background: ${rarityColor}15; color: ${rarityColor}; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase;">
+                        ${badge.rarity}
+                    </span>
+                </td>
+                <td style="font-weight: 600; color: #f59e0b;">${badge.xp_reward || 0}</td>
+                <td>
+                    <span style="color: ${badge.is_active ? '#10b981' : '#6b7280'}; font-weight: 600;">
+                        ${badge.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                </td>
+                <td>
+                    <div style="display: flex; gap: 4px;">
+                        <button onclick="editBadge('${badge.id}')" class="btn-sm btn-secondary" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteBadge('${badge.id}')" class="btn-sm btn-danger" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Get human-readable criteria description
+function getCriteriaDescription(badge) {
+    const criteria = badge.criteria || {};
+
+    switch (criteria.type) {
+        case 'course_complete':
+            return 'Complete course: ' + (criteria.course_name || 'Any course');
+        case 'courses_count':
+            return 'Complete ' + criteria.count + ' courses';
+        case 'xp_threshold':
+            return 'Reach ' + criteria.xp_amount + ' total XP';
+        case 'streak_days':
+            return 'Maintain ' + criteria.days + ' day learning streak';
+        case 'category_master':
+            return 'Complete all courses in ' + criteria.category;
+        case 'perfect_score':
+            return 'Get 100% on any assessment';
+        case 'first_enrollment':
+            return 'Enroll in first course';
+        default:
+            return 'Custom criteria';
+    }
+}
+
+// Open badge modal (create or edit)
+function openBadgeModal(badge) {
+    badge = badge || null;
+    const modal = document.getElementById('badge-modal');
+    const title = document.getElementById('badge-modal-title');
+
+    if (badge) {
+        title.textContent = 'Edit Badge';
+        document.getElementById('badge-id').value = badge.id;
+        document.getElementById('badge-name').value = badge.name;
+        document.getElementById('badge-icon-url').value = badge.icon_url || '';
+        document.getElementById('badge-description').value = badge.description;
+        document.getElementById('badge-color').value = badge.color;
+        document.getElementById('badge-xp').value = badge.xp_reward || 0;
+        document.getElementById('badge-rarity').value = badge.rarity;
+        document.getElementById('badge-active').checked = badge.is_active;
+
+        // Show icon preview if available
+        const preview = document.getElementById('badge-icon-preview');
+        if (badge.icon_url) {
+            preview.src = badge.icon_url;
+            preview.style.display = 'block';
+        } else {
+            preview.style.display = 'none';
+        }
+
+        const criteria = badge.criteria || {};
+        document.getElementById('badge-criteria-type').value = criteria.type || '';
+        updateCriteriaFields(criteria);
+    } else {
+        title.textContent = 'Create Badge';
+        document.getElementById('badge-form').reset();
+        document.getElementById('badge-id').value = '';
+        document.getElementById('badge-icon-url').value = '';
+        document.getElementById('badge-icon-preview').style.display = 'none';
+        document.getElementById('criteria-fields').innerHTML = '';
+        document.getElementById('criteria-fields').style.display = 'none';
+    }
+
+    modal.classList.add('active');
+    lockBodyScroll();
+}
+
+function closeBadgeModal() {
+    const modal = document.getElementById('badge-modal');
+    modal.classList.remove('active');
+    unlockBodyScroll();
+}
+
+// Update criteria fields based on selected type
+function updateCriteriaFields(existingCriteria) {
+    existingCriteria = existingCriteria || {};
+    const type = document.getElementById('badge-criteria-type').value;
+    const container = document.getElementById('criteria-fields');
+
+    if (!type) {
+        container.style.display = 'none';
+        container.innerHTML = '';
+        return;
+    }
+
+    container.style.display = 'block';
+
+    let html = '';
+
+    switch (type) {
+        case 'course_complete':
+            html = `
+                <div class="form-group">
+                    <label class="form-label">Course</label>
+                    <select id="criteria-course-id" class="form-input">
+                        <option value="">Any course</option>
+                    </select>
+                    <small>Leave blank for any course completion</small>
+                </div>
+            `;
+            break;
+        case 'courses_count':
+            html = `
+                <div class="form-group">
+                    <label class="form-label">Number of Courses <span class="required">*</span></label>
+                    <input type="number" id="criteria-count" class="form-input" min="1" value="${existingCriteria.count || 1}" required>
+                </div>
+            `;
+            break;
+        case 'xp_threshold':
+            html = `
+                <div class="form-group">
+                    <label class="form-label">XP Amount <span class="required">*</span></label>
+                    <input type="number" id="criteria-xp-amount" class="form-input" min="1" value="${existingCriteria.xp_amount || 100}" required>
+                </div>
+            `;
+            break;
+        case 'streak_days':
+            html = `
+                <div class="form-group">
+                    <label class="form-label">Number of Days <span class="required">*</span></label>
+                    <input type="number" id="criteria-days" class="form-input" min="1" value="${existingCriteria.days || 7}" required>
+                </div>
+            `;
+            break;
+        case 'category_master':
+            html = `
+                <div class="form-group">
+                    <label class="form-label">Category <span class="required">*</span></label>
+                    <select id="criteria-category" class="form-input" required>
+                        <option value="AI">AI</option>
+                        <option value="Cloud">Cloud</option>
+                        <option value="Cybersecurity">Cybersecurity</option>
+                        <option value="Data">Data</option>
+                    </select>
+                </div>
+            `;
+            break;
+    }
+
+    container.innerHTML = html;
+
+    // Set existing values if editing
+    if (existingCriteria.course_id) {
+        const courseSelect = document.getElementById('criteria-course-id');
+        if (courseSelect) courseSelect.value = existingCriteria.course_id;
+    }
+    if (existingCriteria.category) {
+        const categorySelect = document.getElementById('criteria-category');
+        if (categorySelect) categorySelect.value = existingCriteria.category;
+    }
+}
+
+// Handle badge form submission
+async function handleBadgeSubmit(event) {
+    event.preventDefault();
+
+    const badgeId = document.getElementById('badge-id').value;
+    const name = document.getElementById('badge-name').value.trim();
+    const iconUrl = document.getElementById('badge-icon-url').value.trim();
+    const description = document.getElementById('badge-description').value.trim();
+    const color = document.getElementById('badge-color').value;
+    const xpReward = parseInt(document.getElementById('badge-xp').value) || 0;
+    const rarity = document.getElementById('badge-rarity').value;
+    const isActive = document.getElementById('badge-active').checked;
+    const criteriaType = document.getElementById('badge-criteria-type').value;
+
+    // Build criteria object
+    const criteria = { type: criteriaType };
+
+    switch (criteriaType) {
+        case 'course_complete':
+            const courseId = document.getElementById('criteria-course-id')?.value;
+            if (courseId) criteria.course_id = courseId;
+            break;
+        case 'courses_count':
+            criteria.count = parseInt(document.getElementById('criteria-count').value);
+            break;
+        case 'xp_threshold':
+            criteria.xp_amount = parseInt(document.getElementById('criteria-xp-amount').value);
+            break;
+        case 'streak_days':
+            criteria.days = parseInt(document.getElementById('criteria-days').value);
+            break;
+        case 'category_master':
+            criteria.category = document.getElementById('criteria-category').value;
+            break;
+    }
+
+    const badgeData = {
+        name,
+        icon_url: iconUrl,
+        description,
+        color,
+        xp_reward: xpReward,
+        rarity,
+        is_active: isActive,
+        criteria,
+        updated_at: new Date().toISOString()
+    };
+
+    try {
+        if (badgeId) {
+            // Update existing badge
+            const { error } = await supabase
+                .from('badges')
+                .update(badgeData)
+                .eq('id', badgeId);
+
+            if (error) throw error;
+            showToast('Badge updated successfully', 'success');
+        } else {
+            // Create new badge
+            badgeData.created_at = new Date().toISOString();
+            const { error } = await supabase
+                .from('badges')
+                .insert([badgeData]);
+
+            if (error) throw error;
+            showToast('Badge created successfully', 'success');
+        }
+
+        closeBadgeModal();
+        await loadBadges();
+
+    } catch (error) {
+        console.error('Error saving badge:', error);
+        showToast('Failed to save badge: ' + error.message, 'error');
+    }
+}
+
+// Edit badge
+function editBadge(badgeId) {
+    const badge = allBadges.find(b => b.id === badgeId);
+    if (badge) {
+        openBadgeModal(badge);
+    }
+}
+
+// Delete badge
+async function deleteBadge(badgeId) {
+    if (!confirm('Delete this badge? Users who earned it will lose it.')) return;
+
+    try {
+        const { error } = await supabase
+            .from('badges')
+            .delete()
+            .eq('id', badgeId);
+
+        if (error) throw error;
+
+        showToast('Badge deleted successfully', 'success');
+        await loadBadges();
+
+    } catch (error) {
+        console.error('Error deleting badge:', error);
+        showToast('Failed to delete badge: ' + error.message, 'error');
+    }
+}
+
+// Setup event listeners
+function setupBadgeEventListeners() {
+    const createBtn = document.getElementById('create-badge-btn');
+    if (createBtn) {
+        createBtn.addEventListener('click', () => openBadgeModal());
+    }
+}
+
+// Make functions global
+window.openBadgeModal = openBadgeModal;
+window.closeBadgeModal = closeBadgeModal;
+window.updateCriteriaFields = updateCriteriaFields;
+window.handleBadgeSubmit = handleBadgeSubmit;
+window.editBadge = editBadge;
+window.deleteBadge = deleteBadge;

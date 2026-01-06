@@ -114,6 +114,20 @@
             </div>
           </section>
 
+          <section class="profile-badges" aria-label="Badges">
+            <header class="profile-badges__header">
+              <h2 class="profile-badges__title">Badges</h2>
+              <span class="profile-badges__count" id="badgeCount">0</span>
+            </header>
+            <div class="profile-badges__grid" id="profileBadgesGrid">
+              <!-- Badges will be loaded dynamically -->
+              <div class="profile-badges__loading">
+                <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 12px;"></i>
+                <p style="font-size: 14px; margin: 0;">Loading badges...</p>
+              </div>
+            </div>
+          </section>
+
           <section class="profile-courses" aria-label="Courses">
             <div class="profile-courses__header">
               <div class="profile-courses__tabs" role="tablist" aria-label="Course categories">
@@ -160,6 +174,7 @@
   <div id="footer"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/script.js"></script>
+  <script src="js/badge-awards.js"></script>
   <script src="js/profile.js"></script>
 </body>
 

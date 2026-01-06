@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadUserStats();
     await loadUserCourses();
     await loadPinnedCertifications();
+    await loadUserBadges();
 });
 
 // ============================================
@@ -611,5 +612,106 @@ async function loadPinnedCertifications() {
 
     } catch (error) {
         console.error('Unexpected error loading pinned certifications:', error);
+    }
+}
+
+// ============================================
+// Load User Badges
+// ============================================
+
+async function loadUserBadges() {
+    try {
+        if (!currentUser) return;
+
+        const badgeCount = document.getElementById('badgeCount');
+        const badgesGrid = document.getElementById('profileBadgesGrid');
+
+        // Get all active badges
+        const { data: allBadges, error: badgesError } = await supabase
+            .from('badges')
+            .select('*')
+            .eq('is_active', true)
+            .order('rarity', { ascending: false });
+
+        if (badgesError) {
+            console.error('Error loading badges:', badgesError);
+            badgesGrid.innerHTML = '<p style="text-align: center; color: #666;">Failed to load badges</p>';
+            return;
+        }
+
+        // Get user's earned badges
+        const { data: userBadges, error: userBadgesError } = await supabase
+            .from('user_badges')
+            .select('badge_id, earned_at')
+            .eq('user_id', currentUser.id);
+
+        if (userBadgesError) {
+            console.error('Error loading user badges:', userBadgesError);
+        }
+
+        const earnedBadgeIds = new Set(userBadges?.map(ub => ub.badge_id) || []);
+        const earnedBadgesMap = new Map(userBadges?.map(ub => [ub.badge_id, ub.earned_at]) || []);
+
+        // Update badge count
+        badgeCount.textContent = earnedBadgeIds.size;
+
+        // Render badges
+        if (!allBadges || allBadges.length === 0) {
+            badgesGrid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #666;">No badges available yet</p>';
+            return;
+        }
+
+        badgesGrid.innerHTML = allBadges.map(badge => {
+            const isEarned = earnedBadgeIds.has(badge.id);
+            const earnedDate = earnedBadgesMap.get(badge.id);
+            const formattedDate = earnedDate ? new Date(earnedDate).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            }) : '';
+
+            const rarityColors = {
+                'common': '#10b981',
+                'rare': '#3b82f6',
+                'epic': '#8b5cf6',
+                'legendary': '#f59e0b'
+            };
+
+            const color = badge.color || rarityColors[badge.rarity] || '#3b82f6';
+
+            return `
+                <div class="profile-badge-card ${!isEarned ? 'profile-badge-card--locked' : ''}"
+                     title="${badge.description}">
+                    ${!isEarned ? '<div class="profile-badge-card__lock"><i class="fas fa-lock"></i></div>' : ''}
+
+                    <div class="profile-badge-card__icon" style="background: ${color}15;">
+                        ${badge.icon_url ?
+                            `<img src="${badge.icon_url}" alt="${badge.name}">` :
+                            `<i class="fas fa-trophy" style="color: ${color};"></i>`
+                        }
+                    </div>
+
+                    <h3 class="profile-badge-card__name">${badge.name}</h3>
+                    <p class="profile-badge-card__rarity" style="color: ${color};">${badge.rarity}</p>
+
+                    ${isEarned && badge.xp_reward ?
+                        `<span class="profile-badge-card__xp">+${badge.xp_reward} XP</span>` :
+                        ''
+                    }
+
+                    ${isEarned && formattedDate ?
+                        `<p class="profile-badge-card__earned">Earned ${formattedDate}</p>` :
+                        ''
+                    }
+                </div>
+            `;
+        }).join('');
+
+    } catch (error) {
+        console.error('Error loading badges:', error);
+        const badgesGrid = document.getElementById('profileBadgesGrid');
+        if (badgesGrid) {
+            badgesGrid.innerHTML = '<p style="text-align: center; color: #666;">Failed to load badges</p>';
+        }
     }
 }

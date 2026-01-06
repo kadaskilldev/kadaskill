@@ -1482,13 +1482,25 @@ async function completeCourse() {
             return;
         }
 
+        // Check and award badges
+        if (typeof checkAndAwardBadges === 'function') {
+            const newBadges = await checkAndAwardBadges(currentUser.id);
+            if (newBadges && newBadges.length > 0) {
+                newBadges.forEach(badge => {
+                    if (typeof showBadgeNotification === 'function') {
+                        showBadgeNotification(badge);
+                    }
+                });
+            }
+        }
+
         // Show success message
         showNotification('🎉 Congratulations! You completed the course!', 'success');
 
         // Wait a moment then redirect
         setTimeout(() => {
             window.location.href = 'learn.html';
-        }, 2000);
+        }, 3000);
 
     } catch (error) {
         console.error('Error in completeCourse:', error);

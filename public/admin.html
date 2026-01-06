@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/admin-styles.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -648,17 +649,147 @@
                 <!-- Gamification Section -->
                 <section id="gamification-section" class="admin-section">
                     <div class="section-header">
-                        <h3>Gamification Settings</h3>
+                        <h3>Gamification & Badges</h3>
+                        <p class="section-description">Create and manage achievement badges that users can earn</p>
                     </div>
+
+                    <!-- Badge Management -->
                     <div class="admin-card">
-                        <h4>Badges</h4>
-                        <p>Manage achievement badges, XP rewards, and user rankings.</p>
-                        <div class="empty-state">
-                            <i class="fas fa-trophy"></i>
-                            <p>Badge management coming soon!</p>
+                        <div class="admin-card__header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h4 style="margin: 0;">Achievement Badges</h4>
+                            <button id="create-badge-btn" class="btn-primary">
+                                <i class="fas fa-plus"></i> Create Badge
+                            </button>
+                        </div>
+
+                        <div class="table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 80px;">Icon</th>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Criteria</th>
+                                        <th>Rarity</th>
+                                        <th>XP</th>
+                                        <th>Status</th>
+                                        <th style="width: 120px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="badges-table-body">
+                                    <tr>
+                                        <td colspan="8" class="loading-cell">Loading badges...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </section>
+
+                <!-- Badge Modal -->
+                <div id="badge-modal" class="modal">
+                    <div class="modal-overlay" onclick="closeBadgeModal()"></div>
+                    <div class="modal-content modal-lg">
+                        <div class="modal-header">
+                            <h3 id="badge-modal-title">Create Badge</h3>
+                            <button class="modal-close" onclick="closeBadgeModal()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <form id="badge-form" onsubmit="handleBadgeSubmit(event)">
+                            <input type="hidden" id="badge-id">
+
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label class="form-label">Badge Name <span class="required">*</span></label>
+                                    <input type="text" id="badge-name" class="form-input" required placeholder="e.g., First Course">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Badge Icon <span class="required">*</span></label>
+                                    <div style="display: flex; gap: 12px; align-items: center;">
+                                        <img id="badge-icon-preview" src="" alt="Badge Icon" style="width: 64px; height: 64px; border-radius: 8px; object-fit: cover; border: 2px solid #e5e7eb; display: none;">
+                                        <div style="flex: 1;">
+                                            <input type="file" id="badge-icon-file" accept="image/*" style="display: none;">
+                                            <input type="text" id="badge-icon-url" class="form-input" placeholder="Badge icon URL (or upload below)" style="margin-bottom: 8px;">
+                                            <button type="button" id="badge-icon-upload-btn" class="btn-secondary btn-sm">
+                                                <i class="fas fa-upload"></i> Upload Icon
+                                            </button>
+                                            <small style="display: block; color: #6b7280; margin-top: 4px;">Recommended: 256x256px PNG or JPG</small>
+                                        </div>
+                                    </div>
+                                    <div id="badge-icon-status" style="display: none; margin-top: 8px; padding: 8px; background: #f3f4f6; border-radius: 6px; font-size: 14px;"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Description <span class="required">*</span></label>
+                                    <textarea id="badge-description" class="form-input" rows="3" required placeholder="What does this badge represent?"></textarea>
+                                </div>
+
+                                <div class="form-row form-row-3">
+                                    <div class="form-group">
+                                        <label class="form-label">Color <span class="required">*</span></label>
+                                        <select id="badge-color" class="form-input" required>
+                                            <option value="#3b82f6">Blue</option>
+                                            <option value="#10b981">Green</option>
+                                            <option value="#f59e0b">Orange</option>
+                                            <option value="#8b5cf6">Purple</option>
+                                            <option value="#ef4444">Red</option>
+                                            <option value="#ec4899">Pink</option>
+                                            <option value="#14b8a6">Teal</option>
+                                            <option value="#fbbf24">Gold</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">XP Reward</label>
+                                        <input type="number" id="badge-xp" class="form-input" min="0" value="0" placeholder="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Rarity</label>
+                                        <select id="badge-rarity" class="form-input">
+                                            <option value="common">Common</option>
+                                            <option value="rare">Rare</option>
+                                            <option value="epic">Epic</option>
+                                            <option value="legendary">Legendary</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Unlock Criteria <span class="required">*</span></label>
+                                    <select id="badge-criteria-type" class="form-input" required onchange="updateCriteriaFields()">
+                                        <option value="">-- Select Criteria --</option>
+                                        <option value="course_complete">Complete Course</option>
+                                        <option value="courses_count">Complete X Courses</option>
+                                        <option value="xp_threshold">Reach XP Amount</option>
+                                        <option value="streak_days">Maintain Learning Streak</option>
+                                        <option value="category_master">Complete All Courses in Category</option>
+                                        <option value="perfect_score">Get Perfect Score</option>
+                                        <option value="first_enrollment">First Course Enrollment</option>
+                                    </select>
+                                </div>
+
+                                <div id="criteria-fields" style="display: none;">
+                                    <!-- Dynamic fields based on criteria type -->
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="badge-active" checked>
+                                        <span>Active (users can earn this badge)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn-secondary" onclick="closeBadgeModal()">Cancel</button>
+                                <button type="submit" class="btn-primary">
+                                    <i class="fas fa-save"></i> Save Badge
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
                 <!-- Help Section -->
                 <section id="help-section" class="admin-section">

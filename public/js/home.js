@@ -756,51 +756,74 @@ async function loadUserBadges() {
     try {
         if (!currentUser) return;
 
-        const { data: userBadges, error } = await supabase
-            .from('user_badges')
-            .select(`
-                earned_at,
-                badges (
-                    id,
-                    name,
-                    icon_url,
-                    tier
-                )
-            `)
-            .eq('user_id', currentUser.id)
-            .order('earned_at', { ascending: false })
+        // Get all active badges
+        const { data: allBadges, error: badgesError } = await supabase
+            .from('badges')
+            .select('*')
+            .eq('is_active', true)
+            .order('created_at', { ascending: true })
             .limit(6);
 
-        if (error) {
-            console.error('Error loading badges:', error);
+        if (badgesError) {
+            console.error('Error loading badges:', badgesError);
             return;
         }
 
-        // Update badge count in sidebar
-        const badgeCountEl = document.querySelector('.text-wrapper-7');
-        if (badgeCountEl) {
-            badgeCountEl.textContent = userBadges?.length || 0;
+        // Get user's earned badges
+        const { data: userBadges, error: userBadgesError } = await supabase
+            .from('user_badges')
+            .select('badge_id, earned_at')
+            .eq('user_id', currentUser.id);
+
+        if (userBadgesError) {
+            console.error('Error loading user badges:', userBadgesError);
         }
 
-        // Update badge images
-        if (userBadges && userBadges.length > 0) {
-            const badgeItems = document.querySelectorAll('.badge-item');
+        const earnedBadgeIds = new Set(userBadges?.map(ub => ub.badge_id) || []);
 
-            userBadges.forEach((userBadge, index) => {
-                if (badgeItems[index] && userBadge.badges) {
-                    const badgeImg = badgeItems[index].querySelector('.badge-icon');
-                    if (badgeImg && userBadge.badges.icon_url) {
-                        badgeImg.src = userBadge.badges.icon_url;
-                        badgeImg.alt = userBadge.badges.name;
-                    }
-                }
-            });
+        // Update badge count in sidebar
+        const badgeCountEl = document.getElementById('profile-badges');
+        if (badgeCountEl) {
+            badgeCountEl.textContent = earnedBadgeIds.size;
+            badgeCountEl.classList.remove('skeleton-text');
+        }
 
-            // Show first badge in profile section
+        // Render badges in badges-row
+        const badgesRow = document.getElementById('homeBadgesRow');
+        if (badgesRow && allBadges && allBadges.length > 0) {
+            badgesRow.innerHTML = allBadges.map(badge => {
+                const isEarned = earnedBadgeIds.has(badge.id);
+                const rarityColors = {
+                    'common': '#10b981',
+                    'rare': '#3b82f6',
+                    'epic': '#8b5cf6',
+                    'legendary': '#f59e0b'
+                };
+                const color = badge.color || rarityColors[badge.rarity] || '#3b82f6';
+
+                return `
+                    <div class="badge-item" style="position: relative;" title="${badge.description}">
+                        ${!isEarned ? `<div style="position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; background: rgba(0,0,0,0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1;">
+                            <i class="fas fa-lock" style="font-size: 10px; color: white;"></i>
+                        </div>` : ''}
+                        ${badge.icon_url ?
+                            `<img src="${badge.icon_url}" alt="${badge.name}" class="badge-icon" style="${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}">` :
+                            `<div class="badge-icon" style="background: ${color}; display: flex; align-items: center; justify-content: center; ${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}">
+                                <i class="fas fa-trophy" style="color: white; font-size: 28px;"></i>
+                            </div>`
+                        }
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Show first earned badge in profile section
+        if (userBadges && userBadges.length > 0 && allBadges) {
+            const firstEarnedBadge = allBadges.find(b => earnedBadgeIds.has(b.id));
             const profileBadge = document.querySelector('.untitled-design');
-            if (profileBadge && userBadges[0]?.badges?.icon_url) {
-                profileBadge.src = userBadges[0].badges.icon_url;
-                profileBadge.alt = userBadges[0].badges.name;
+            if (profileBadge && firstEarnedBadge?.icon_url) {
+                profileBadge.src = firstEarnedBadge.icon_url;
+                profileBadge.alt = firstEarnedBadge.name;
             }
         }
 
