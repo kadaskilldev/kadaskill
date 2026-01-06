@@ -15,15 +15,20 @@ function getSupabaseClient() {
         return supabaseClient;
     } else {
         console.error("Supabase client library not found on the window object. Did you include the CDN link in index.html?");
-    // Mock for environments without the library loaded, to prevent immediate fatal errors in auth functions
-    supabaseClient = {
-        auth: {
-            signUp: async () => ({ data: { user: { id: 'mock-id' } }, error: { message: 'Supabase Mock' } }),
-            signInWithPassword: async () => ({ data: { user: { id: 'mock-id' } }, error: { message: 'Supabase Mock' } }),
-            signInWithOAuth: async () => ({ error: { message: 'Supabase Mock: Library not loaded.' } }),
-        }
-    };
+        // Mock for environments without the library loaded, to prevent immediate fatal errors in auth functions
+        supabaseClient = {
+            auth: {
+                signUp: async () => ({ data: { user: { id: 'mock-id' } }, error: { message: 'Supabase Mock' } }),
+                signInWithPassword: async () => ({ data: { user: { id: 'mock-id' } }, error: { message: 'Supabase Mock' } }),
+                signInWithOAuth: async () => ({ error: { message: 'Supabase Mock: Library not loaded.' } }),
+            }
+        };
+        return supabaseClient;
+    }
 }
+
+// Initialize the client
+supabaseClient = getSupabaseClient();
 
 // DON'T use 'const supabase' - it conflicts with the CDN!
 // Just use supabaseClient throughout the code
