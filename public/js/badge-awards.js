@@ -81,6 +81,12 @@ async function checkBadgeCriteria(userId, badge) {
             case 'courses_count':
                 return await checkCoursesCount(userId, criteria.count);
 
+            case 'lessons_count':
+                return await checkLessonsCount(userId, criteria.lessons_count);
+
+            case 'practice_exercises_count':
+                return await checkPracticeExercisesCount(userId, criteria.exercises_count);
+
             case 'xp_threshold':
                 return await checkXPThreshold(userId, criteria.xp_amount);
 
@@ -89,6 +95,15 @@ async function checkBadgeCriteria(userId, badge) {
 
             case 'category_master':
                 return await checkCategoryMaster(userId, criteria.category);
+
+            case 'course_speed':
+                return await checkCourseSpeed(userId, criteria.speed_days);
+
+            case 'early_user':
+                return await checkEarlyUser(userId, criteria.user_number);
+
+            case 'community_engagement':
+                return await checkCommunityEngagement(userId, criteria.upvotes);
 
             case 'perfect_score':
                 return await checkPerfectScore(userId);
@@ -363,6 +378,134 @@ function showBadgeNotification(badge) {
     `;
     document.head.appendChild(style);
 })();
+
+// ============================================
+// New Criteria Check Functions
+// ============================================
+
+// Check lessons completed count
+async function checkLessonsCount(userId, requiredLessons) {
+    try {
+        const { data, error } = await supabase
+            .from('lesson_progress')
+            .select('id')
+            .eq('user_id', userId)
+            .eq('completed', true);
+
+        if (error) throw error;
+        
+        const completedLessons = data?.length || 0;
+        console.log(`📚 User ${userId} completed ${completedLessons}/${requiredLessons} lessons`);
+        return completedLessons >= requiredLessons;
+    } catch (error) {
+        console.error('Error checking lessons count:', error);
+        return false;
+    }
+}
+
+// Check practice exercises completed count
+async function checkPracticeExercisesCount(userId, requiredExercises) {
+    try {
+        const { data, error } = await supabase
+            .from('practice_attempts')
+            .select('id')
+            .eq('user_id', userId)
+            .eq('completed', true);
+
+        if (error) throw error;
+        
+        const completedExercises = data?.length || 0;
+        console.log(`💪 User ${userId} completed ${completedExercises}/${requiredExercises} practice exercises`);
+        return completedExercises >= requiredExercises;
+    } catch (error) {
+        console.error('Error checking practice exercises count:', error);
+        return false;
+    }
+}
+
+// Check course completion speed
+async function checkCourseSpeed(userId, speedDays) {
+    try {
+        const { data, error } = await supabase
+            .from('enrollments')
+            .select(`
+                enrolled_at,
+                completed_at,
+                course:courses(name)
+            `)
+            .eq('user_id', userId)
+            .eq('status', 'completed')
+            .not('completed_at', 'is', null);
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) return false;
+
+        // Check if any course was completed within speed requirement
+        for (const enrollment of data) {
+            const enrolledDate = new Date(enrollment.enrolled_at);
+            const completedDate = new Date(enrollment.completed_at);
+            const daysTaken = Math.ceil((completedDate - enrolledDate) / (1000 * 60 * 60 * 24));
+            
+            console.log(`⚡ Course "${enrollment.course?.name}" completed in ${daysTaken} days (target: ${speedDays} days)`);
+            
+            if (daysTaken <= speedDays) {
+                return true;
+            }
+        }
+
+        return false;
+    } catch (error) {
+        console.error('Error checking course speed:', error);
+        return false;
+    }
+}
+
+// Check if user is among early users
+async function checkEarlyUser(userId, userThreshold) {
+    try {
+        // Get user registration order by created_at
+        const { data: userProfile, error: userError } = await supabase
+            .from('profiles')
+            .select('created_at')
+            .eq('id', userId)
+            .single();
+
+        if (userError || !userProfile) {
+            console.error('Error getting user profile:', userError);
+            return false;
+        }
+
+        // Count how many users registered before this user
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('id')
+            .lt('created_at', userProfile.created_at);
+
+        if (error) throw error;
+
+        const userNumber = (data?.length || 0) + 1; // +1 because we count this user too
+        console.log(`👑 User ${userId} is user #${userNumber} (target: top ${userThreshold})`);
+        
+        return userNumber <= userThreshold;
+    } catch (error) {
+        console.error('Error checking early user status:', error);
+        return false;
+    }
+}
+
+// Check community engagement (future feature)
+async function checkCommunityEngagement(userId, requiredUpvotes) {
+    try {
+        // This is a placeholder for future implementation
+        // When comments/upvotes feature is added, implement the actual logic
+        console.log(`🚧 Community engagement check not yet implemented (target: ${requiredUpvotes} upvotes)`);
+        return false;
+    } catch (error) {
+        console.error('Error checking community engagement:', error);
+        return false;
+    }
+}
 
 // Make functions globally available
 window.checkAndAwardBadges = checkAndAwardBadges;

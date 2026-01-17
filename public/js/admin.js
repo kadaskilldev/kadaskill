@@ -4729,6 +4729,7 @@ let allBadges = [];
 // Initialize badges when gamification section is loaded
 async function initializeGamification() {
     await loadBadges();
+    await initializeRanks();
     setupBadgeEventListeners();
 }
 
@@ -4778,7 +4779,10 @@ function renderBadges() {
     tbody.innerHTML = allBadges.map(badge => {
         const rarityColor = rarityColors[badge.rarity] || '#6b7280';
         const iconDisplay = badge.icon_url ?
-            `<img src="${badge.icon_url}" alt="${badge.name}" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover;">` :
+            `<img src="${badge.icon_url}" alt="${badge.name}" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover;" onerror="console.error('Failed to load badge icon:', '${badge.icon_url}'); this.style.display='none'; this.nextElementSibling.style.display='flex';">
+             <div style="width: 48px; height: 48px; border-radius: 8px; background: ${badge.color || '#6b7280'}15; display: none; align-items: center; justify-content: center;">
+                 <i class="fas fa-exclamation-triangle" style="color: #ef4444; font-size: 20px;" title="Image failed to load"></i>
+             </div>` :
             `<div style="width: 48px; height: 48px; border-radius: 8px; background: ${badge.color}15; display: flex; align-items: center; justify-content: center;">
                 <i class="fas fa-trophy" style="color: ${badge.color}; font-size: 24px;"></i>
             </div>`;
@@ -4824,12 +4828,22 @@ function getCriteriaDescription(badge) {
             return 'Complete course: ' + (criteria.course_name || 'Any course');
         case 'courses_count':
             return 'Complete ' + criteria.count + ' courses';
+        case 'lessons_count':
+            return 'Complete ' + criteria.lessons_count + ' lessons';
+        case 'practice_exercises_count':
+            return 'Complete ' + criteria.exercises_count + ' practice exercises';
         case 'xp_threshold':
             return 'Reach ' + criteria.xp_amount + ' total XP';
         case 'streak_days':
             return 'Maintain ' + criteria.days + ' day learning streak';
         case 'category_master':
             return 'Complete all courses in ' + criteria.category;
+        case 'course_speed':
+            return 'Complete any course within ' + criteria.speed_days + ' days';
+        case 'early_user':
+            return 'Be among the first ' + criteria.user_number + ' users';
+        case 'community_engagement':
+            return 'Get ' + criteria.upvotes + ' upvotes (future feature)';
         case 'perfect_score':
             return 'Get 100% on any assessment';
         case 'first_enrollment':
@@ -4924,6 +4938,22 @@ function updateCriteriaFields(existingCriteria) {
                 </div>
             `;
             break;
+        case 'lessons_count':
+            html = `
+                <div class="form-group">
+                    <label class="form-label">Number of Lessons <span class="required">*</span></label>
+                    <input type="number" id="criteria-lessons-count" class="form-input" min="1" value="${existingCriteria.lessons_count || 10}" required>
+                </div>
+            `;
+            break;
+        case 'practice_exercises_count':
+            html = `
+                <div class="form-group">
+                    <label class="form-label">Number of Practice Exercises <span class="required">*</span></label>
+                    <input type="number" id="criteria-exercises-count" class="form-input" min="1" value="${existingCriteria.exercises_count || 10}" required>
+                </div>
+            `;
+            break;
         case 'xp_threshold':
             html = `
                 <div class="form-group">
@@ -4950,6 +4980,33 @@ function updateCriteriaFields(existingCriteria) {
                         <option value="Cybersecurity">Cybersecurity</option>
                         <option value="Data">Data</option>
                     </select>
+                </div>
+            `;
+            break;
+        case 'course_speed':
+            html = `
+                <div class="form-group">
+                    <label class="form-label">Complete Course Within (Days) <span class="required">*</span></label>
+                    <input type="number" id="criteria-speed-days" class="form-input" min="1" value="${existingCriteria.speed_days || 14}" required>
+                    <small>Award badge for completing any course within this timeframe</small>
+                </div>
+            `;
+            break;
+        case 'early_user':
+            html = `
+                <div class="form-group">
+                    <label class="form-label">User Number Threshold <span class="required">*</span></label>
+                    <input type="number" id="criteria-user-number" class="form-input" min="1" value="${existingCriteria.user_number || 100}" required>
+                    <small>Award badge to first X users who register</small>
+                </div>
+            `;
+            break;
+        case 'community_engagement':
+            html = `
+                <div class="form-group">
+                    <label class="form-label">Minimum Upvotes <span class="required">*</span></label>
+                    <input type="number" id="criteria-upvotes" class="form-input" min="1" value="${existingCriteria.upvotes || 10}" required>
+                    <small>🚧 Future feature - not yet implemented</small>
                 </div>
             `;
             break;
@@ -4993,6 +5050,12 @@ async function handleBadgeSubmit(event) {
         case 'courses_count':
             criteria.count = parseInt(document.getElementById('criteria-count').value);
             break;
+        case 'lessons_count':
+            criteria.lessons_count = parseInt(document.getElementById('criteria-lessons-count').value);
+            break;
+        case 'practice_exercises_count':
+            criteria.exercises_count = parseInt(document.getElementById('criteria-exercises-count').value);
+            break;
         case 'xp_threshold':
             criteria.xp_amount = parseInt(document.getElementById('criteria-xp-amount').value);
             break;
@@ -5001,6 +5064,15 @@ async function handleBadgeSubmit(event) {
             break;
         case 'category_master':
             criteria.category = document.getElementById('criteria-category').value;
+            break;
+        case 'course_speed':
+            criteria.speed_days = parseInt(document.getElementById('criteria-speed-days').value);
+            break;
+        case 'early_user':
+            criteria.user_number = parseInt(document.getElementById('criteria-user-number').value);
+            break;
+        case 'community_engagement':
+            criteria.upvotes = parseInt(document.getElementById('criteria-upvotes').value);
             break;
     }
 
@@ -5081,6 +5153,106 @@ function setupBadgeEventListeners() {
     if (createBtn) {
         createBtn.addEventListener('click', () => openBadgeModal());
     }
+
+    // Badge icon upload functionality
+    const badgeIconUploadBtn = document.getElementById('badge-icon-upload-btn');
+    const badgeIconFile = document.getElementById('badge-icon-file');
+    const badgeIconUrl = document.getElementById('badge-icon-url');
+    const badgeIconPreview = document.getElementById('badge-icon-preview');
+
+    if (badgeIconUploadBtn) {
+        badgeIconUploadBtn.addEventListener('click', () => {
+            badgeIconFile?.click();
+        });
+    }
+
+    if (badgeIconFile) {
+        badgeIconFile.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select an image file', 'error');
+                return;
+            }
+
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            if (file.size > maxSize) {
+                showToast('File too large. Please choose an image under 5MB', 'error');
+                return;
+            }
+
+            try {
+                badgeIconUploadBtn.disabled = true;
+                badgeIconUploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+
+                // Create unique filename
+                const fileExt = file.name.split('.').pop();
+                const fileName = `badge-icon-${Date.now()}.${fileExt}`;
+
+                // Upload to Supabase Storage
+                const { data, error } = await supabase.storage
+                    .from('badge-icons')
+                    .upload(fileName, file);
+
+                if (error) {
+                    console.error('Upload error:', error);
+                    throw error;
+                }
+
+                // Get public URL
+                const { data: { publicUrl } } = supabase.storage
+                    .from('badge-icons')
+                    .getPublicUrl(fileName);
+
+                console.log('📸 Badge icon uploaded successfully!');
+                console.log('📄 File name:', fileName);
+                console.log('🔗 Public URL:', publicUrl);
+                console.log('🧪 Testing URL access...');
+                
+                // Test if the URL is accessible
+                const testImg = new Image();
+                testImg.onload = () => {
+                    console.log('✅ Badge icon URL is accessible');
+                };
+                testImg.onerror = () => {
+                    console.error('❌ Badge icon URL is NOT accessible - check storage bucket permissions');
+                    console.error('💡 Make sure the badge-icons bucket is public in Supabase Dashboard');
+                };
+                testImg.src = publicUrl;
+
+                // Update the input field and preview
+                badgeIconUrl.value = publicUrl;
+                badgeIconPreview.src = publicUrl;
+                badgeIconPreview.style.display = 'block';
+
+                showToast('Badge icon uploaded successfully', 'success');
+
+            } catch (error) {
+                console.error('Error uploading badge icon:', error);
+                showToast('Failed to upload badge icon: ' + error.message, 'error');
+            } finally {
+                badgeIconUploadBtn.disabled = false;
+                badgeIconUploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Icon';
+            }
+        });
+    }
+
+    // Badge icon URL input change handler for preview
+    if (badgeIconUrl && badgeIconPreview) {
+        badgeIconUrl.addEventListener('input', (e) => {
+            const url = e.target.value.trim();
+            if (url) {
+                badgeIconPreview.src = url;
+                badgeIconPreview.style.display = 'block';
+                badgeIconPreview.onerror = () => {
+                    badgeIconPreview.style.display = 'none';
+                };
+            } else {
+                badgeIconPreview.style.display = 'none';
+            }
+        });
+    }
 }
 
 // Make functions global
@@ -5090,3 +5262,256 @@ window.updateCriteriaFields = updateCriteriaFields;
 window.handleBadgeSubmit = handleBadgeSubmit;
 window.editBadge = editBadge;
 window.deleteBadge = deleteBadge;
+
+// ============================================
+// Rank Management System
+// ============================================
+
+let allRanks = [];
+
+// Initialize ranks when gamification section is loaded
+async function initializeRanks() {
+    await loadRanks();
+    setupRankEventListeners();
+}
+
+// Load all ranks
+async function loadRanks() {
+    try {
+        const { data: ranks, error } = await supabase
+            .from('ranks')
+            .select('*')
+            .order('rank_order', { ascending: true });
+
+        if (error) throw error;
+
+        allRanks = ranks || [];
+        renderRanks();
+
+    } catch (error) {
+        console.error('Error loading ranks:', error);
+        showToast('Failed to load ranks', 'error');
+    }
+}
+
+// Render ranks table
+function renderRanks() {
+    const tbody = document.getElementById('ranks-table-body');
+    if (!tbody) return;
+
+    if (allRanks.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 40px;">
+                    <i class="fas fa-crown" style="font-size: 48px; color: #d1d5db; display: block; margin-bottom: 12px;"></i>
+                    <p style="color: #6b7280; margin: 0;">No ranks created yet</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = allRanks.map(rank => {
+        const xpRange = rank.max_xp ? 
+            `${rank.min_xp.toLocaleString()} - ${rank.max_xp.toLocaleString()}` : 
+            `${rank.min_xp.toLocaleString()}+`;
+
+        const iconDisplay = `
+            <div style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 8px; background: ${rank.icon_color}15;">
+                <i class="${rank.icon}" style="color: ${rank.icon_color}; font-size: 24px;"></i>
+            </div>
+        `;
+
+        return `
+            <tr>
+                <td>${iconDisplay}</td>
+                <td style="font-weight: 600;">${rank.name}</td>
+                <td style="max-width: 250px;">${rank.description || ''}</td>
+                <td style="font-weight: 600; color: #059669;">${xpRange}</td>
+                <td>
+                    <span style="background: #f3f4f6; padding: 4px 8px; border-radius: 4px; font-weight: 600; color: #374151;">
+                        ${rank.rank_order}
+                    </span>
+                </td>
+                <td>
+                    <span style="color: ${rank.is_active ? '#10b981' : '#6b7280'}; font-weight: 600;">
+                        ${rank.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                </td>
+                <td>
+                    <div style="display: flex; gap: 4px;">
+                        <button onclick="editRank('${rank.id}')" class="btn-sm btn-secondary" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteRank('${rank.id}')" class="btn-sm btn-danger" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Open rank modal (create or edit)
+function openRankModal(rank) {
+    rank = rank || null;
+    const modal = document.getElementById('rank-modal');
+    const title = document.getElementById('rank-modal-title');
+    const submitText = document.getElementById('rank-submit-text');
+
+    if (rank) {
+        title.textContent = 'Edit Rank';
+        submitText.textContent = 'Update Rank';
+        document.getElementById('rank-id').value = rank.id;
+        document.getElementById('rank-name').value = rank.name;
+        document.getElementById('rank-description').value = rank.description || '';
+        document.getElementById('rank-icon').value = rank.icon;
+        document.getElementById('rank-icon-color').value = rank.icon_color;
+        document.getElementById('rank-min-xp').value = rank.min_xp;
+        document.getElementById('rank-max-xp').value = rank.max_xp || '';
+        document.getElementById('rank-order').value = rank.rank_order;
+        document.getElementById('rank-active').checked = rank.is_active;
+    } else {
+        title.textContent = 'Create Rank';
+        submitText.textContent = 'Create Rank';
+        document.getElementById('rank-form').reset();
+        document.getElementById('rank-id').value = '';
+        document.getElementById('rank-icon').value = 'fas fa-star';
+        document.getElementById('rank-icon-color').value = '#f59e0b';
+        document.getElementById('rank-active').checked = true;
+        
+        // Suggest next rank order
+        const nextOrder = allRanks.length > 0 ? Math.max(...allRanks.map(r => r.rank_order)) + 1 : 1;
+        document.getElementById('rank-order').value = nextOrder;
+    }
+
+    modal.classList.add('active');
+    lockBodyScroll();
+}
+
+function closeRankModal() {
+    const modal = document.getElementById('rank-modal');
+    modal.classList.remove('active');
+    unlockBodyScroll();
+}
+
+// Handle rank form submission
+async function handleRankSubmit(event) {
+    event.preventDefault();
+
+    const rankId = document.getElementById('rank-id').value;
+    const name = document.getElementById('rank-name').value.trim();
+    const description = document.getElementById('rank-description').value.trim();
+    const icon = document.getElementById('rank-icon').value.trim();
+    const iconColor = document.getElementById('rank-icon-color').value;
+    const minXp = parseInt(document.getElementById('rank-min-xp').value);
+    const maxXp = document.getElementById('rank-max-xp').value.trim();
+    const rankOrder = parseInt(document.getElementById('rank-order').value);
+    const isActive = document.getElementById('rank-active').checked;
+
+    const rankData = {
+        name,
+        description: description || null,
+        icon,
+        icon_color: iconColor,
+        min_xp: minXp,
+        max_xp: maxXp ? parseInt(maxXp) : null,
+        rank_order: rankOrder,
+        is_active: isActive,
+        updated_at: new Date().toISOString()
+    };
+
+    try {
+        if (rankId) {
+            // Update existing rank
+            const { error } = await supabase
+                .from('ranks')
+                .update(rankData)
+                .eq('id', rankId);
+
+            if (error) throw error;
+            showToast('Rank updated successfully', 'success');
+        } else {
+            // Create new rank
+            rankData.created_at = new Date().toISOString();
+            const { error } = await supabase
+                .from('ranks')
+                .insert([rankData]);
+
+            if (error) throw error;
+            showToast('Rank created successfully', 'success');
+        }
+
+        closeRankModal();
+        await loadRanks();
+
+        // Update all user ranks after rank changes
+        await updateAllUserRanks();
+
+    } catch (error) {
+        console.error('Error saving rank:', error);
+        showToast('Failed to save rank: ' + error.message, 'error');
+    }
+}
+
+// Edit rank
+function editRank(rankId) {
+    const rank = allRanks.find(r => r.id === rankId);
+    if (rank) {
+        openRankModal(rank);
+    }
+}
+
+// Delete rank
+async function deleteRank(rankId) {
+    const rank = allRanks.find(r => r.id === rankId);
+    if (!rank) return;
+    
+    if (!confirm(`Delete the "${rank.name}" rank? Users with this rank will need to be reassigned.`)) return;
+
+    try {
+        const { error } = await supabase
+            .from('ranks')
+            .delete()
+            .eq('id', rankId);
+
+        if (error) throw error;
+
+        showToast('Rank deleted successfully', 'success');
+        await loadRanks();
+
+        // Update all user ranks after deletion
+        await updateAllUserRanks();
+
+    } catch (error) {
+        console.error('Error deleting rank:', error);
+        showToast('Failed to delete rank: ' + error.message, 'error');
+    }
+}
+
+// Update all user ranks (call this after rank changes)
+async function updateAllUserRanks() {
+    try {
+        const { error } = await supabase.rpc('update_all_user_ranks');
+        if (error) throw error;
+        console.log('Updated all user ranks');
+    } catch (error) {
+        console.error('Error updating user ranks:', error);
+    }
+}
+
+// Setup event listeners
+function setupRankEventListeners() {
+    const createBtn = document.getElementById('create-rank-btn');
+    if (createBtn) {
+        createBtn.addEventListener('click', () => openRankModal());
+    }
+}
+
+// Make functions global
+window.openRankModal = openRankModal;
+window.closeRankModal = closeRankModal;
+window.handleRankSubmit = handleRankSubmit;
+window.editRank = editRank;
+window.deleteRank = deleteRank;

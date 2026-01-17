@@ -283,6 +283,29 @@ function initializePracticeSessionPage() {
         };
 
         await supabase.from('practice_attempts').insert([newAttemptData]);
+
+        // Award XP if any was earned (only for first perfect attempt)
+        if (xp > 0) {
+            try {
+                const { error: xpError } = await supabase
+                    .from('xp_transactions')
+                    .insert({
+                        user_id: user.id,
+                        amount: xp,
+                        source_type: 'practice_complete',
+                        source_id: currentExercise.id,
+                        description: `Practice exercise completed perfectly: ${currentExercise.title}`
+                    });
+
+                if (xpError) {
+                    console.error('Error awarding practice XP:', xpError);
+                } else {
+                    console.log(`✅ Awarded ${xp} XP for perfect practice completion: ${currentExercise.title}`);
+                }
+            } catch (error) {
+                console.error('Error awarding practice XP:', error);
+            }
+        }
     }
 
     // --- Event Listeners ---

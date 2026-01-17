@@ -39,7 +39,18 @@ async function loadUserProfile() {
 
         const { data: profile, error: profileError } = await supabase
             .from('profiles')
-            .select('*')
+            .select(`
+                *,
+                rank:ranks(
+                    id,
+                    name,
+                    icon,
+                    icon_color,
+                    min_xp,
+                    max_xp,
+                    rank_order
+                )
+            `)
             .eq('id', user.id)
             .single();
 
@@ -156,12 +167,15 @@ function updateProfileHero(user, profile) {
 function updateBioSection(profile) {
     // Calculate level from total XP
     const level = Math.floor(Math.sqrt(profile.total_xp / 100)) || 1;
-    const rank = getRankFromLevel(level);
 
-    // Update badge label and remove skeleton
+    // Update badge label with rank name or fallback
     const badgeLabel = document.querySelector('.profile-bio-card__badge-label');
     if (badgeLabel) {
-        badgeLabel.textContent = rank;
+        if (profile.rank) {
+            badgeLabel.textContent = profile.rank.name;
+        } else {
+            badgeLabel.textContent = 'Unranked';
+        }
         badgeLabel.classList.remove('skeleton-text');
     }
 

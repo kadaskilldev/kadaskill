@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badge Storage Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .test-section { margin: 30px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .success { background: #f0fff4; border-color: #10b981; }
+        .error { background: #fef2f2; border-color: #ef4444; }
+        .test-image { max-width: 200px; max-height: 200px; border: 2px solid #ddd; margin: 10px 0; }
+        .console-log { background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 4px; font-family: monospace; font-size: 12px; }
+    </style>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>🧪 Badge Storage Test</h1>
+    
+    <div class="test-section">
+        <h3>Step 1: Test Supabase Connection</h3>
+        <button onclick="testSupabaseConnection()">Test Connection</button>
+        <div id="connection-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Step 2: Test Existing Badge Icons</h3>
+        <button onclick="loadExistingBadges()">Load Badges from Database</button>
+        <div id="badges-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Step 3: Test Image Upload</h3>
+        <input type="file" id="test-file" accept="image/*" />
+        <button onclick="testUpload()">Test Upload</button>
+        <div id="upload-result"></div>
+    </div>
+
+    <script>
+        // Supabase configuration - replace with your actual values
+        const SUPABASE_URL = 'https://kbpbubsnadnhebgdggdy.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImticGJ1YnNuYWRuaGViZ2RnZ2R5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMjA4MTksImV4cCI6MjA3MzU5NjgxOX0.4O8ZLeZ2iR786MZ8JS_55nzhn-5WxqabMtDQuAoZkAA';
+        
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        function log(message, isError = false) {
+            console.log(message);
+            const div = document.createElement('div');
+            div.className = 'console-log';
+            div.style.color = isError ? '#ef4444' : '#059669';
+            div.textContent = message;
+            return div;
+        }
+
+        async function testSupabaseConnection() {
+            const resultDiv = document.getElementById('connection-result');
+            resultDiv.innerHTML = '';
+            
+            try {
+                resultDiv.appendChild(log('Testing Supabase connection...'));
+                
+                const { data, error } = await supabase.from('badges').select('count').limit(1);
+                
+                if (error) throw error;
+                
+                resultDiv.appendChild(log('✅ Supabase connection successful!'));
+                resultDiv.className = 'test-section success';
+            } catch (error) {
+                resultDiv.appendChild(log(`❌ Connection failed: ${error.message}`, true));
+                resultDiv.className = 'test-section error';
+            }
+        }
+
+        async function loadExistingBadges() {
+            const resultDiv = document.getElementById('badges-result');
+            resultDiv.innerHTML = '';
+            
+            try {
+                resultDiv.appendChild(log('Loading badges from database...'));
+                
+                const { data: badges, error } = await supabase
+                    .from('badges')
+                    .select('*')
+                    .limit(5);
+                
+                if (error) throw error;
+                
+                if (!badges || badges.length === 0) {
+                    resultDiv.appendChild(log('No badges found in database'));
+                    return;
+                }
+                
+                resultDiv.appendChild(log(`Found ${badges.length} badges`));
+                
+                badges.forEach(badge => {
+                    if (badge.icon_url) {
+                        resultDiv.appendChild(log(`Testing: ${badge.name} - ${badge.icon_url}`));
+                        
+                        const img = document.createElement('img');
+                        img.src = badge.icon_url;
+                        img.alt = badge.name;
+                        img.className = 'test-image';
+                        img.onload = () => {
+                            resultDiv.appendChild(log(`✅ ${badge.name} icon loaded successfully`));
+                        };
+                        img.onerror = () => {
+                            resultDiv.appendChild(log(`❌ ${badge.name} icon failed to load`, true));
+                        };
+                        
+                        resultDiv.appendChild(img);
+                    }
+                });
+                
+                resultDiv.className = 'test-section success';
+                
+            } catch (error) {
+                resultDiv.appendChild(log(`❌ Failed to load badges: ${error.message}`, true));
+                resultDiv.className = 'test-section error';
+            }
+        }
+
+        async function testUpload() {
+            const resultDiv = document.getElementById('upload-result');
+            const fileInput = document.getElementById('test-file');
+            
+            resultDiv.innerHTML = '';
+            
+            if (!fileInput.files[0]) {
+                resultDiv.appendChild(log('Please select a file first', true));
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            
+            try {
+                resultDiv.appendChild(log('Testing file upload...'));
+                
+                const fileName = `test-badge-${Date.now()}.${file.name.split('.').pop()}`;
+                resultDiv.appendChild(log(`File name: ${fileName}`));
+                
+                // Upload to Supabase Storage
+                const { data, error } = await supabase.storage
+                    .from('badge-icons')
+                    .upload(fileName, file);
+
+                if (error) {
+                    resultDiv.appendChild(log(`❌ Upload failed: ${error.message}`, true));
+                    resultDiv.className = 'test-section error';
+                    return;
+                }
+                
+                resultDiv.appendChild(log('✅ File uploaded successfully'));
+                
+                // Get public URL
+                const { data: { publicUrl } } = supabase.storage
+                    .from('badge-icons')
+                    .getPublicUrl(fileName);
+                    
+                resultDiv.appendChild(log(`Public URL: ${publicUrl}`));
+                
+                // Test the URL
+                const img = document.createElement('img');
+                img.src = publicUrl;
+                img.className = 'test-image';
+                img.onload = () => {
+                    resultDiv.appendChild(log('✅ Uploaded image is accessible!'));
+                    resultDiv.className = 'test-section success';
+                };
+                img.onerror = () => {
+                    resultDiv.appendChild(log('❌ Uploaded image is NOT accessible - check bucket permissions', true));
+                    resultDiv.className = 'test-section error';
+                };
+                
+                resultDiv.appendChild(img);
+                
+            } catch (error) {
+                resultDiv.appendChild(log(`❌ Upload test failed: ${error.message}`, true));
+                resultDiv.className = 'test-section error';
+            }
+        }
+    </script>
+</body>
+</html>

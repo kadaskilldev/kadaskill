@@ -684,7 +684,113 @@
                             </table>
                         </div>
                     </div>
+
+                    <!-- Rank Management -->
+                    <div class="admin-card">
+                        <div class="admin-card__header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <div>
+                                <h4 style="margin: 0;">User Ranks</h4>
+                                <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 14px;">Manage XP-based rank progression system</p>
+                            </div>
+                            <button id="create-rank-btn" class="btn-primary">
+                                <i class="fas fa-plus"></i> Create Rank
+                            </button>
+                        </div>
+
+                        <div class="table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 80px;">Icon</th>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>XP Range</th>
+                                        <th>Order</th>
+                                        <th>Status</th>
+                                        <th style="width: 120px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ranks-table-body">
+                                    <tr>
+                                        <td colspan="7" class="loading-cell">Loading ranks...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </section>
+
+                <!-- Rank Modal -->
+                <div id="rank-modal" class="modal">
+                    <div class="modal-overlay" onclick="closeRankModal()"></div>
+                    <div class="modal-content modal-lg">
+                        <div class="modal-header">
+                            <h3 id="rank-modal-title">Create Rank</h3>
+                            <button class="modal-close" onclick="closeRankModal()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <form id="rank-form" onsubmit="handleRankSubmit(event)">
+                            <input type="hidden" id="rank-id">
+
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label class="form-label">Rank Name <span class="required">*</span></label>
+                                    <input type="text" id="rank-name" class="form-input" required placeholder="e.g., Uncommon">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Description</label>
+                                    <textarea id="rank-description" class="form-input" rows="2" placeholder="Describe what this rank represents"></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Icon <span class="required">*</span></label>
+                                    <input type="text" id="rank-icon" class="form-input" required placeholder="e.g., fas fa-bolt" value="fas fa-star">
+                                    <small>Use Font Awesome class names (e.g., fas fa-bolt, fas fa-crown)</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Icon Color</label>
+                                    <input type="color" id="rank-icon-color" class="form-input" value="#f59e0b">
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                    <div class="form-group">
+                                        <label class="form-label">Minimum XP <span class="required">*</span></label>
+                                        <input type="number" id="rank-min-xp" class="form-input" min="0" required placeholder="1000">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Maximum XP</label>
+                                        <input type="number" id="rank-max-xp" class="form-input" min="0" placeholder="2499">
+                                        <small>Leave empty for highest rank</small>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Rank Order <span class="required">*</span></label>
+                                    <input type="number" id="rank-order" class="form-input" min="1" required placeholder="4">
+                                    <small>1 = lowest rank, higher numbers = higher ranks</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="rank-active" checked>
+                                        <span>Active (users can achieve this rank)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn-secondary" onclick="closeRankModal()">Cancel</button>
+                                <button type="submit" class="btn-primary">
+                                    <span id="rank-submit-text">Create Rank</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
                 <!-- Badge Modal -->
                 <div id="badge-modal" class="modal">
@@ -761,9 +867,14 @@
                                         <option value="">-- Select Criteria --</option>
                                         <option value="course_complete">Complete Course</option>
                                         <option value="courses_count">Complete X Courses</option>
+                                        <option value="lessons_count">Complete X Lessons</option>
+                                        <option value="practice_exercises_count">Complete X Practice Exercises</option>
                                         <option value="xp_threshold">Reach XP Amount</option>
                                         <option value="streak_days">Maintain Learning Streak</option>
                                         <option value="category_master">Complete All Courses in Category</option>
+                                        <option value="course_speed">Complete Course in X Days</option>
+                                        <option value="early_user">Early User (First X Users)</option>
+                                        <option value="community_engagement">Community Engagement (Future)</option>
                                         <option value="perfect_score">Get Perfect Score</option>
                                         <option value="first_enrollment">First Course Enrollment</option>
                                     </select>

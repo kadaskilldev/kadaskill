@@ -1088,6 +1088,26 @@ async function markLessonComplete(autoTriggered = false) {
             return;
         }
 
+        // Award XP for lesson completion (but not for quiz lessons since they get XP when quiz is passed)
+        if (currentLesson.xp_reward && currentLesson.xp_reward > 0 && currentLesson.content_type !== 'quiz') {
+            const { error: xpError } = await supabase
+                .from('xp_transactions')
+                .insert({
+                    user_id: currentUser.id,
+                    amount: currentLesson.xp_reward,
+                    source_type: 'lesson_complete',
+                    source_id: currentLesson.id,
+                    description: `Lesson completed: ${currentLesson.title}`
+                });
+
+            if (xpError) {
+                console.error('Error awarding lesson XP:', xpError);
+                // Don't fail the completion, just log the error
+            } else {
+                console.log(`✅ Awarded ${currentLesson.xp_reward} XP for completing lesson: ${currentLesson.title}`);
+            }
+        }
+
         // CRITICAL: Reload from database - DON'T manually push
         await loadCompletedLessons();
 
@@ -1604,7 +1624,7 @@ window.handleQuizAnswer = function(questionIndex, selectedAnswer, correctAnswer)
     updateQuizScore();
 };
 
-function updateQuizScore() {
+async function updateQuizScore() {
     const totalAnswered = Object.keys(quizState.answers).length;
     const correctAnswers = Object.values(quizState.answers).filter(a => a).length;
     const totalQuestions = document.querySelectorAll('.quiz-question').length;
@@ -1627,6 +1647,29 @@ function updateQuizScore() {
 
         // Auto-mark lesson as complete if passed (70% or higher)
         if (percentage >= 70) {
+            // Award XP for passing the quiz
+            if (currentLesson && currentLesson.xp_reward && currentLesson.xp_reward > 0) {
+                try {
+                    const { error: xpError } = await supabase
+                        .from('xp_transactions')
+                        .insert({
+                            user_id: currentUser.id,
+                            amount: currentLesson.xp_reward,
+                            source_type: 'quiz_pass',
+                            source_id: currentLesson.id,
+                            description: `Quiz passed: ${currentLesson.title} (${Math.round(percentage)}%)`
+                        });
+
+                    if (xpError) {
+                        console.error('Error awarding quiz XP:', xpError);
+                    } else {
+                        console.log(`✅ Awarded ${currentLesson.xp_reward} XP for passing quiz: ${currentLesson.title}`);
+                    }
+                } catch (error) {
+                    console.error('Error awarding quiz XP:', error);
+                }
+            }
+
             showNotification(`Great job! You scored ${Math.round(percentage)}%`, 'success');
             setTimeout(() => {
                 autoCompleteLessonIfEligible('quiz');

@@ -45,7 +45,18 @@ async function loadUserData() {
         const [profileResult, badgeCountResult] = await Promise.all([
             supabase
                 .from('profiles')
-                .select('*')
+                .select(`
+                    *,
+                    rank:ranks(
+                        id,
+                        name,
+                        icon,
+                        icon_color,
+                        min_xp,
+                        max_xp,
+                        rank_order
+                    )
+                `)
                 .eq('id', user.id)
                 .single(),
             supabase
@@ -153,21 +164,78 @@ function updateProfileUI(user, profile) {
         streakElement.classList.remove('skeleton-text');
     }
 
-    // Update rank (based on level)
-    const rank = getRankFromLevel(level);
+    // Update rank display with new rank system
     const rankElement = document.getElementById('profile-rank');
-    if (rankElement) {
-        rankElement.textContent = rank;
-        rankElement.classList.remove('skeleton-text');
-    }
-
-    // Update rank icon
+    const rankIconElement = document.getElementById('profile-rank-icon');
     const rankIconSkeleton = document.getElementById('profile-rank-icon-skeleton');
-    const rankIcon = document.getElementById('profile-rank-icon');
-    if (rankIcon && rankIconSkeleton) {
-        rankIcon.src = getRankIconFromLevel(level);
-        rankIcon.style.display = '';
-        rankIconSkeleton.style.display = 'none';
+    
+    if (profile.rank) {
+        // Update rank name
+        if (rankElement) {
+            rankElement.textContent = profile.rank.name;
+            rankElement.classList.remove('skeleton-text');
+        }
+        
+        // Update rank icon with Font Awesome icon
+        if (rankIconElement && rankIconSkeleton) {
+            // Hide the image element and show icon instead
+            rankIconElement.style.display = 'none';
+            rankIconSkeleton.style.display = 'none';
+            
+            // Create or update rank icon container
+            let rankIconContainer = document.getElementById('rank-icon-container');
+            if (!rankIconContainer) {
+                rankIconContainer = document.createElement('div');
+                rankIconContainer.id = 'rank-icon-container';
+                rankIconContainer.style.cssText = `
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    background: ${profile.rank.icon_color}15;
+                    margin-right: 8px;
+                `;
+                rankIconElement.parentNode.insertBefore(rankIconContainer, rankIconElement);
+            }
+            
+            rankIconContainer.innerHTML = `
+                <i class="${profile.rank.icon}" style="color: ${profile.rank.icon_color}; font-size: 16px;"></i>
+            `;
+        }
+    } else {
+        // No rank assigned yet
+        if (rankElement) {
+            rankElement.textContent = 'Unranked';
+            rankElement.classList.remove('skeleton-text');
+        }
+        
+        if (rankIconElement && rankIconSkeleton) {
+            rankIconElement.style.display = 'none';
+            rankIconSkeleton.style.display = 'none';
+            
+            let rankIconContainer = document.getElementById('rank-icon-container');
+            if (!rankIconContainer) {
+                rankIconContainer = document.createElement('div');
+                rankIconContainer.id = 'rank-icon-container';
+                rankIconContainer.style.cssText = `
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    background: #f3f4f6;
+                    margin-right: 8px;
+                `;
+                rankIconElement.parentNode.insertBefore(rankIconContainer, rankIconElement);
+            }
+            
+            rankIconContainer.innerHTML = `
+                <i class="fas fa-question" style="color: #6b7280; font-size: 16px;"></i>
+            `;
+        }
     }
 
     // Update badges count
@@ -807,7 +875,7 @@ async function loadUserBadges() {
                             <i class="fas fa-lock" style="font-size: 10px; color: white;"></i>
                         </div>` : ''}
                         ${badge.icon_url ?
-                            `<img src="${badge.icon_url}" alt="${badge.name}" class="badge-icon" style="${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}">` :
+                            `<img src="${badge.icon_url}" alt="${badge.name}" class="badge-icon" style="${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}" onerror="console.error('Badge icon failed to load:', '${badge.icon_url}'); this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9IiNlZjQ0NDQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJtMTIgMi41IDMuMDkgNi4yNkwyMiA5Ljk3bC01IDQuODcgMS4xOCA3LjE2TDEyIDE3LjUgNS44MiAyMkw3IDEwLjg0IDIgOS45N2w2LjkxLTEuMjFMMTIgMi41eiIvPjwvc3ZnPg=='; this.style.filter='sepia(100%) saturate(500%) hue-rotate(-50deg)';"` :
                             `<div class="badge-icon" style="background: ${color}; display: flex; align-items: center; justify-content: center; ${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}">
                                 <i class="fas fa-trophy" style="color: white; font-size: 28px;"></i>
                             </div>`
