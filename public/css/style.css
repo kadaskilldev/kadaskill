@@ -2423,6 +2423,18 @@ body.has-fixed-header {
     margin: 0 auto 134px auto;
 }
 
+.final-cta .cta-button {
+    min-height: 85px;
+    padding: 0 4.5rem;
+    font-size: 2rem;
+    transform: scale(1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.final-cta .cta-button:hover {
+    transform: scale(1.05);
+}
+
 .final-cta .cta-button span {
     font-family: 'Amazon Ember', 'Inter', sans-serif;
     font-weight: 700;
