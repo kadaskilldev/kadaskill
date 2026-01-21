@@ -134,14 +134,17 @@
     transform: translateX(0);
     opacity: 1;
   }
+
   50% {
     transform: translateX(-20px);
     opacity: 0;
   }
+
   51% {
     transform: translateX(20px);
     opacity: 0;
   }
+
   100% {
     transform: translateX(0);
     opacity: 1;
@@ -153,14 +156,17 @@
     transform: translateX(0);
     opacity: 1;
   }
+
   50% {
     transform: translateX(20px);
     opacity: 0;
   }
+
   51% {
     transform: translateX(-20px);
     opacity: 0;
   }
+
   100% {
     transform: translateX(0);
     opacity: 1;
@@ -223,6 +229,7 @@
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -260,6 +267,7 @@
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -281,13 +289,13 @@
   pointer-events: none;
 }
 
-.hero-section .ellipse-10 + .day-label,
-.hero-section .day-circle.ellipse-10 + .day-label {
+.hero-section .ellipse-10+.day-label,
+.hero-section .day-circle.ellipse-10+.day-label {
   color: #f8fafc;
 }
 
-.hero-section .ellipse-9 + .day-label,
-.hero-section .day-circle.ellipse-9 + .day-label {
+.hero-section .ellipse-9+.day-label,
+.hero-section .day-circle.ellipse-9+.day-label {
   color: #111827;
 }
 
@@ -296,10 +304,12 @@
     opacity: 0;
     transform: translateX(-60px) scale(0.92) rotate(-8deg);
   }
+
   60% {
     opacity: 1;
     transform: translateX(4px) scale(1) rotate(3deg);
   }
+
   100% {
     opacity: 1;
     transform: translateX(0) scale(1) rotate(0deg);
@@ -307,13 +317,16 @@
 }
 
 @keyframes waveBot {
+
   0%,
   100% {
     transform: rotate(0deg) translateY(0);
   }
+
   40% {
     transform: rotate(-6deg) translateY(-3px);
   }
+
   60% {
     transform: rotate(6deg) translateY(-3px);
   }
@@ -471,7 +484,7 @@
   gap: 1.5rem;
 }
 
-.practice-review + .greeting-learn {
+.practice-review+.greeting-learn {
   margin-top: 1.5rem;
 }
 
@@ -708,7 +721,7 @@
 /* Restore profile panel styling */
 .profile-section {
   position: relative;
-  width: 288px;
+  width: 320px;
   height: 277px;
   margin: 0 auto;
 }
@@ -735,7 +748,7 @@
 .profile-section .div {
   position: absolute;
   top: 22px;
-  right: 162px;
+  right: 194px;
   width: 96px;
   height: 35px;
 }
@@ -1033,6 +1046,7 @@
   font-size: 1rem;
   justify-content: center;
 }
+
 .profile-section .button-vie-profile.learning-action-continue::before {
   transform: scaleX(1.18);
   transform-origin: center;
@@ -1041,7 +1055,7 @@
 
 /* Calendar panel */
 .profile-section-2 {
-  width: 288px;
+  width: 320px;
   margin: 0 auto;
 }
 
@@ -1153,7 +1167,7 @@
 
   .profile-section,
   .profile-section-2 {
-  width: 100%;
+    width: 100%;
   }
 }
 
@@ -1164,7 +1178,7 @@
   }
 
   .hero-section .greetings {
-  align-items: center;
+    align-items: center;
     text-align: center;
   }
 
@@ -1173,6 +1187,6 @@
   }
 
   .dashboard-sidebar {
-  flex-direction: column;
-}
+    flex-direction: column;
+  }
 }

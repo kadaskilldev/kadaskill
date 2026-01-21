@@ -61,7 +61,7 @@ body.has-fixed-header {
 
 .content-wrapper {
     display: grid;
-    grid-template-columns: 1fr 300px;
+    grid-template-columns: 1fr 330px;
     gap: 3rem;
     align-items: start;
 }
@@ -299,6 +299,7 @@ body.has-fixed-header {
     0% {
         background-position: -200px 0;
     }
+
     100% {
         background-position: calc(200px + 100%) 0;
     }
@@ -1085,7 +1086,7 @@ body.has-fixed-header {
 /* Leaderboard Card */
 
 .leaderboard-card {
-    width: 288px;
+    width: 320px;
     margin: 2.5rem auto 0;
     background: #ffffff;
     border-radius: 15px;
@@ -1259,11 +1260,11 @@ body.has-fixed-header {
         grid-template-columns: 1fr;
         gap: 2rem;
     }
-    
+
     .course-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .cert-grid {
         grid-template-columns: 1fr;
     }
@@ -1274,29 +1275,29 @@ body.has-fixed-header {
         flex-direction: column;
         gap: 1rem;
     }
-    
+
     .nav-links {
         gap: 1rem;
     }
-    
+
     .search-box input {
         width: 200px;
     }
-    
+
     .welcome-header {
         flex-direction: column;
         text-align: center;
     }
-    
+
     .stats-grid {
         grid-template-columns: repeat(4, 1fr);
     }
-    
+
     .footer-content {
         grid-template-columns: 1fr;
         gap: 2rem;
     }
-    
+
     /* Responsive Badge Layout */
     #homeBadgesRow,
     #homeBadgesRow.badges-grid,
