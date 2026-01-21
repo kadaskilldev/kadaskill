@@ -1,4 +1,4 @@
-    /* AGGRESSIVE BADGE FIX - HIGHEST PRIORITY */
+/* AGGRESSIVE BADGE FIX - HIGHEST PRIORITY */
 
 section.badges-showcase,
 .badges-section {
@@ -1309,11 +1309,12 @@ body.has-fixed-header {
     }
     .badges-grid {
         grid-template-columns: repeat(3, 1fr);
-        /* Responsive Badge Layout */
-        #homeBadgesRow,
-        #homeBadgesRow.badges-grid,
-        .badges-row {
-            gap: 16px !important;
-            justify-content: space-around !important;
-        }
     }
+    /* Responsive Badge Layout */
+    #homeBadgesRow,
+    #homeBadgesRow.badges-grid,
+    .badges-row {
+        gap: 16px !important;
+        justify-content: space-around !important;
+    }
+}
