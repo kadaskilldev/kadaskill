@@ -279,7 +279,6 @@ function renderCourses(courses) {
 
 function createCourseCard(course, isEnrolled) {
     const categoryClass = course.category.toLowerCase().replace(/\s+/g, '-');
-    const difficultyClass = course.difficulty.toLowerCase();
     const duration = formatDuration(course.duration_hours);
     const description = course.short_description || course.description || 'Learn essential skills and concepts.';
 
@@ -295,7 +294,7 @@ function createCourseCard(course, isEnrolled) {
         lockBadge = '<div class="course-locked-badge"><i class="fas fa-lock"></i> Locked</div>';
         buttonHtml = `
             <button class="course-card-btn locked" onclick="showPrerequisitesModal('${course.id}')">
-                <i class="fas fa-lock"></i> Prerequisites Required
+                <i class="fas fa-lock"></i> Unlock
             </button>
         `;
     } else if (isEnrolled) {
@@ -319,9 +318,9 @@ function createCourseCard(course, isEnrolled) {
                 <img src="${course.thumbnail_url || '/images/courses/default.jpg'}"
                      alt="${course.title}"
                      onerror="this.style.display='none';">
-                <div class="course-badge ${difficultyClass}">${course.difficulty}</div>
             </div>
             <div class="course-card-content">
+                <div class="course-level-badge">${course.difficulty}</div>
                 <h3 class="course-card-title">${course.title}</h3>
                 <p class="course-card-description">${truncateText(description, 100)}</p>
                 <div class="course-card-footer">
@@ -554,23 +553,22 @@ function searchCourses(searchTerm) {
         }
         
         .course-card-btn.enrolled {
-            background: #ff9500 !important;
+            background: #f59e0b !important;
             color: #1a202c !important;
-            border-radius: 50px !important;
         }
         
         .course-card-btn.enrolled:hover {
-            background: #e68500 !important;
+            background: #fbbf24 !important;
         }
         
         .course-card-btn.locked {
-            background: #6b7280;
-            cursor: not-allowed;
+            background: #94a3b8 !important;
+            cursor: not-allowed !important;
         }
         
         .course-card-btn.locked:hover {
-            background: #6b7280;
-            transform: none;
+            background: #94a3b8 !important;
+            transform: none !important;
         }
     `;
     document.head.appendChild(style);

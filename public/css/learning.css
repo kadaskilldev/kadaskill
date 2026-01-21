@@ -1,5 +1,5 @@
 /* ============================================
-   Course Learning Page Styles
+   Course Learning Page Styles - Updated with Orange Theme
    ============================================ */
 
 :root {
@@ -22,7 +22,7 @@
    ============================================ */
 
 .course-header {
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-dark-hover) 100%);
+    background: linear-gradient(135deg, #0f5257 0%, #052a38 100%);
     color: white;
     padding: 40px 0;
     margin-bottom: 30px;
@@ -276,7 +276,7 @@
 }
 
 .lesson-item.active {
-    background-color: rgba(255, 149, 0, 0.1);
+    background-color: rgba(245, 158, 11, 0.1);
     border-left-color: var(--accent-orange);
 }
 
@@ -363,35 +363,46 @@
     gap: 12px;
 }
 
+
+/* 3D Orange Button Style - Mark Complete */
+
 .btn-mark-complete {
-    background-color: var(--success-green);
-    color: white;
-    border: none;
-    padding: 12px 24px;
+    background: var(--accent-orange);
+    color: var(--text-dark);
+    border: 3px solid var(--text-dark);
+    padding: 0.75rem 1.75rem;
     border-radius: 8px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: all 0.3s;
+    transition: all 0.1s ease;
+    box-shadow: 0 4px 0px rgba(26, 32, 44, 0.4);
+    position: relative;
+    top: 0;
 }
 
 .btn-mark-complete:hover {
-    background-color: #218838;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    background-color: var(--accent-orange-hover);
+    top: -1px;
+    box-shadow: 0 5px 0px rgba(26, 32, 44, 0.4);
+}
+
+.btn-mark-complete:active {
+    top: 3px;
+    box-shadow: 0 1px 0px rgba(26, 32, 44, 0.4);
 }
 
 .btn-mark-complete.completed {
-    background-color: #6c757d;
+    background-color: #94a3b8;
     cursor: default;
 }
 
 .btn-mark-complete.completed:hover {
-    transform: none;
-    box-shadow: none;
+    top: 0;
+    box-shadow: 0 4px 0px rgba(26, 32, 44, 0.4);
 }
 
 
@@ -446,6 +457,18 @@
     left: 0;
     width: 100%;
     height: 100%;
+}
+
+
+/* Progress Bar - Orange to Yellow Gradient */
+
+.video-progress-bar {
+    background: linear-gradient(135deg, #ff9500 0%, #fbbf24 100%);
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    color: #1a202c;
+    font-weight: 600;
 }
 
 
@@ -581,7 +604,7 @@
 }
 
 
-/* Lesson Navigation */
+/* Lesson Navigation - 3D Button Style */
 
 .lesson-navigation {
     padding: 20px 30px;
@@ -598,60 +621,91 @@
 }
 
 .btn-nav {
-    padding: 12px 24px;
+    padding: 0.75rem 1.75rem;
     border-radius: 8px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: all 0.3s;
+    transition: all 0.1s ease;
+    position: relative;
+    top: 0;
 }
 
+
+/* Previous Button - White with Black Border */
+
 .btn-prev {
-    background-color: white;
-    color: var(--primary-dark);
-    border: 2px solid var(--primary-dark);
+    background-color: #ffffff;
+    color: var(--text-dark);
+    border: 3px solid var(--text-dark);
+    box-shadow: 0 4px 0px rgba(26, 32, 44, 0.4);
 }
 
 .btn-prev:hover {
-    background-color: var(--primary-dark);
-    color: white;
+    background-color: #f8f9fa;
+    top: -1px;
+    box-shadow: 0 5px 0px rgba(26, 32, 44, 0.4);
 }
+
+.btn-prev:active {
+    top: 3px;
+    box-shadow: 0 1px 0px rgba(26, 32, 44, 0.4);
+}
+
+
+/* Next Button - Orange with Black Border */
 
 .btn-next {
     background-color: var(--accent-orange);
-    color: white;
-    border: 2px solid var(--accent-orange);
+    color: var(--text-dark);
+    border: 3px solid var(--text-dark);
+    box-shadow: 0 4px 0px rgba(26, 32, 44, 0.4);
 }
 
 .btn-next:hover {
     background-color: var(--accent-orange-hover);
-    border-color: var(--accent-orange-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.3);
+    top: -1px;
+    box-shadow: 0 5px 0px rgba(26, 32, 44, 0.4);
 }
 
+.btn-next:active {
+    top: 3px;
+    box-shadow: 0 1px 0px rgba(26, 32, 44, 0.4);
+}
+
+
+/* Complete Course Button - Green with 3D Effect */
+
 .btn-complete {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    color: white;
-    border: none;
-    padding: 12px 24px;
+    background: #28a745;
+    color: #ffffff;
+    border: 3px solid var(--text-dark);
+    padding: 0.75rem 1.75rem;
     border-radius: 8px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.1s ease;
     display: flex;
     align-items: center;
     gap: 8px;
+    box-shadow: 0 4px 0px rgba(26, 32, 44, 0.4);
+    position: relative;
+    top: 0;
 }
 
 .btn-complete:hover {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+    background: #218838;
+    top: -1px;
+    box-shadow: 0 5px 0px rgba(26, 32, 44, 0.4);
+}
+
+.btn-complete:active {
+    top: 3px;
+    box-shadow: 0 1px 0px rgba(26, 32, 44, 0.4);
 }
 
 .btn-complete i {
@@ -664,15 +718,8 @@
 }
 
 .btn-nav:disabled:hover {
-    transform: none;
-    box-shadow: none;
-    background-color: var(--accent-orange);
-    border-color: var(--accent-orange);
-}
-
-.btn-prev:disabled:hover {
-    background-color: white;
-    color: var(--primary-dark);
+    top: 0;
+    box-shadow: 0 4px 0px rgba(26, 32, 44, 0.4);
 }
 
 
@@ -683,6 +730,7 @@
 .quiz-content {
     max-width: 800px;
     padding: 20px 0;
+    margin: 0 auto;
 }
 
 .quiz-header {
@@ -733,7 +781,7 @@
 
 .quiz-question:hover {
     border-color: var(--accent-orange);
-    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
 }
 
 .question-header {
@@ -894,18 +942,18 @@
 }
 
 
-/* Quiz Summary */
+/* Quiz Summary - Orange to Yellow Gradient */
 
 .quiz-summary {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-dark-hover) 100%);
-    color: white;
+    background: linear-gradient(135deg, #ff9500 0%, #fbbf24 100%);
+    color: #1a202c;
     padding: 24px 32px;
     border-radius: 12px;
     margin-top: 32px;
-    box-shadow: 0 4px 16px rgba(26, 53, 65, 0.3);
+    box-shadow: 0 4px 16px rgba(255, 149, 0, 0.3);
 }
 
 .quiz-score {
@@ -913,37 +961,49 @@
     align-items: center;
     gap: 16px;
     font-size: 18px;
+    font-weight: 600;
 }
 
 .quiz-score i {
     font-size: 32px;
-    color: var(--accent-orange);
+    color: #1a202c;
 }
 
 .quiz-score strong {
-    color: var(--accent-orange);
+    color: #1a202c;
     font-size: 24px;
 }
 
+
+/* Retry Quiz Button - 3D Style */
+
 .btn-retry-quiz {
-    background-color: var(--accent-orange);
-    color: white;
-    border: none;
-    padding: 12px 24px;
+    background-color: #ffffff;
+    color: var(--text-dark);
+    border: 3px solid var(--text-dark);
+    padding: 0.75rem 1.75rem;
     border-radius: 8px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: all 0.3s;
+    transition: all 0.1s ease;
+    box-shadow: 0 4px 0px rgba(26, 32, 44, 0.4);
+    position: relative;
+    top: 0;
 }
 
 .btn-retry-quiz:hover {
-    background-color: var(--accent-orange-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.3);
+    background-color: #f8f9fa;
+    top: -1px;
+    box-shadow: 0 5px 0px rgba(26, 32, 44, 0.4);
+}
+
+.btn-retry-quiz:active {
+    top: 3px;
+    box-shadow: 0 1px 0px rgba(26, 32, 44, 0.4);
 }
 
 

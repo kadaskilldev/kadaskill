@@ -195,8 +195,7 @@ function renderPage() {
     const xpEl = document.getElementById('metaXP');
     xpEl.innerHTML = `<i class="fas fa-star"></i> ${currentCourse.xp_reward || 0} XP`;
 
-    const studentsEl = document.getElementById('metaStudents');
-    studentsEl.innerHTML = `<i class="fas fa-users"></i> ${currentCourse.enrolled_count || 0} students`;
+    // Removed student count section
 
     // Render learning objectives
     renderLearningObjectives();
@@ -287,7 +286,7 @@ function updateEnrollmentCard() {
         const list = document.getElementById('prerequisitesList');
         list.innerHTML = currentCourse.unmetPrerequisites.map(prereq => `
             <li>
-                <a href="enroll.html?course=${prereq.slug}" style="color: white; text-decoration: underline;">
+                <a href="enroll.html?course=${prereq.slug}" style="color: var(--text-dark); text-decoration: underline;">
                     ${escapeHtml(prereq.title)}
                 </a>
             </li>
@@ -465,8 +464,9 @@ function showError(message) {
                 <p style="color: #ef4444;">${escapeHtml(message)}</p>
                 <button onclick="window.location.href='learn.html'" 
                         style="margin-top: 16px; padding: 12px 24px; border: none; 
-                               background: #ff9500; color: white; border-radius: 8px; 
-                               cursor: pointer; font-weight: 600;">
+                               background: #f59e0b; color: #1a202c; border-radius: 8px; 
+                               cursor: pointer; font-weight: 600; border: 3px solid #1a202c;
+                               box-shadow: 0 4px 0px rgba(26, 32, 44, 0.4);">
                     Back to Courses
                 </button>
             </div>

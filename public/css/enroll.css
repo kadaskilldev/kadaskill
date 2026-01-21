@@ -3,31 +3,59 @@
    ============================================ */
 
 .course-card-btn.enrolled {
-    background: #ff9500 !important;
+    background: #f59e0b !important;
+    border: 3px solid #1a202c !important;
     color: #1a202c !important;
-    border-radius: 50px !important;
-    padding: 0.75rem 2.5rem !important;
-    border: none !important;
+    padding: 0.625rem 1.75rem !important;
+    border-radius: 8px !important;
+    font-size: 0.875rem !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    transition: all 0.1s ease !important;
+    box-shadow: 0 4px 0px rgba(26, 32, 44, 0.4) !important;
+    text-transform: capitalize !important;
+    position: relative !important;
+    top: 0 !important;
 }
 
 .course-card-btn.enrolled:hover {
-    background: #e68500 !important;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(255, 149, 0, 0.4);
+    background-color: #fbbf24 !important;
+    top: -1px !important;
+    box-shadow: 0 5px 0px rgba(26, 32, 44, 0.4) !important;
+    transform: none !important;
+}
+
+.course-card-btn.enrolled:active {
+    top: 3px !important;
+    box-shadow: 0 1px 0px rgba(26, 32, 44, 0.4) !important;
 }
 
 .course-card-btn.resume {
-    background: #ff9500 !important;
+    background: #f59e0b !important;
+    border: 3px solid #1a202c !important;
     color: #1a202c !important;
-    border-radius: 50px !important;
-    padding: 0.75rem 2.5rem !important;
-    border: none !important;
+    padding: 0.625rem 1.75rem !important;
+    border-radius: 8px !important;
+    font-size: 0.875rem !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    transition: all 0.1s ease !important;
+    box-shadow: 0 4px 0px rgba(26, 32, 44, 0.4) !important;
+    text-transform: capitalize !important;
+    position: relative !important;
+    top: 0 !important;
 }
 
 .course-card-btn.resume:hover {
-    background: #e68500 !important;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(255, 149, 0, 0.4);
+    background-color: #fbbf24 !important;
+    top: -1px !important;
+    box-shadow: 0 5px 0px rgba(26, 32, 44, 0.4) !important;
+    transform: none !important;
+}
+
+.course-card-btn.resume:active {
+    top: 3px !important;
+    box-shadow: 0 1px 0px rgba(26, 32, 44, 0.4) !important;
 }
 
 
@@ -317,24 +345,27 @@
 }
 
 
-/* Enrollment Buttons */
+/* Enrollment Buttons - Updated with 3D Style */
 
 .btn-enroll,
 .btn-continue {
     width: 100%;
-    padding: 16px 32px;
-    border-radius: 30px;
-    font-size: 16px;
-    font-weight: 600;
+    padding: 0.875rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    transition: all 0.3s;
-    border: none;
-    background-color: var(--accent-orange);
-    color: white;
+    transition: all 0.1s ease;
+    background: #f59e0b;
+    border: 3px solid #1a202c;
+    color: #1a202c;
+    box-shadow: 0 4px 0px rgba(26, 32, 44, 0.4);
+    position: relative;
+    top: 0;
 }
 
 .btn-continue i {
@@ -343,20 +374,30 @@
 
 .btn-enroll:hover,
 .btn-continue:hover {
-    background-color: var(--accent-orange-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(255, 149, 0, 0.3);
+    background-color: #fbbf24;
+    top: -1px;
+    box-shadow: 0 5px 0px rgba(26, 32, 44, 0.4);
+    transform: none;
+}
+
+.btn-enroll:active,
+.btn-continue:active {
+    top: 3px;
+    box-shadow: 0 1px 0px rgba(26, 32, 44, 0.4);
 }
 
 .btn-enroll:disabled {
-    background-color: var(--text-light);
+    background: #94a3b8;
+    box-shadow: 0 4px 0px rgba(26, 32, 44, 0.4);
     cursor: not-allowed;
-    opacity: 0.6;
+    color: #ffffff;
+    top: 0;
 }
 
 .btn-enroll:disabled:hover {
+    top: 0;
+    box-shadow: 0 4px 0px rgba(26, 32, 44, 0.4);
     transform: none;
-    box-shadow: none;
 }
 
 

@@ -1793,7 +1793,7 @@ function showNotification(message, type = 'info') {
         
         /* Lesson Progress Indicator Styles */
         .lesson-progress-indicator {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #04505b 0%, #146563 100%);
             color: white;
             padding: 20px;
             border-radius: 12px;
