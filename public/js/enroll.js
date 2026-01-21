@@ -13,7 +13,7 @@ let prerequisitesMet = true;
 // Initialize Page
 // ============================================
 
-document.addEventListener('DOMContentLoaded', async() => {
+document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const courseSlug = urlParams.get('course');
 
@@ -486,9 +486,10 @@ function showError(message) {
             top: 20px;
             right: 20px;
             padding: 16px 24px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            background: linear-gradient(135deg, #0a2838 0%, #11a1a3 100%);
+            color: white;
+            border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             display: flex;
             align-items: center;
             gap: 12px;
@@ -506,36 +507,20 @@ function showError(message) {
             font-size: 20px;
         }
         
-        .notification-success {
-            border-left: 4px solid #10b981;
-        }
-        
         .notification-success i {
             color: #10b981;
-        }
-        
-        .notification-error {
-            border-left: 4px solid #ef4444;
         }
         
         .notification-error i {
             color: #ef4444;
         }
         
-        .notification-warning {
-            border-left: 4px solid #f59e0b;
-        }
-        
         .notification-warning i {
             color: #f59e0b;
         }
         
-        .notification-info {
-            border-left: 4px solid #3b82f6;
-        }
-        
         .notification-info i {
-            color: #3b82f6;
+            color: #f59e0b;
         }
     `;
     document.head.appendChild(style);

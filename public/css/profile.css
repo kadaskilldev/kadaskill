@@ -982,20 +982,13 @@ body {
   background: white;
   border: 2px solid #f0f0f0;
   border-radius: 12px;
-  padding: 1.25rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  transition: all 0.3s ease;
   position: relative;
   cursor: pointer;
-}
-
-.profile-badge-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  border-color: var(--profile-focus);
 }
 
 .profile-badge-card--locked {
@@ -1004,21 +997,15 @@ body {
   background: #fafafa;
 }
 
-.profile-badge-card--locked:hover {
-  transform: none;
-  box-shadow: none;
-  border-color: #f0f0f0;
-}
-
 .profile-badge-card__icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 0.75rem;
-  font-size: 32px;
+  margin-bottom: 0.5rem;
+  font-size: 24px;
 }
 
 .profile-badge-card__icon img {
@@ -1084,12 +1071,12 @@ body {
   }
 
   .profile-badge-card {
-    padding: 1rem;
+    padding: 0.875rem;
   }
 
   .profile-badge-card__icon {
-    width: 48px;
-    height: 48px;
-    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
   }
 }

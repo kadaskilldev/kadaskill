@@ -9,7 +9,7 @@ let supabaseClient;
 // Performance Optimization: Only create client once
 function getSupabaseClient() {
     if (supabaseClient) return supabaseClient;
-    
+
     if (window.supabase && window.supabase.createClient) {
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         return supabaseClient;
@@ -1197,26 +1197,84 @@ function showNotification(message, type = 'info') {
     notification.className = `notification notification-${type}`;
     notification.innerHTML = `
         <div class="notification-content">
-            <span class="notification-icon">${getNotificationIcon(type)}</span>
+            <div class="notification-icon">${getNotificationIcon(type)}</div>
             <span class="notification-message">${message}</span>
-            <button class="notification-close">&times;</button>
+            <button class="notification-close" aria-label="Close">&times;</button>
         </div>
     `;
+
+    // Mobile detection
+    const isMobile = window.innerWidth <= 768;
 
     // Add styles
     notification.style.cssText = `
         position: fixed;
-        top: 20px;
-        right: 20px;
+        top: ${isMobile ? '16px' : '24px'};
+        right: ${isMobile ? '16px' : '24px'};
+        ${isMobile ? 'left: 16px;' : ''}
         background: ${getNotificationColor(type)};
         color: white;
-        padding: 1rem;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        padding: ${isMobile ? '14px 16px' : '16px 20px'};
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1);
         z-index: 10000;
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
-        max-width: 400px;
+        transform: ${isMobile ? 'translateY(-200px)' : 'translateX(450px)'};
+        transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        ${!isMobile ? 'max-width: 380px;' : ''}
+        backdrop-filter: blur(10px);
+        font-family: 'Inter', sans-serif;
+    `;
+
+    // Style notification content
+    const content = notification.querySelector('.notification-content');
+    content.style.cssText = `
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    `;
+
+    // Style icon
+    const icon = notification.querySelector('.notification-icon');
+    icon.style.cssText = `
+        width: ${isMobile ? '28px' : '32px'};
+        height: ${isMobile ? '28px' : '32px'};
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: ${isMobile ? '16px' : '18px'};
+        font-weight: bold;
+        flex-shrink: 0;
+    `;
+
+    // Style message
+    const messageEl = notification.querySelector('.notification-message');
+    messageEl.style.cssText = `
+        flex: 1;
+        font-size: ${isMobile ? '13px' : '14px'};
+        line-height: 1.4;
+        font-weight: 500;
+    `;
+
+    // Style close button
+    const closeBtn = notification.querySelector('.notification-close');
+    closeBtn.style.cssText = `
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: background 0.2s ease;
+        line-height: 1;
+        padding: 0;
     `;
 
     // Add to DOM
@@ -1224,21 +1282,28 @@ function showNotification(message, type = 'info') {
 
     // Animate in
     setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
+        notification.style.transform = isMobile ? 'translateY(0)' : 'translateX(0)';
     }, 100);
 
     // Close button functionality
-    const closeBtn = notification.querySelector('.notification-close');
     closeBtn.addEventListener('click', () => {
-        notification.style.transform = 'translateX(100%)';
-        setTimeout(() => notification.remove(), 300);
+        notification.style.transform = isMobile ? 'translateY(-200px)' : 'translateX(450px)';
+        setTimeout(() => notification.remove(), 400);
+    });
+
+    closeBtn.addEventListener('mouseenter', () => {
+        closeBtn.style.background = 'rgba(255, 255, 255, 0.3)';
+    });
+
+    closeBtn.addEventListener('mouseleave', () => {
+        closeBtn.style.background = 'rgba(255, 255, 255, 0.2)';
     });
 
     // Auto remove after 5 seconds
     setTimeout(() => {
         if (document.body.contains(notification)) {
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => notification.remove(), 300);
+            notification.style.transform = isMobile ? 'translateY(-200px)' : 'translateX(450px)';
+            setTimeout(() => notification.remove(), 400);
         }
     }, 5000);
 }
@@ -1254,13 +1319,8 @@ function getNotificationIcon(type) {
 }
 
 function getNotificationColor(type) {
-    const colors = {
-        success: '#28a745',
-        error: '#dc3545',
-        warning: '#ffc107',
-        info: '#17a2b8'
-    };
-    return colors[type] || colors.info;
+    // Unified Brand Teal/Dark Theme - same background for all types
+    return 'linear-gradient(135deg, #0a2838 0%, #11a1a3 100%)';
 }
 
 // Learn Page Functionality

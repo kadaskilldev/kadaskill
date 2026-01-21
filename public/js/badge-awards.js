@@ -284,11 +284,11 @@ function showBadgeNotification(badge) {
     // Animate in
     setTimeout(() => notification.classList.add('show'), 100);
 
-    // Remove after 5 seconds
+    // Remove after 6 seconds
     setTimeout(() => {
         notification.classList.remove('show');
-        setTimeout(() => notification.remove(), 300);
-    }, 5000);
+        setTimeout(() => notification.remove(), 400);
+    }, 6000);
 }
 
 // Inject notification styles
@@ -300,17 +300,19 @@ function showBadgeNotification(badge) {
     style.textContent = `
         .badge-notification {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 24px;
+            right: 24px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3), 0 2px 8px rgba(0, 0, 0, 0.15);
             z-index: 10000;
             max-width: 400px;
             transform: translateX(450px);
-            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            backdrop-filter: blur(10px);
+            font-family: 'Inter', sans-serif;
         }
 
         .badge-notification.show {
@@ -324,55 +326,87 @@ function showBadgeNotification(badge) {
         }
 
         .badge-notification-icon {
-            width: 64px;
-            height: 64px;
+            width: 56px;
+            height: 56px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
+            font-size: 28px;
             flex-shrink: 0;
         }
 
         .badge-notification-icon img {
-            width: 56px;
-            height: 56px;
+            width: 48px;
+            height: 48px;
             border-radius: 8px;
             object-fit: cover;
         }
 
+        .badge-notification-text {
+            flex: 1;
+        }
+
         .badge-notification-text h4 {
-            margin: 0 0 8px 0;
-            font-size: 18px;
+            margin: 0 0 6px 0;
+            font-size: 16px;
             font-weight: 700;
+            letter-spacing: -0.01em;
         }
 
         .badge-notification-text p {
-            margin: 4px 0;
-            font-size: 14px;
+            margin: 3px 0;
+            font-size: 13px;
             opacity: 0.95;
+            line-height: 1.4;
+        }
+
+        .badge-notification-text p strong {
+            font-weight: 600;
         }
 
         .badge-xp {
             display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 4px 12px;
+            background: rgba(255, 255, 255, 0.25);
+            padding: 4px 10px;
             border-radius: 6px;
             font-weight: 600;
-            margin-top: 8px !important;
+            margin-top: 6px !important;
+            font-size: 12px;
         }
 
         @media (max-width: 768px) {
             .badge-notification {
-                right: 10px;
-                left: 10px;
+                top: 16px;
+                right: 16px;
+                left: 16px;
                 max-width: none;
-                transform: translateY(-150px);
+                transform: translateY(-200px);
+                padding: 16px;
             }
 
             .badge-notification.show {
                 transform: translateY(0);
+            }
+
+            .badge-notification-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 24px;
+            }
+
+            .badge-notification-icon img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .badge-notification-text h4 {
+                font-size: 15px;
+            }
+
+            .badge-notification-text p {
+                font-size: 12px;
             }
         }
     `;

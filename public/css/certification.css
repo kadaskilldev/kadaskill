@@ -379,7 +379,7 @@ body {
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%) translateY(100px);
-    background: linear-gradient(135deg, #1f2937, #111827);
+    background: linear-gradient(135deg, #0a2838 0%, #11a1a3 100%);
     color: white;
     padding: 14px 24px;
     border-radius: 50px;

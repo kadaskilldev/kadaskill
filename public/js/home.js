@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadEnrolledCourses();
     await loadPracticeExercises();
     await loadCertificationCallouts();
-    await loadUserBadges();
+    // await loadUserBadges(); // TEMPORARILY COMMENTED OUT
     await loadLeaderboard();
 });
 
@@ -819,8 +819,14 @@ function showNoCertificationsMessage(container, message) {
 // ============================================
 // Load User Badges
 // ============================================
+// NOTE: This function is currently disabled.
+// Badge section is commented out in home.html (lines 169-183)
+// Function call is commented out in DOMContentLoaded (line 24)
 
 async function loadUserBadges() {
+    // DISABLED - Badge section is temporarily commented out
+    return;
+
     try {
         if (!currentUser) return;
 
@@ -859,6 +865,28 @@ async function loadUserBadges() {
         // Render badges in badges-row
         const badgesRow = document.getElementById('homeBadgesRow');
         if (badgesRow && allBadges && allBadges.length > 0) {
+            console.log('Applying badge layout fix...', allBadges.length, 'badges found');
+            
+            // Nuclear option - completely reset everything
+            badgesRow.removeAttribute('class');
+            badgesRow.removeAttribute('style');
+            badgesRow.className = '';
+            
+            // Force apply styles with maximum specificity
+            setTimeout(() => {
+                badgesRow.style.setProperty('display', 'flex', 'important');
+                badgesRow.style.setProperty('justify-content', 'space-evenly', 'important');
+                badgesRow.style.setProperty('align-items', 'center', 'important');
+                badgesRow.style.setProperty('flex-wrap', 'wrap', 'important');
+                badgesRow.style.setProperty('gap', '30px', 'important');
+                badgesRow.style.setProperty('width', '100%', 'important');
+                badgesRow.style.setProperty('padding', '20px 0', 'important');
+                badgesRow.style.setProperty('margin', '0', 'important');
+                badgesRow.style.setProperty('min-height', '100px', 'important');
+                
+                console.log('Badge container styles applied:', badgesRow.style.cssText);
+            }, 100);
+            
             badgesRow.innerHTML = allBadges.map(badge => {
                 const isEarned = earnedBadgeIds.has(badge.id);
                 const rarityColors = {
@@ -870,19 +898,33 @@ async function loadUserBadges() {
                 const color = badge.color || rarityColors[badge.rarity] || '#3b82f6';
 
                 return `
-                    <div class="badge-item" style="position: relative;" title="${badge.description}">
-                        ${!isEarned ? `<div style="position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; background: rgba(0,0,0,0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1;">
-                            <i class="fas fa-lock" style="font-size: 10px; color: white;"></i>
+                    <div class="badge-item" title="${badge.description}">
+                        ${!isEarned ? `<div style="position: absolute; top: 0; right: 0; width: 16px; height: 16px; background: rgba(0,0,0,0.75); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 2; border: 1.5px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">
+                            <i class="fas fa-lock" style="font-size: 7px; color: white;"></i>
                         </div>` : ''}
                         ${badge.icon_url ?
-                            `<img src="${badge.icon_url}" alt="${badge.name}" class="badge-icon" style="${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}" onerror="console.error('Badge icon failed to load:', '${badge.icon_url}'); this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9IiNlZjQ0NDQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJtMTIgMi41IDMuMDkgNi4yNkwyMiA5Ljk3bC01IDQuODcgMS4xOCA3LjE2TDEyIDE3LjUgNS44MiAyMkw3IDEwLjg0IDIgOS45N2w2LjkxLTEuMjFMMTIgMi41eiIvPjwvc3ZnPg=='; this.style.filter='sepia(100%) saturate(500%) hue-rotate(-50deg)';"` :
+                            `<img src="${badge.icon_url}" alt="${badge.name}" class="badge-icon" style="${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}" onerror="console.error('Badge icon failed to load:', '${badge.icon_url}'); this.onerror=null; this.style.display='none'; this.parentNode.innerHTML='<div class=\'badge-icon\' style=\'background: ${color}; display: flex; align-items: center; justify-content: center; ${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}\'>  <i class=\'fas fa-exclamation-triangle\' style=\'color: white; font-size: 20px;\'></i></div>';"` :
                             `<div class="badge-icon" style="background: ${color}; display: flex; align-items: center; justify-content: center; ${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}">
-                                <i class="fas fa-trophy" style="color: white; font-size: 28px;"></i>
+                                <i class="fas fa-trophy" style="color: white; font-size: 20px;"></i>
                             </div>`
                         }
                     </div>
                 `;
             }).join('');
+            
+            // Force layout recalculation and spacing
+            setTimeout(() => {
+                const badgeItems = badgesRow.querySelectorAll('.badge-item');
+                badgeItems.forEach((item, index) => {
+                    item.style.setProperty('flex', '0 0 64px', 'important');
+                    item.style.setProperty('width', '64px', 'important');
+                    item.style.setProperty('height', '64px', 'important');
+                    item.style.setProperty('margin', '0', 'important');
+                });
+                
+                console.log('Badge layout enforced on', badgeItems.length, 'items');
+                console.log('Final container styles:', badgesRow.style.cssText);
+            }, 200);
         }
 
         // Show first earned badge in profile section
@@ -906,10 +948,11 @@ async function loadUserBadges() {
 
 async function loadLeaderboard() {
     try {
+        // Fetch top users by total_xp from profiles table
         const { data: leaderboard, error } = await supabase
-            .from('leaderboard')
-            .select('*')
-            .order('rank', { ascending: true })
+            .from('profiles')
+            .select('id, username, full_name, avatar_url, total_xp')
+            .order('total_xp', { ascending: false })
             .limit(10);
 
         if (error) {
@@ -922,12 +965,13 @@ async function loadLeaderboard() {
             if (!leaderboardList) return;
 
             leaderboardList.innerHTML = leaderboard.map((entry, index) => {
-                const isCurrentUser = currentUser && entry.user_id === currentUser.id;
+                const isCurrentUser = currentUser && entry.id === currentUser.id;
                 const entryClass = isCurrentUser ? 'leaderboard-entry current-user' : 'leaderboard-entry';
 
                 return `
                     <li class="${entryClass}">
                         <div class="leaderboard-entry__profile">
+                            <span class="leaderboard-rank">#${index + 1}</span>
                             <img class="leaderboard-entry__avatar"
                                  src="${entry.avatar_url || 'images/profile/default-avatar.svg'}"
                                  alt="${entry.username} avatar" />
@@ -937,6 +981,19 @@ async function loadLeaderboard() {
                     </li>
                 `;
             }).join('');
+        } else {
+            // Show empty state if no users found
+            const leaderboardList = document.querySelector('.leaderboard-card__list');
+            if (leaderboardList) {
+                leaderboardList.innerHTML = `
+                    <li class="leaderboard-entry">
+                        <div class="leaderboard-entry__profile">
+                            <span class="leaderboard-entry__name">No users yet</span>
+                        </div>
+                        <span class="leaderboard-entry__score">0</span>
+                    </li>
+                `;
+            }
         }
 
     } catch (error) {
