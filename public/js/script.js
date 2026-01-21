@@ -1664,8 +1664,7 @@ function updateUserUI(user, profile) {
         '.greeting-text .highlight-name',
         '.greeting-text .highlight',
         '.welcome-section .greeting-text .highlight',
-        '.welcome-section .greeting-text .highlight-name',
-        '.text-wrapper-37'
+        '.welcome-section .greeting-text .highlight-name'
     ];
     greetingHighlightSelectors.forEach(selector => {
         document.querySelectorAll(selector).forEach(element => {

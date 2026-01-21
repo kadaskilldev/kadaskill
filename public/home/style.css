@@ -30,7 +30,7 @@
   animation: iconEnter 0.9s ease-out forwards, waveBot 2.6s ease-in-out 0.9s infinite;
 }
 
-.hero-section .welcome-back-eijay {
+.hero-section .welcome-back {
   font-family: 'Inter', sans-serif;
   font-size: clamp(2.75rem, 3.8vw, 3.6rem);
   font-weight: 700;
@@ -38,8 +38,17 @@
   letter-spacing: -0.012em;
 }
 
-.hero-section .welcome-back-eijay .text-wrapper-37 {
+.hero-section .welcome-back-name {
+  display: block;
   color: #ff9900;
+}
+
+.hero-section .welcome-back-name.name-long {
+  font-size: clamp(2rem, 3vw, 2.8rem);
+}
+
+.hero-section .welcome-back-name.name-very-long {
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem);
 }
 
 .hero-section .greeting-header {
