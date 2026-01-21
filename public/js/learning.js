@@ -20,7 +20,7 @@ let minimumEngagementTime = 0;
 // Initialize Page
 // ============================================
 
-document.addEventListener('DOMContentLoaded', async() => {
+document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const courseSlug = urlParams.get('course');
 
@@ -323,22 +323,22 @@ function groupLessonsIntoModules(lessons) {
 
 function renderModuleLessons(lessons) {
     return lessons.map((lesson) => {
-                const isCompleted = completedLessons.includes(lesson.id);
-                const isLocked = !isLessonUnlocked(lesson);
-                const isActive = currentLesson && currentLesson.id === lesson.id;
+        const isCompleted = completedLessons.includes(lesson.id);
+        const isLocked = !isLessonUnlocked(lesson);
+        const isActive = currentLesson && currentLesson.id === lesson.id;
 
-                let iconClass = 'unlocked';
-                let iconName = 'fa-circle';
+        let iconClass = 'unlocked';
+        let iconName = 'fa-circle';
 
-                if (isCompleted) {
-                    iconClass = 'completed';
-                    iconName = 'fa-check-circle';
-                } else if (isLocked) {
-                    iconClass = 'locked';
-                    iconName = 'fa-lock';
-                }
+        if (isCompleted) {
+            iconClass = 'completed';
+            iconName = 'fa-check-circle';
+        } else if (isLocked) {
+            iconClass = 'locked';
+            iconName = 'fa-lock';
+        }
 
-                return `
+        return `
             <div class="lesson-item ${isActive ? 'active' : ''} ${isLocked ? 'locked' : ''}"
                  data-lesson-id="${lesson.id}"
                  ${!isLocked ? `onclick="loadLesson('${lesson.id}')"` : ''}>
@@ -516,14 +516,14 @@ function startEngagementTracking(lesson) {
     if (lesson.content_type === 'text' && !completedLessons.includes(lesson.id)) {
         let timeSpent = 0;
         const totalTime = minimumEngagementTime;
-        
+
         contentEngagementTimer = setInterval(() => {
             timeSpent += 1000;
             const percentage = Math.min(100, (timeSpent / totalTime) * 100);
-            
+
             // Update reading progress UI
             updateReadingProgress(percentage, timeSpent, totalTime);
-            
+
             // Auto-complete after minimum engagement time
             if (timeSpent >= minimumEngagementTime) {
                 stopEngagementTracking();
@@ -541,10 +541,10 @@ function updateReadingProgress(percentage, timeSpent, totalTime) {
     const progressBar = document.getElementById('readingProgressBar');
     const progressPercentage = document.getElementById('progressPercentage');
     const progressText = document.getElementById('progressText');
-    
+
     if (progressBar) {
         progressBar.style.width = `${percentage}%`;
-        
+
         // Color coding
         if (percentage >= 100) {
             progressBar.style.background = '#10b981'; // Green
@@ -554,11 +554,11 @@ function updateReadingProgress(percentage, timeSpent, totalTime) {
             progressBar.style.background = '#3b82f6'; // Blue
         }
     }
-    
+
     if (progressPercentage) {
         progressPercentage.textContent = `${Math.round(percentage)}%`;
     }
-  
+
 }
 
 function stopEngagementTracking() {
@@ -566,18 +566,18 @@ function stopEngagementTracking() {
         clearInterval(contentEngagementTimer);
         contentEngagementTimer = null;
     }
-    
+
     // Clear YouTube tracking
     if (window.youtubeProgressInterval) {
         clearInterval(window.youtubeProgressInterval);
         window.youtubeProgressInterval = null;
     }
-    
+
     // Clean up players
     if (window.currentYouTubePlayer) {
         window.currentYouTubePlayer = null;
     }
-    
+
     if (window.currentVimeoPlayer) {
         window.currentVimeoPlayer = null;
     }
@@ -619,7 +619,7 @@ async function autoCompleteLessonIfEligible(trigger = 'manual') {
 
 function renderLessonContent(lesson) {
     const contentArea = document.getElementById('lessonContent');
-    
+
     if (!contentArea) {
         console.error('Content area not found');
         return;
@@ -714,17 +714,17 @@ function renderVideoContent(lesson) {
 function setupVideoTracking() {
     setTimeout(() => {
         const videoElement = document.getElementById('lessonVideo');
-        
+
         if (!videoElement) return;
 
         // For HTML5 video element
         if (videoElement.tagName === 'VIDEO') {
-            videoElement.addEventListener('timeupdate', function() {
+            videoElement.addEventListener('timeupdate', function () {
                 if (this.duration > 0) {
                     const percentage = (this.currentTime / this.duration) * 100;
                     videoWatchedPercentage = Math.max(videoWatchedPercentage, percentage);
                     updateVideoProgress(percentage);
-                    
+
                     // Auto-complete at 80%
                     if (percentage >= 80 && !completedLessons.includes(currentLesson.id)) {
                         autoCompleteLessonIfEligible('video');
@@ -757,7 +757,7 @@ function setupYouTubeTracking() {
     }
 
     // Wait for API to be ready
-    window.onYouTubeIframeAPIReady = function() {
+    window.onYouTubeIframeAPIReady = function () {
         initYouTubePlayer();
     };
 
@@ -789,18 +789,18 @@ function initYouTubePlayer() {
 
 function onYouTubePlayerReady(event) {
     const player = event.target;
-    
+
     // Track progress every second
     window.youtubeProgressInterval = setInterval(() => {
         if (player && player.getCurrentTime && player.getDuration) {
             const currentTime = player.getCurrentTime();
             const duration = player.getDuration();
-            
+
             if (duration > 0) {
                 const percentage = (currentTime / duration) * 100;
                 videoWatchedPercentage = Math.max(videoWatchedPercentage, percentage);
                 updateVideoProgress(percentage);
-                
+
                 // Auto-complete at 80%
                 if (percentage >= 80 && currentLesson && !completedLessons.includes(currentLesson.id)) {
                     clearInterval(window.youtubeProgressInterval);
@@ -846,18 +846,18 @@ function initVimeoPlayer() {
 
         const player = new Vimeo.Player(iframe);
 
-        player.on('timeupdate', function(data) {
+        player.on('timeupdate', function (data) {
             const percentage = data.percent * 100;
             videoWatchedPercentage = Math.max(videoWatchedPercentage, percentage);
             updateVideoProgress(percentage);
-            
+
             // Auto-complete at 80%
             if (percentage >= 80 && currentLesson && !completedLessons.includes(currentLesson.id)) {
                 autoCompleteLessonIfEligible('video');
             }
         });
 
-        player.on('ended', function() {
+        player.on('ended', function () {
             videoWatchedPercentage = 100;
             updateVideoProgress(100);
             if (currentLesson && !completedLessons.includes(currentLesson.id)) {
@@ -880,10 +880,10 @@ function updateVideoProgress(percentage) {
     const progressBar = document.getElementById('videoProgressBar');
     const progressPercentage = document.getElementById('progressPercentage');
     const progressText = document.getElementById('progressText');
-    
+
     if (progressBar) {
         progressBar.style.width = `${percentage}%`;
-        
+
         // Color coding
         if (percentage >= 80) {
             progressBar.style.background = '#10b981'; // Green
@@ -893,7 +893,7 @@ function updateVideoProgress(percentage) {
             progressBar.style.background = '#3b82f6'; // Blue
         }
     }
-    
+
     if (progressPercentage) {
         progressPercentage.textContent = `${Math.round(percentage)}%`;
         progressPercentage.style.fontSize = "0.85rem"; // smaller %
@@ -922,7 +922,7 @@ function showManualCompleteButton() {
 function renderTextContent(lesson) {
     const wordCount = (lesson.text_content || '').split(/\s+/).length;
     const estimatedMinutes = Math.max(1, Math.round(wordCount / 200));
-    
+
     return `
         <div class="text-content">
             <div class="lesson-progress-indicator" id="lessonProgressIndicator">
@@ -952,7 +952,7 @@ function renderQuizContent(lesson) {
     if (!quizData || !quizData.questions) {
         return '<p>Invalid quiz data.</p>';  // ← THIS IS YOUR ERROR
     }
-    
+
     const { instructions, questions } = quizData;
 
     let quizHtml = `
@@ -1037,10 +1037,10 @@ function escapeHtml(unsafe) {
         .replace(/'/g, "&#039;");
 }
 
-window.copyCode = function(button) {
+window.copyCode = function (button) {
     const codeBlock = button.closest('.code-editor')?.querySelector('code');
     if (!codeBlock) return;
-    
+
     const code = codeBlock.textContent;
 
     navigator.clipboard.writeText(code).then(() => {
@@ -1134,7 +1134,7 @@ async function markLessonComplete(autoTriggered = false) {
             if (nextLessonItem) {
                 nextLessonItem.classList.remove('locked');
                 nextLessonItem.setAttribute('onclick', `loadLesson('${nextLesson.id}')`);
-                
+
                 const icon = nextLessonItem.querySelector('.lesson-icon');
                 if (icon) {
                     icon.classList.remove('locked');
@@ -1149,8 +1149,8 @@ async function markLessonComplete(autoTriggered = false) {
         await updateCourseProgress();
 
         // Show success message
-        const message = autoTriggered ? 
-            'Lesson completed automatically!' : 
+        const message = autoTriggered ?
+            'Lesson completed automatically!' :
             'Lesson completed! Great job!';
         showNotification(message, 'success');
 
@@ -1170,13 +1170,13 @@ async function markLessonComplete(autoTriggered = false) {
 async function updateCourseProgress() {
     // IMPORTANT: Reload completed lessons from database first
     await loadCompletedLessons();
-    
+
     const totalLessons = allLessons.length;
-    
+
     // Ensure completedLessons is an array and remove duplicates
     const uniqueCompletedLessons = [...new Set(completedLessons)];
     const completedCount = uniqueCompletedLessons.length;
-    
+
     // Calculate percentage and STRICTLY CLAMP between 0 and 100
     let progressPercentage = 0;
     if (totalLessons > 0) {
@@ -1186,11 +1186,11 @@ async function updateCourseProgress() {
         progressPercentage = Math.max(0, Math.min(100, progressPercentage));
     }
 
-    console.log('📊 Progress Calculation:', { 
-        completedCount, 
-        totalLessons, 
+    console.log('📊 Progress Calculation:', {
+        completedCount,
+        totalLessons,
         progressPercentage,
-        completedLessonIds: uniqueCompletedLessons 
+        completedLessonIds: uniqueCompletedLessons
     });
 
     try {
@@ -1216,7 +1216,7 @@ async function updateCourseProgress() {
         if (progressPercentage >= 100) {
             await handleCourseCompletion();
         }
-        
+
         return progressPercentage;
     } catch (error) {
         console.error('Error in updateCourseProgress:', error);
@@ -1230,43 +1230,43 @@ async function fixBrokenProgress() {
         console.error('Cannot fix: missing enrollment or lessons');
         return;
     }
-    
+
     console.log('🔧 Starting progress fix...');
-    
+
     // Reload completed lessons
     await loadCompletedLessons();
-    
+
     const totalLessons = allLessons.length;
     const validLessonIds = allLessons.map(l => l.id);
-    
+
     // Filter to only count lessons that exist in THIS course
     const validCompleted = completedLessons.filter(id => validLessonIds.includes(id));
     const completedCount = validCompleted.length;
-    
+
     const correctProgress = Math.min(100, Math.max(0, Math.round((completedCount / totalLessons) * 100)));
-    
-    console.log('🔧 Fix Details:', { 
+
+    console.log('🔧 Fix Details:', {
         totalLessons,
         rawCompletedCount: completedLessons.length,
         validCompletedCount: completedCount,
         correctProgress,
         validCompletedIds: validCompleted
     });
-    
+
     const { error } = await supabase
         .from('enrollments')
         .update({ progress_percentage: correctProgress })
         .eq('id', enrollmentId);
-    
+
     if (error) {
         console.error('❌ Fix failed:', error);
     } else {
         console.log('✅ Progress fixed successfully!');
         updateProgressCircle(correctProgress);
-        
+
         // Also update the completedLessons array
         completedLessons = validCompleted;
-        
+
         location.reload();
     }
 }
@@ -1297,36 +1297,36 @@ async function handleCourseCompletion() {
 function updateProgressCircle(percentage) {
     // FORCE CLAMP percentage to 0-100 range
     percentage = Math.max(0, Math.min(100, Math.round(percentage)));
-    
+
     const circle = document.getElementById('progressCircleFill');
-    const text = document.querySelector('.progress-circle-container #progressText') || 
-                 document.querySelector('.progress-text');
+    const text = document.querySelector('.progress-circle-container #progressText') ||
+        document.querySelector('.progress-text');
 
     if (circle) {
         const circumference = 439.823; // 2 * PI * 70
         const offset = circumference - (percentage / 100) * circumference;
-        
+
         // Add smooth transition
         circle.style.transition = 'stroke-dashoffset 0.6s ease-in-out';
         circle.style.strokeDashoffset = offset;
-        
+
         console.log('✅ Updated circle stroke:', { percentage, offset });
     } else {
         console.warn('⚠️ progressCircleFill element not found!');
     }
-    
+
     if (text) {
         // Animate the number counting up
         const currentPercent = parseInt(text.textContent) || 0;
         const targetPercent = percentage; // Already clamped above
-        
-        console.log('🔢 Animating progress text:', { 
-            currentPercent, 
-            targetPercent, 
+
+        console.log('🔢 Animating progress text:', {
+            currentPercent,
+            targetPercent,
             element: text,
-            currentText: text.textContent 
+            currentText: text.textContent
         });
-        
+
         if (currentPercent !== targetPercent) {
             animateValue(text, currentPercent, targetPercent, 600);
         } else {
@@ -1343,11 +1343,11 @@ function animateValue(element, start, end, duration) {
     // CLAMP both start and end to 0-100
     start = Math.max(0, Math.min(100, start));
     end = Math.max(0, Math.min(100, end));
-    
+
     const range = end - start;
     const increment = range / (duration / 16); // 60 FPS
     let current = start;
-    
+
     const timer = setInterval(() => {
         current += increment;
         if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
@@ -1387,14 +1387,14 @@ async function refreshProgressDisplay() {
     try {
         // Reload completed lessons from database
         await loadCompletedLessons();
-        
+
         // Calculate current progress
         const totalLessons = allLessons.length;
-        
+
         // Remove duplicates from completedLessons
         const uniqueCompletedLessons = [...new Set(completedLessons)];
         const completedCount = uniqueCompletedLessons.length;
-        
+
         // Calculate and CLAMP percentage
         let progressPercentage = 0;
         if (totalLessons > 0) {
@@ -1402,13 +1402,13 @@ async function refreshProgressDisplay() {
             progressPercentage = Math.round(progressPercentage);
             progressPercentage = Math.max(0, Math.min(100, progressPercentage));
         }
-        
-        console.log('🔄 Refreshing Progress Display:', { 
-            completedCount, 
-            totalLessons, 
-            progressPercentage 
+
+        console.log('🔄 Refreshing Progress Display:', {
+            completedCount,
+            totalLessons,
+            progressPercentage
         });
-        
+
         // Update the circle with current progress
         updateProgressCircle(progressPercentage);
     } catch (error) {
@@ -1445,7 +1445,7 @@ function updateNavigationButtons() {
     if (isLastLesson) {
         // On last lesson - hide next, show complete
         nextBtn.style.display = 'none';
-        
+
         if (completeBtn) {
             completeBtn.style.display = 'flex';
             completeBtn.onclick = async () => {
@@ -1537,7 +1537,7 @@ window.completeCourse = completeCourse;
 function setupEventListeners() {
     // Mark complete button - REMOVED manual click handler
     // System will auto-complete based on engagement tracking
-    
+
     // Module collapse/expand
     document.addEventListener('click', (e) => {
         const moduleHeader = e.target.closest('.module-header');
@@ -1583,7 +1583,7 @@ let quizState = {
     allAnswered: false
 };
 
-window.handleQuizAnswer = function(questionIndex, selectedAnswer, correctAnswer) {
+window.handleQuizAnswer = function (questionIndex, selectedAnswer, correctAnswer) {
     const questionElement = document.querySelector(`[data-question-index="${questionIndex}"]`);
     if (!questionElement) return;
 
@@ -1635,7 +1635,7 @@ async function updateQuizScore() {
     // Show summary if all questions answered
     if (totalAnswered === totalQuestions && !quizState.allAnswered) {
         quizState.allAnswered = true;
-        
+
         const summaryElement = document.querySelector('.quiz-summary');
         const scoreElement = document.getElementById('quizScore');
 
@@ -1680,11 +1680,11 @@ async function updateQuizScore() {
     }
 }
 
-window.retryQuiz = function() {
+window.retryQuiz = function () {
     // Reset quiz state
-    quizState = { 
-        answers: {}, 
-        correctAnswers: 0, 
+    quizState = {
+        answers: {},
+        correctAnswers: 0,
         totalQuestions: 0,
         allAnswered: false
     };
@@ -1703,23 +1703,23 @@ function showNotification(message, type = 'info') {
     // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
-    
+
     let icon = 'fa-info-circle';
     if (type === 'success') icon = 'fa-check-circle';
     if (type === 'error') icon = 'fa-exclamation-circle';
     if (type === 'warning') icon = 'fa-exclamation-triangle';
-    
+
     notification.innerHTML = `
         <i class="fas ${icon}"></i>
         <span>${escapeHtml(message)}</span>
     `;
-    
+
     // Add to body
     document.body.appendChild(notification);
-    
+
     // Trigger animation
     setTimeout(() => notification.classList.add('show'), 10);
-    
+
     // Remove after 4 seconds
     setTimeout(() => {
         notification.classList.remove('show');
@@ -1739,9 +1739,10 @@ function showNotification(message, type = 'info') {
             top: 20px;
             right: 20px;
             padding: 16px 24px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            background: linear-gradient(135deg, #0a2838 0%, #11a1a3 100%);
+            color: white;
+            border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             display: flex;
             align-items: center;
             gap: 12px;
@@ -1759,36 +1760,20 @@ function showNotification(message, type = 'info') {
             font-size: 20px;
         }
         
-        .notification-success {
-            border-left: 4px solid #10b981;
-        }
-        
         .notification-success i {
             color: #10b981;
-        }
-        
-        .notification-error {
-            border-left: 4px solid #ef4444;
         }
         
         .notification-error i {
             color: #ef4444;
         }
         
-        .notification-warning {
-            border-left: 4px solid #f59e0b;
-        }
-        
         .notification-warning i {
             color: #f59e0b;
         }
         
-        .notification-info {
-            border-left: 4px solid #3b82f6;
-        }
-        
         .notification-info i {
-            color: #3b82f6;
+            color: #f59e0b;
         }
         
         /* Lesson Progress Indicator Styles */

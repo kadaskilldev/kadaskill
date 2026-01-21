@@ -9,7 +9,7 @@ let supabaseClient;
 // Performance Optimization: Only create client once
 function getSupabaseClient() {
     if (supabaseClient) return supabaseClient;
-    
+
     if (window.supabase && window.supabase.createClient) {
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         return supabaseClient;
@@ -1319,13 +1319,8 @@ function getNotificationIcon(type) {
 }
 
 function getNotificationColor(type) {
-    const colors = {
-        success: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-        error: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-        warning: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
-        info: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-    };
-    return colors[type] || colors.info;
+    // Unified Brand Teal/Dark Theme - same background for all types
+    return 'linear-gradient(135deg, #0a2838 0%, #11a1a3 100%)';
 }
 
 // Learn Page Functionality
