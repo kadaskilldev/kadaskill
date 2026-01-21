@@ -118,10 +118,26 @@ function getProviderAvatarUrl(user) {
 // ============================================
 
 function updateProfileUI(user, profile) {
-    // Update welcome message
-    const welcomeName = document.querySelector('.text-wrapper-37');
+    // Update welcome message with first name extraction and responsive sizing
+    const welcomeName = document.getElementById('welcome-name');
     if (welcomeName) {
-        welcomeName.textContent = profile.full_name || profile.username || 'Learner!';
+        // Get display name: first word of full_name, or username, or 'Learner'
+        let displayName = 'Learner';
+        if (profile.full_name?.trim()) {
+            displayName = profile.full_name.trim().split(/\s+/)[0];
+        } else if (profile.username) {
+            displayName = profile.username;
+        }
+
+        welcomeName.textContent = displayName + '!';
+
+        // Apply size class based on name length
+        welcomeName.classList.remove('name-long', 'name-very-long');
+        if (displayName.length > 15) {
+            welcomeName.classList.add('name-very-long');
+        } else if (displayName.length > 10) {
+            welcomeName.classList.add('name-long');
+        }
     }
 
     // Update sidebar profile username
@@ -168,20 +184,20 @@ function updateProfileUI(user, profile) {
     const rankElement = document.getElementById('profile-rank');
     const rankIconElement = document.getElementById('profile-rank-icon');
     const rankIconSkeleton = document.getElementById('profile-rank-icon-skeleton');
-    
+
     if (profile.rank) {
         // Update rank name
         if (rankElement) {
             rankElement.textContent = profile.rank.name;
             rankElement.classList.remove('skeleton-text');
         }
-        
+
         // Update rank icon with Font Awesome icon
         if (rankIconElement && rankIconSkeleton) {
             // Hide the image element and show icon instead
             rankIconElement.style.display = 'none';
             rankIconSkeleton.style.display = 'none';
-            
+
             // Create or update rank icon container
             let rankIconContainer = document.getElementById('rank-icon-container');
             if (!rankIconContainer) {
@@ -199,7 +215,7 @@ function updateProfileUI(user, profile) {
                 `;
                 rankIconElement.parentNode.insertBefore(rankIconContainer, rankIconElement);
             }
-            
+
             rankIconContainer.innerHTML = `
                 <i class="${profile.rank.icon}" style="color: ${profile.rank.icon_color}; font-size: 16px;"></i>
             `;
@@ -210,11 +226,11 @@ function updateProfileUI(user, profile) {
             rankElement.textContent = 'Unranked';
             rankElement.classList.remove('skeleton-text');
         }
-        
+
         if (rankIconElement && rankIconSkeleton) {
             rankIconElement.style.display = 'none';
             rankIconSkeleton.style.display = 'none';
-            
+
             let rankIconContainer = document.getElementById('rank-icon-container');
             if (!rankIconContainer) {
                 rankIconContainer = document.createElement('div');
@@ -231,7 +247,7 @@ function updateProfileUI(user, profile) {
                 `;
                 rankIconElement.parentNode.insertBefore(rankIconContainer, rankIconElement);
             }
-            
+
             rankIconContainer.innerHTML = `
                 <i class="fas fa-question" style="color: #6b7280; font-size: 16px;"></i>
             `;
@@ -282,7 +298,7 @@ async function trackDailyLogin() {
 
     try {
         const todayPHT = formatDateString(getPhilippineDate());
-        
+
         // Check if already logged in today
         const { data: existingLogin, error: checkError } = await supabase
             .from('daily_activities')
@@ -421,15 +437,15 @@ async function loadWeeklyProgress(weekOffset = 0) {
     try {
         const pht = getPhilippineDate();
         const todayDayIndex = pht.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
-        
+
         // Calculate the week based on offset
         const referenceDate = new Date(pht);
         referenceDate.setDate(referenceDate.getDate() + (weekOffset * 7));
-        
+
         // Calculate start of that week (Sunday)
         const weekStart = new Date(referenceDate);
         weekStart.setDate(referenceDate.getDate() - referenceDate.getDay());
-        
+
         // Calculate end of that week (Saturday)
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 6);
@@ -492,11 +508,11 @@ function updateWeeklyProgressUI(activeDays, todayDayIndex) {
     if (!tracker) return;
 
     const dayItems = tracker.querySelectorAll('.day-item');
-    
+
     dayItems.forEach(item => {
         const dayIndex = parseInt(item.getAttribute('data-day-index'), 10);
         const circle = item.querySelector('.day-circle');
-        
+
         if (!circle) return;
 
         // Remove loading and skeleton classes
@@ -691,7 +707,7 @@ async function loadEnrolledCourses() {
 
 async function loadPracticeExercises() {
     const practiceGrid = document.querySelector('.practice-review-grid');
-    
+
     try {
         const { data: exercises, error } = await supabase
             .from('practice_exercises')
@@ -759,7 +775,7 @@ function showNoPracticesMessage(container, message) {
 
 async function loadCertificationCallouts() {
     const certContainer = document.querySelector('.certification-callouts');
-    
+
     try {
         const { data: certifications, error } = await supabase
             .from('certifications')
@@ -866,12 +882,12 @@ async function loadUserBadges() {
         const badgesRow = document.getElementById('homeBadgesRow');
         if (badgesRow && allBadges && allBadges.length > 0) {
             console.log('Applying badge layout fix...', allBadges.length, 'badges found');
-            
+
             // Nuclear option - completely reset everything
             badgesRow.removeAttribute('class');
             badgesRow.removeAttribute('style');
             badgesRow.className = '';
-            
+
             // Force apply styles with maximum specificity
             setTimeout(() => {
                 badgesRow.style.setProperty('display', 'flex', 'important');
@@ -883,10 +899,10 @@ async function loadUserBadges() {
                 badgesRow.style.setProperty('padding', '20px 0', 'important');
                 badgesRow.style.setProperty('margin', '0', 'important');
                 badgesRow.style.setProperty('min-height', '100px', 'important');
-                
+
                 console.log('Badge container styles applied:', badgesRow.style.cssText);
             }, 100);
-            
+
             badgesRow.innerHTML = allBadges.map(badge => {
                 const isEarned = earnedBadgeIds.has(badge.id);
                 const rarityColors = {
@@ -903,15 +919,15 @@ async function loadUserBadges() {
                             <i class="fas fa-lock" style="font-size: 7px; color: white;"></i>
                         </div>` : ''}
                         ${badge.icon_url ?
-                            `<img src="${badge.icon_url}" alt="${badge.name}" class="badge-icon" style="${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}" onerror="console.error('Badge icon failed to load:', '${badge.icon_url}'); this.onerror=null; this.style.display='none'; this.parentNode.innerHTML='<div class=\'badge-icon\' style=\'background: ${color}; display: flex; align-items: center; justify-content: center; ${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}\'>  <i class=\'fas fa-exclamation-triangle\' style=\'color: white; font-size: 20px;\'></i></div>';"` :
-                            `<div class="badge-icon" style="background: ${color}; display: flex; align-items: center; justify-content: center; ${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}">
+                        `<img src="${badge.icon_url}" alt="${badge.name}" class="badge-icon" style="${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}" onerror="console.error('Badge icon failed to load:', '${badge.icon_url}'); this.onerror=null; this.style.display='none'; this.parentNode.innerHTML='<div class=\'badge-icon\' style=\'background: ${color}; display: flex; align-items: center; justify-content: center; ${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}\'>  <i class=\'fas fa-exclamation-triangle\' style=\'color: white; font-size: 20px;\'></i></div>';"` :
+                        `<div class="badge-icon" style="background: ${color}; display: flex; align-items: center; justify-content: center; ${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}">
                                 <i class="fas fa-trophy" style="color: white; font-size: 20px;"></i>
                             </div>`
-                        }
+                    }
                     </div>
                 `;
             }).join('');
-            
+
             // Force layout recalculation and spacing
             setTimeout(() => {
                 const badgeItems = badgesRow.querySelectorAll('.badge-item');
@@ -921,7 +937,7 @@ async function loadUserBadges() {
                     item.style.setProperty('height', '64px', 'important');
                     item.style.setProperty('margin', '0', 'important');
                 });
-                
+
                 console.log('Badge layout enforced on', badgeItems.length, 'items');
                 console.log('Final container styles:', badgesRow.style.cssText);
             }, 200);
