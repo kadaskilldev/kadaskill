@@ -505,45 +505,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1.75rem;
+  gap: 2rem;
+  flex-wrap: wrap;
 }
 
 .badge-item {
   position: relative;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-
-.badge-item::after {
-  content: '';
-  position: absolute;
-  inset: -8px;
-  background:
-    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.9) 0 30%, transparent 55%),
-    radial-gradient(circle at 65% 25%, rgba(255, 214, 102, 0.8) 0 24%, transparent 50%),
-    radial-gradient(circle at 40% 75%, rgba(137, 207, 240, 0.75) 0 22%, transparent 55%);
-  opacity: 0;
-  transform: scale(0.85);
-  filter: blur(0.2px);
-  pointer-events: none;
-  animation: none;
-}
-
-.badge-item:hover::after {
-  animation: badgeSparkle 0.9s ease-out;
-}
-
-.badge-item:hover .badge-icon {
-  transform: translateY(-2px);
+  flex-shrink: 0;
+  padding: 6px;
+  min-width: 64px;
+  min-height: 64px;
 }
 
 .badge-icon {
-  width: 112px;
-  height: 112px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
   flex-shrink: 0;
-  transition: transform 0.25s ease;
+  border-radius: 8px;
 }
 
 @media (max-width: 768px) {
@@ -552,43 +534,16 @@
   }
 
   .badges-row {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1.25rem;
-  }
-
-  .badge-item::after {
-    inset: -6px;
+    gap: 1.5rem;
   }
 
   .badge-icon {
-    width: 88px;
-    height: 88px;
+    width: 48px;
+    height: 48px;
   }
 }
 
-@keyframes badgeSparkle {
-  0% {
-    opacity: 0;
-    transform: scale(0.85) rotate(0deg);
-    background-position: 20% 30%, 65% 25%, 40% 75%;
-  }
-  30% {
-    opacity: 1;
-    transform: scale(1) rotate(10deg);
-    background-position: 25% 20%, 60% 15%, 45% 70%;
-  }
-  60% {
-    opacity: 0.7;
-    transform: scale(1.05) rotate(-8deg);
-    background-position: 30% 35%, 70% 30%, 50% 65%;
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1.1) rotate(0deg);
-    background-position: 35% 40%, 75% 35%, 55% 60%;
-  }
-}
+/* Badge sparkle animation removed - no longer in use */
 
 .practice-review-header {
   display: flex;
