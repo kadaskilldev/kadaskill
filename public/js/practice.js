@@ -221,7 +221,8 @@ function filterExercises(category) {
         // but exact match is usually safer for categories.
         const filtered = allExercises.filter(exercise => 
             exercise.category === category || 
-            (category === 'Artificial Intelligence' && exercise.category === 'AI') // Handle abbreviation
+            (category === 'Artificial Intelligence' && exercise.category === 'AI') || // Handle abbreviation
+            (category === 'Cloud Computing' && exercise.category === 'Cloud') 
         );
         renderExercises(filtered);
     }
