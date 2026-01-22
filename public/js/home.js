@@ -1005,13 +1005,13 @@ async function loadLeaderboard() {
                 const entryClass = isCurrentUser ? 'leaderboard-entry current-user' : 'leaderboard-entry';
 
                 return `
-                    <li class="${entryClass}">
+                    <li class="${entryClass}" data-tooltip="${entry.username}">
                         <div class="leaderboard-entry__profile">
                             <span class="leaderboard-rank">#${index + 1}</span>
                             <img class="leaderboard-entry__avatar"
                                  src="${entry.avatar_url || 'images/profile/default-avatar.svg'}"
                                  alt="${entry.username} avatar" />
-                            <span class="leaderboard-entry__name">@${entry.username}</span>
+                            <span class="leaderboard-entry__name">${entry.username}</span>
                         </div>
                         <span class="leaderboard-entry__score">${formatNumber(entry.total_xp)}</span>
                     </li>

@@ -1234,6 +1234,56 @@ body.has-fixed-header {
     flex-shrink: 0;
 }
 
+/* Custom Tooltip for Leaderboard */
+.leaderboard-entry {
+    position: relative;
+}
+
+.leaderboard-entry[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px);
+    background: linear-gradient(135deg, #0a2838 0%, #11a1a3 100%);
+    color: #ffffff;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(10, 40, 56, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.leaderboard-entry[data-tooltip]::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    border: 6px solid transparent;
+    border-top-color: #11a1a3;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    z-index: 100;
+}
+
+.leaderboard-entry[data-tooltip]:hover::after,
+.leaderboard-entry[data-tooltip]:hover::before {
+    opacity: 1;
+    visibility: visible;
+}
+
+.leaderboard-entry[data-tooltip]:hover::after {
+    transform: translateX(-50%) translateY(-8px);
+}
+
 @media (max-width: 1024px) {
     .leaderboard-card {
         width: 100%;
