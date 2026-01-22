@@ -123,6 +123,15 @@ async function loadCertifications() {
         }
 
         allCertifications = certifications || [];
+        
+        // Sort by level: foundational → associate → professional
+        allCertifications.sort((a, b) => {
+            const levelOrder = { 'foundational': 1, 'associate': 2, 'professional': 3 };
+            const levelA = (a.level || 'foundational').toLowerCase();
+            const levelB = (b.level || 'foundational').toLowerCase();
+            return (levelOrder[levelA] || 1) - (levelOrder[levelB] || 1);
+        });
+        
         renderCertifications(allCertifications);
         updateCertCount(allCertifications.length);
 

@@ -49,9 +49,9 @@ body {
 }
 
 .greeting-text {
-    font-size: 2.5rem;
-    font-weight: 600;
-    color: #1f2937;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a202c;
     margin: 0;
 }
 
@@ -187,40 +187,50 @@ body {
 .filter-tabs {
     display: flex;
     gap: 1rem;
-    /* Increased gap */
     margin-bottom: 1.5rem;
     justify-content: space-between;
     width: 100%;
+    flex-wrap: wrap;
 }
 
 .filter-tab {
-    background: #f59e0b;
-    border: none;
-    padding: 0.75rem 2rem;
-    /* Increased horizontal padding */
+    background: #ffffff;
+    border: 3px solid #1a202c;
+    padding: 0.75rem 2.5rem;
     border-radius: 12px;
-    font-weight: 600;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a202c;
     cursor: pointer;
-    transition: all 0.3s ease;
-    color: #042047ff;
-    font-size: 0.875rem;
-    outline: none;
-    box-shadow: none;
+    transition: all 0.1s ease;
+    box-shadow: 0 4px 0px rgba(26, 32, 44, 0.4);
+    position: relative;
+    top: 0;
     flex: 1;
-    /* Make buttons equal width and fill container */
+    min-width: 200px;
     text-align: center;
-    /* Center text in wider buttons */
 }
 
 .filter-tab:hover {
-    background: #ea580c;
-    transform: translateY(-1px);
-    /* Same hover effect as continue button */
+    background-color: #f8f9fa;
+    top: -1px;
+    box-shadow: 0 5px 0px rgba(26, 32, 44, 0.4);
 }
 
 .filter-tab.active {
     background: #f59e0b;
-    color: black;
+    border-color: #1a202c;
+    color: #1a202c;
+    box-shadow: 0 4px 0px rgba(26, 32, 44, 0.4);
+}
+
+.filter-tab:active {
+    top: 3px;
+    box-shadow: 0 1px 0px rgba(26, 32, 44, 0.4);
+}
+
+.filter-tab.active:active {
+    box-shadow: 0 1px 0px rgba(26, 32, 44, 0.4);
 }
 
 .search-and-count {
