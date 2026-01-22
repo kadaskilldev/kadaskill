@@ -459,7 +459,8 @@ function setActiveNavigation() {
             (currentPage === 'learn.html' && href.includes('learn')) ||
             (currentPage === 'learning.html' && href.includes('learn')) ||
             (currentPage === 'home.html' && href.includes('home')) ||
-            (currentPage === 'practice.html' && href.includes('practice'))) {
+            (currentPage === 'practice.html' && href.includes('practice'))||
+            (currentPage === 'practice-session.html' && href.includes('practice'))) {
             link.classList.add('active');
         }
     });
