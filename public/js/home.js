@@ -765,20 +765,52 @@ async function loadCertificationCallouts() {
     const certContainer = document.querySelector('.certification-callouts');
 
     try {
-        const { data: certifications, error } = await supabase
-            .from('certifications')
-            .select('id, slug, title, description, badge_url, icon_url')
-            .eq('is_active', true)
-            .order('updated_at', { ascending: false })
-            .limit(2);
+        let certifications = [];
 
-        if (error) {
-            console.error('Error loading certifications:', error);
-            showNoCertificationsMessage(certContainer, 'Failed to load certifications');
-            return;
+        // First, try to get user's pinned certifications
+        if (currentUser) {
+            const { data: pinnedCerts, error: pinnedError } = await supabase
+                .from('user_certifications')
+                .select(`
+                    certification_id,
+                    is_pinned,
+                    certifications (
+                        id,
+                        slug,
+                        title,
+                        description,
+                        badge_url,
+                        icon_url,
+                        is_active
+                    )
+                `)
+                .eq('user_id', currentUser.id)
+                .eq('is_pinned', true)
+                .limit(2);
+
+            if (!pinnedError && pinnedCerts && pinnedCerts.length > 0) {
+                // Filter out any inactive certifications and extract the certification data
+                certifications = pinnedCerts
+                    .filter(pc => pc.certifications && pc.certifications.is_active)
+                    .map(pc => pc.certifications);
+            }
         }
 
-        if (!certifications || certifications.length === 0) {
+        // If no pinned certifications (or not logged in), get random active certifications
+        if (certifications.length === 0) {
+            const { data: allCerts, error: allError } = await supabase
+                .from('certifications')
+                .select('id, slug, title, description, badge_url, icon_url')
+                .eq('is_active', true);
+
+            if (!allError && allCerts && allCerts.length > 0) {
+                // Shuffle and pick 2 random certifications
+                const shuffled = allCerts.sort(() => Math.random() - 0.5);
+                certifications = shuffled.slice(0, 2);
+            }
+        }
+
+        if (certifications.length === 0) {
             showNoCertificationsMessage(certContainer, 'No certifications available');
             return;
         }
