@@ -41,9 +41,9 @@ function loadNavigation() {
         </nav>
     </header>
     `;
-    
+
     document.getElementById('navigation').innerHTML = nav;
-    
+
     // Set active navigation based on current page
     setActiveNavigation();
 }
@@ -114,12 +114,12 @@ function loadFooter() {
             </div>
 
             <div class="footer-bottom">
-                <p>Copyright  © 2025 by KadaSkill, All rights reserved</p>
+                <p>Copyright  © 2026 by KadaSkill, All rights reserved</p>
             </div>
         </div>
     </footer>
     `;
-    
+
     document.getElementById('footer').innerHTML = footer;
 }
 
@@ -128,12 +128,12 @@ function setActiveNavigation() {
     const pathname = window.location.pathname;
     const currentPage = (pathname === '/' || pathname === '') ? 'home.html' : pathname.split('/').pop();
     const navLinks = document.querySelectorAll('.nav-menu a');
-    
+
     navLinks.forEach(link => {
         link.classList.remove('active');
         const href = link.getAttribute('href');
-        
-        if (href.includes(currentPage) || 
+
+        if (href.includes(currentPage) ||
             (currentPage === 'certification.html' && href.includes('certification')) ||
             (currentPage === 'learn.html' && href.includes('learn')) ||
             (currentPage === 'home.html' && href.includes('home'))) {
@@ -143,7 +143,7 @@ function setActiveNavigation() {
 }
 
 // Initialize components when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     loadNavigation();
     loadFooter();
 });

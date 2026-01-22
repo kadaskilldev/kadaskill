@@ -430,7 +430,7 @@ function loadFooter() {
             </div>
 
             <div class="footer-bottom">
-                <p>Copyright  © 2025 by KadaSkill, All rights reserved</p>
+                <p>Copyright  © 2026 by KadaSkill, All rights reserved</p>
             </div>
         </div>
     </footer>
