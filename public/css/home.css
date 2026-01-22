@@ -308,6 +308,7 @@ body.has-fixed-header {
     0% {
         background-position: -200px 0;
     }
+
     100% {
         background-position: calc(200px + 100%) 0;
     }
@@ -858,7 +859,7 @@ body.has-fixed-header {
 
 .learning-overview {
     display: grid;
-    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
     align-items: stretch;
     margin-top: 1.25rem;
@@ -1240,17 +1241,21 @@ body.has-fixed-header {
         margin: 2rem auto 0;
         padding: 1.25rem;
     }
+
     .leaderboard-entry__avatar {
         width: 28px;
         height: 28px;
     }
+
     .leaderboard-entry__name {
         font-size: 0.8rem;
     }
+
     .leaderboard-entry__score {
         font-size: 0.8rem;
         width: 50px;
     }
+
     .leaderboard-rank {
         font-size: 0.7rem;
         min-width: 18px;
@@ -1261,9 +1266,11 @@ body.has-fixed-header {
     .learning-overview {
         grid-template-columns: 1fr;
     }
+
     .learning-card {
         min-height: auto;
     }
+
     .learning-card-actions {
         flex-wrap: wrap;
     }
@@ -1277,9 +1284,11 @@ body.has-fixed-header {
         grid-template-columns: 1fr;
         gap: 2rem;
     }
+
     .course-grid {
         grid-template-columns: 1fr;
     }
+
     .cert-grid {
         grid-template-columns: 1fr;
     }
@@ -1290,26 +1299,33 @@ body.has-fixed-header {
         flex-direction: column;
         gap: 1rem;
     }
+
     .nav-links {
         gap: 1rem;
     }
+
     .search-box input {
         width: 200px;
     }
+
     .welcome-header {
         flex-direction: column;
         text-align: center;
     }
+
     .stats-grid {
         grid-template-columns: repeat(4, 1fr);
     }
+
     .footer-content {
         grid-template-columns: 1fr;
         gap: 2rem;
     }
+
     .badges-grid {
         grid-template-columns: repeat(3, 1fr);
     }
+
     /* Responsive Badge Layout */
     #homeBadgesRow,
     #homeBadgesRow.badges-grid,

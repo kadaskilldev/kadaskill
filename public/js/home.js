@@ -633,68 +633,56 @@ async function loadEnrolledCourses() {
             return;
         }
 
-        const courseCard = document.querySelector('.learning-card-course');
-        const trackCard = document.querySelector('.learning-card-track');
+        const card1 = document.getElementById('course-card-1');
+        const card2 = document.getElementById('course-card-2');
 
-        if (enrollments && enrollments.length > 0) {
-            // Update current course card
-            const currentCourse = enrollments[0];
-            const courseTitle = document.querySelector('.learning-card-course .learning-card-title');
-            if (courseTitle && currentCourse.courses) {
-                courseTitle.textContent = currentCourse.courses.title;
-            }
-            // Remove loading state
-            if (courseCard) courseCard.classList.remove('learning-card-loading');
+        // Helper function to update a course card
+        function updateCourseCard(card, course) {
+            if (!card) return;
 
-            // Update continue button to redirect to actual course
-            const continueBtn = document.querySelector('.learning-action-continue');
-            if (continueBtn && currentCourse.courses) {
-                continueBtn.onclick = () => {
-                    window.location.href = `learning.html?course=${currentCourse.courses.slug}`;
-                };
-            }
+            const title = card.querySelector('.learning-card-title');
+            const continueBtn = card.querySelector('.learning-action-continue');
+            const practiceBtn = card.querySelector('.learning-action-practice');
 
-            // Update enrolled track (second course or certification)
-            if (enrollments.length > 1) {
-                const trackCourse = enrollments[1];
-                const trackTitle = document.querySelector('.learning-card-track .learning-card-title');
-                if (trackTitle && trackCourse.courses) {
-                    trackTitle.textContent = trackCourse.courses.title;
+            if (course && course.courses) {
+                // Has a course - show it
+                if (title) title.textContent = course.courses.title;
+                if (continueBtn) {
+                    continueBtn.textContent = 'Continue';
+                    continueBtn.onclick = () => {
+                        window.location.href = `learning.html?course=${course.courses.slug}`;
+                    };
                 }
-
-                const trackLink = document.querySelector('.learning-card-link');
-                if (trackLink && trackCourse.courses) {
-                    trackLink.href = `learning.html?course=${trackCourse.courses.slug}`;
+                if (practiceBtn) {
+                    practiceBtn.onclick = () => {
+                        window.location.href = `practice.html?course=${course.courses.slug}`;
+                    };
                 }
-                // Remove loading state
-                if (trackCard) trackCard.classList.remove('learning-card-loading');
             } else {
-                // No second course - show placeholder
-                const trackTitle = document.querySelector('.learning-card-track .learning-card-title');
-                if (trackTitle) trackTitle.textContent = 'No track enrolled';
-                if (trackCard) trackCard.classList.remove('learning-card-loading');
+                // No course - show fallback
+                if (title) title.textContent = 'No courses yet';
+                if (continueBtn) {
+                    continueBtn.textContent = 'Browse Courses';
+                    continueBtn.onclick = () => {
+                        window.location.href = 'learn.html';
+                    };
+                }
+                if (practiceBtn) {
+                    practiceBtn.onclick = () => {
+                        window.location.href = 'practice.html';
+                    };
+                }
             }
-        } else {
-            // No enrolled courses - show message
-            const courseTitle = document.querySelector('.learning-card-course .learning-card-title');
-            if (courseTitle) {
-                courseTitle.textContent = 'No courses yet';
-            }
-            if (courseCard) courseCard.classList.remove('learning-card-loading');
 
-            // Also update track card
-            const trackTitle = document.querySelector('.learning-card-track .learning-card-title');
-            if (trackTitle) trackTitle.textContent = 'No track enrolled';
-            if (trackCard) trackCard.classList.remove('learning-card-loading');
-
-            const continueBtn = document.querySelector('.learning-action-continue');
-            if (continueBtn) {
-                continueBtn.textContent = 'Browse Courses';
-                continueBtn.onclick = () => {
-                    window.location.href = 'learn.html';
-                };
-            }
+            card.classList.remove('learning-card-loading');
         }
+
+        // Update both cards based on enrollment count
+        const course1 = enrollments && enrollments.length > 0 ? enrollments[0] : null;
+        const course2 = enrollments && enrollments.length > 1 ? enrollments[1] : null;
+
+        updateCourseCard(card1, course1);
+        updateCourseCard(card2, course2);
 
     } catch (error) {
         console.error('Unexpected error loading courses:', error);
