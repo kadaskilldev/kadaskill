@@ -321,6 +321,7 @@ body {
     width: 100%;
     max-width: 800px;
     text-align: center;
+    margin: 0 auto; /* Centers the box itself */
 }
 
 
@@ -331,6 +332,7 @@ body {
     padding: 2.5rem 8rem;
     width: 100%;
     max-width: 800px;
+    margin: 0 auto;
 }
 
 #quiz-title {
@@ -523,6 +525,7 @@ body {
     gap: 8rem;
     width: 100%;
     max-width: 800px; 
+    margin: 1.5rem auto 0 auto;
 }
 
 .quiz-btn-submit, .quiz-btn-next {
@@ -743,7 +746,7 @@ body {
 
 
 .exercise-header {
-    background: linear-gradient(135deg, #1e3a5f 0%, #2d5073 100%);
+    background: linear-gradient(135deg, #0f5257 0%, #052a38 100%);
     color: white;
     padding: 2rem 0;
     border-bottom: 4px solid #f59e0b;
@@ -812,9 +815,17 @@ body {
     padding: 0 1rem;
 }
 
-.exercise-start-screen,
+.exercise-start-screen {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
 .exercise-question-screen {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;    
 }
 
 .start-card {
@@ -957,6 +968,55 @@ body {
     width: 100%;
     text-align: left; /* Align text to left in sidebar mode */
     padding: 0.75rem 1rem;
+}
+
+
+
+/* --- Practice Card Status Checkbox --- */
+
+.card-status-checkbox {
+    position: absolute;
+    top: 1.5rem; /* Aligns with padding */
+    left: 1.5rem; /* Aligns with padding */
+    z-index: 20;
+    background: rgba(255, 255, 255, 0.2); /* Subtle background */
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.card-status-checkbox input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+    cursor: default; /* Since it's disabled */
+    position: relative;
+    background-color: transparent;
+}
+
+/* Checked State - Green with Checkmark */
+.card-status-checkbox input[type="checkbox"]:checked {
+    background-color: #10b981; /* Success Green */
+    border-color: #10b981;
+}
+
+.card-status-checkbox input[type="checkbox"]:checked::after {
+    content: '✔';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
 }
 
 /* Add a slide-in animation */

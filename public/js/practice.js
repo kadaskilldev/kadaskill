@@ -7,6 +7,7 @@
 // SUPABASE_URL and SUPABASE_ANON_KEY are declared in script.js
 
 let allExercises = [];
+let completedExerciseIds = new Set();
 
 // ============================================
 // Initialize Page
@@ -24,6 +25,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadPracticeExercises() {
     try {
+        // get current user
+        const { data: { user } } = await supabase.auth.getUser();
+        completedExerciseIds = new Set();
+
+        // If user is logged in, fetch their passed attempts
+        if (user) {
+            const { data: attempts } = await supabase
+                .from('practice_attempts')
+                .select('exercise_id')
+                .eq('user_id', user.id)
+                .eq('passed', true); 
+            
+            if (attempts) {
+                // Create a Set for fast lookups
+                completedExerciseIds = new Set(attempts.map(a => a.exercise_id));
+            }
+        }
+
+        // Fetch exercises
         const { data: exercises, error } = await supabase
             .from('practice_exercises')
             .select('*')
@@ -38,7 +58,8 @@ async function loadPracticeExercises() {
         }
 
         allExercises = exercises || [];
-        renderExercises(allExercises);
+        // Pass the completed IDs to the render function
+        renderExercises(allExercises, completedExerciseIds);
 
     } catch (error) {
         console.error('Unexpected error loading practice exercises:', error);
@@ -50,7 +71,7 @@ async function loadPracticeExercises() {
 // Render Practice Exercises to Grid
 // ============================================
 
-function renderExercises(exercises) {
+function renderExercises(exercises, completedIds = new Set()) {
     const practiceGrid = document.querySelector('.practice-grid');
 
     if (!practiceGrid) {
@@ -68,14 +89,17 @@ function renderExercises(exercises) {
         return;
     }
 
-    practiceGrid.innerHTML = exercises.map(exercise => createExerciseCard(exercise)).join('');
+    // Pass the completedIds to createExerciseCard
+    practiceGrid.innerHTML = exercises.map(exercise => 
+        createExerciseCard(exercise, completedIds.has(exercise.id))
+    ).join('');
 }
 
 // ============================================
 // Create Exercise Card HTML
 // ============================================
 
-function createExerciseCard(exercise) {
+function createExerciseCard(exercise, isCompleted) {
     const categoryClass = getCategoryClass(exercise.category);
     const categoryLabel = getCategoryLabel(exercise.category);
     const xpReward = exercise.xp_reward || 0;
@@ -83,6 +107,12 @@ function createExerciseCard(exercise) {
     return `
         <div class="practice-card" data-category="${categoryClass}" style="--xp-reward: '${xpReward}xp';">
             <div class="practice-card-content">
+                
+                <!-- NEW: Completed Checkbox -->
+                <div class="card-status-checkbox" title="${isCompleted ? 'Completed' : 'Not taken yet'}">
+                    <input type="checkbox" ${isCompleted ? 'checked' : ''} disabled>
+                </div>
+
                 <div class="practice-card-header">
                     <span class="practice-badge ${categoryClass}">${categoryLabel}</span>
                 </div>
@@ -214,7 +244,7 @@ function setupFilters() {
 function filterExercises(category) {
     if (category === 'all') {
         // If 'All', show everything
-        renderExercises(allExercises);
+        renderExercises(allExercises, completedExerciseIds);
     } else {
         // Filter the array based on the category
         // We use .includes() to handle cases like "AI" vs "Artificial Intelligence" nicely if needed, 
@@ -224,7 +254,7 @@ function filterExercises(category) {
             (category === 'Artificial Intelligence' && exercise.category === 'AI') || // Handle abbreviation
             (category === 'Cloud Computing' && exercise.category === 'Cloud') 
         );
-        renderExercises(filtered);
+        renderExercises(filtered, completedExerciseIds);
     }
 }
 
