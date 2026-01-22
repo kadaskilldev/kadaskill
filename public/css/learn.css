@@ -113,28 +113,34 @@ body {
 /* My Courses Section */
 
 .my-courses-section {
-    margin-top: 2rem;
+    margin-top: 3rem;
 }
 
 .section-header {
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid #d1d5db;
+    display: block;
+    text-align: left !important;
+    width: 100%;
 }
 
 .section-title-main {
-    font-size: 1.75rem;
+    font-size: 2.5rem;
     font-weight: 700;
     color: #1a202c;
     margin-bottom: 1rem;
+    line-height: 1.2;
+    text-align: left !important;
 }
 
 .section-description {
-    color: #1a202c;
+    color: #4b5563;
     font-size: 1rem;
     line-height: 1.6;
-    max-width: 900px;
-    margin-top: 0.5rem;
+    max-width: 100%;
+    margin: 0;
+    text-align: left !important;
 }
 
 
