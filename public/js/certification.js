@@ -49,7 +49,8 @@ async function loadUserProfile() {
         // Update greeting
         const greetingHighlight = document.querySelector('.greeting-text .highlight');
         if (greetingHighlight) {
-            greetingHighlight.textContent = profile.full_name || profile.username || 'Learner!';
+            greetingHighlight.classList.remove('skeleton-text-inline');
+            greetingHighlight.textContent = (profile.full_name || profile.username || 'Learner') + '!';
         }
 
         // Update avatar

@@ -129,6 +129,7 @@ function updateProfileUI(user, profile) {
             displayName = profile.username;
         }
 
+        welcomeName.classList.remove('skeleton-text-inline');
         welcomeName.textContent = displayName + '!';
 
         // Apply size class based on name length

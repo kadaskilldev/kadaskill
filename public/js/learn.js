@@ -63,7 +63,8 @@ async function loadUserProfile() {
         // Update greeting
         const greetingName = document.querySelector('.highlight-name');
         if (greetingName) {
-            greetingName.textContent = profile.full_name || profile.username || 'Learner';
+            greetingName.classList.remove('skeleton-text-inline');
+            greetingName.textContent = (profile.full_name || profile.username || 'Learner') + '!';
         }
 
         // Update avatar
@@ -550,25 +551,6 @@ function searchCourses(searchTerm) {
             align-items: center;
             gap: 6px;
             z-index: 10;
-        }
-        
-        .course-card-btn.enrolled {
-            background: #f59e0b !important;
-            color: #1a202c !important;
-        }
-        
-        .course-card-btn.enrolled:hover {
-            background: #fbbf24 !important;
-        }
-        
-        .course-card-btn.locked {
-            background: #94a3b8 !important;
-            cursor: not-allowed !important;
-        }
-        
-        .course-card-btn.locked:hover {
-            background: #94a3b8 !important;
-            transform: none !important;
         }
     `;
     document.head.appendChild(style);

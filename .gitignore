@@ -33,3 +33,5 @@ build/
 *.swp
 *.swo
 *.bak
+.vercel
+.env*.local

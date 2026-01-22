@@ -1,0 +1,6 @@
+server.js
+node_modules
+.git
+sql
+documentations
+*.md
