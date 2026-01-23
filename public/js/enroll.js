@@ -6,6 +6,7 @@
 
 let currentUser = null;
 let currentCourse = null;
+let allLessons = []; // Store lessons data for XP calculation
 let isEnrolled = false;
 let prerequisitesMet = true;
 
@@ -45,6 +46,9 @@ async function initializeEnrollmentPage(courseSlug) {
 
         // Load course data
         await loadCourseData(courseSlug);
+
+        // Load lessons to calculate total XP
+        await loadLessons();
 
         // Check enrollment status
         await checkEnrollmentStatus();
@@ -86,6 +90,39 @@ async function loadCourseData(slug) {
     }
 
     currentCourse = course;
+}
+
+// ============================================
+// Load Lessons
+// ============================================
+
+async function loadLessons() {
+    const { data: lessons, error } = await supabase
+        .from('lessons')
+        .select('*')
+        .eq('course_id', currentCourse.id)
+        .order('order_index', { ascending: true });
+
+    if (error) {
+        console.error('Error loading lessons:', error);
+        return;
+    }
+
+    allLessons = lessons || [];
+}
+
+// ============================================
+// Calculate Total Course XP from Lessons
+// ============================================
+
+function calculateTotalCourseXP() {
+    if (!allLessons || allLessons.length === 0) {
+        return 0;
+    }
+    
+    return allLessons.reduce((total, lesson) => {
+        return total + (lesson.xp_reward || 0);
+    }, 0);
 }
 
 // ============================================
@@ -193,7 +230,8 @@ function renderPage() {
     durationEl.innerHTML = `<i class="fas fa-clock"></i> ${formatDuration(hours)}`;
 
     const xpEl = document.getElementById('metaXP');
-    xpEl.innerHTML = `<i class="fas fa-star"></i> ${currentCourse.xp_reward || 0} XP`;
+    const totalXP = calculateTotalCourseXP();
+    xpEl.innerHTML = `<i class="fas fa-star"></i> ${totalXP} XP`;
 
     // Removed student count section
 

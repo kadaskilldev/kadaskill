@@ -130,10 +130,40 @@ function updateCourseHeader() {
         durationEl.textContent = hours >= 1 ? `${Math.floor(hours)} hours` : `${Math.round(hours * 60)} min`;
     }
 
-    // Update XP
+    // Update XP - Calculate total from all lessons
     const xpEl = document.querySelector('#courseXP span');
     if (xpEl) {
-        xpEl.textContent = `${currentCourse.xp_reward || 0} XP`;
+        const totalXP = calculateTotalCourseXP();
+        xpEl.textContent = `${totalXP} XP`;
+    }
+    
+    // Also update enrollment modal if it exists
+    updateEnrollmentModal();
+}
+
+// ============================================
+// Update Enrollment Modal
+// ============================================
+
+function updateEnrollmentModal() {
+    // Update enrollment difficulty
+    const enrollDifficultyEl = document.getElementById('enrollDifficulty');
+    if (enrollDifficultyEl) {
+        enrollDifficultyEl.textContent = currentCourse.difficulty || 'Beginner';
+    }
+
+    // Update enrollment duration
+    const enrollDurationEl = document.getElementById('enrollDuration');
+    if (enrollDurationEl) {
+        const hours = currentCourse.duration_hours || 0;
+        enrollDurationEl.textContent = hours >= 1 ? `${Math.floor(hours)} hours` : `${Math.round(hours * 60)} min`;
+    }
+
+    // Update enrollment XP
+    const enrollXPEl = document.getElementById('enrollXP');
+    if (enrollXPEl) {
+        const totalXP = calculateTotalCourseXP();
+        enrollXPEl.textContent = `${totalXP} XP`;
     }
 }
 
@@ -208,6 +238,23 @@ async function loadLessons() {
     }
 
     allLessons = lessons || [];
+    
+    // Update course header after lessons are loaded to calculate total XP
+    updateCourseHeader();
+}
+
+// ============================================
+// Calculate Total Course XP from Lessons
+// ============================================
+
+function calculateTotalCourseXP() {
+    if (!allLessons || allLessons.length === 0) {
+        return 0;
+    }
+    
+    return allLessons.reduce((total, lesson) => {
+        return total + (lesson.xp_reward || 0);
+    }, 0);
 }
 
 // ============================================

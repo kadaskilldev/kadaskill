@@ -5,28 +5,89 @@ section.badges-showcase,
     width: 100% !important;
     max-width: none !important;
     overflow: visible !important;
+    padding: 1.5rem !important;
+    margin-top: 1rem !important;
+}
+
+.badges-showcase .badges-header {
+    margin-bottom: 0.5rem;
+}
+
+.badges-showcase .badges-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1a202c;
 }
 
 #homeBadgesRow,
 .badges-row,
 div[id="homeBadgesRow"] {
     display: flex !important;
-    justify-content: space-evenly !important;
+    justify-content: space-between !important;
     align-items: center !important;
     flex-wrap: wrap !important;
-    gap: 30px !important;
+    gap: 16px !important;
     width: 100% !important;
-    padding: 20px 0 !important;
+    padding: 10px 0 !important;
     margin: 0 !important;
-    min-height: 100px !important;
+    min-height: 80px !important;
 }
 
 #homeBadgesRow .badge-item,
 .badges-row .badge-item {
-    flex: 0 0 64px !important;
-    width: 64px !important;
-    height: 64px !important;
+    flex: 0 0 100px !important;
+    width: 100px !important;
+    height: 100px !important;
     margin: 0 !important;
+    position: relative !important;
+}
+
+/* Badge Tooltip - Scoped to badges-showcase */
+.badges-showcase .badge-item {
+    cursor: pointer;
+}
+
+.badges-showcase .badge-item::after {
+    content: attr(title);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    max-width: 200px;
+    white-space: normal;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    z-index: 1000;
+    pointer-events: none;
+    line-height: 1.4;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.badges-showcase .badge-item::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.9);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    z-index: 1000;
+}
+
+.badges-showcase .badge-item:hover::after,
+.badges-showcase .badge-item:hover::before {
+    opacity: 1;
+    visibility: visible;
 }
 
 
@@ -815,27 +876,13 @@ body.has-fixed-header {
 }
 
 
-/* Badge Grid Layout - Hard Fix */
-
-#homeBadgesRow,
-#homeBadgesRow.badges-grid,
-.badges-row {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    gap: 24px !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-    min-height: 80px !important;
-}
+/* Badge Grid Layout - styles defined at top of file */
 
 .badge-item {
-    width: 64px !important;
-    height: 64px !important;
-    min-width: 64px !important;
-    max-width: 64px !important;
+    width: 100px !important;
+    height: 100px !important;
+    min-width: 100px !important;
+    max-width: 100px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -850,10 +897,36 @@ body.has-fixed-header {
 }
 
 .badge-img {
-    width: 48px;
-    height: 48px;
+    width: 80px;
+    height: 80px;
     object-fit: contain;
     border-radius: 8px;
+}
+
+/* Badge Icon - for both img and div badge icons */
+.badge-icon {
+    width: 80px !important;
+    height: 80px !important;
+    min-width: 80px !important;
+    min-height: 80px !important;
+    max-width: 80px !important;
+    max-height: 80px !important;
+    object-fit: contain;
+    border-radius: 8px;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Badge icon when it's a div (fallback with icon) */
+div.badge-icon {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Badge icon when it's an img */
+img.badge-icon {
+    display: block !important;
 }
 
 .badge-fallback {
@@ -867,6 +940,7 @@ body.has-fixed-header {
     font-size: 1.5rem;
     color: #64748b;
 }
+
 
 .learning-overview {
     display: grid;

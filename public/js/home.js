@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadEnrolledCourses();
     await loadPracticeExercises();
     await loadCertificationCallouts();
-    // await loadUserBadges(); // TEMPORARILY COMMENTED OUT
+    await loadUserBadges();
     await loadLeaderboard();
 });
 
@@ -856,14 +856,8 @@ function showNoCertificationsMessage(container, message) {
 // ============================================
 // Load User Badges
 // ============================================
-// NOTE: This function is currently disabled.
-// Badge section is commented out in home.html (lines 169-183)
-// Function call is commented out in DOMContentLoaded (line 24)
 
 async function loadUserBadges() {
-    // DISABLED - Badge section is temporarily commented out
-    return;
-
     try {
         if (!currentUser) return;
 
@@ -904,25 +898,9 @@ async function loadUserBadges() {
         if (badgesRow && allBadges && allBadges.length > 0) {
             console.log('Applying badge layout fix...', allBadges.length, 'badges found');
 
-            // Nuclear option - completely reset everything
-            badgesRow.removeAttribute('class');
+            // Keep the badges-row class for CSS styling
+            badgesRow.className = 'badges-row';
             badgesRow.removeAttribute('style');
-            badgesRow.className = '';
-
-            // Force apply styles with maximum specificity
-            setTimeout(() => {
-                badgesRow.style.setProperty('display', 'flex', 'important');
-                badgesRow.style.setProperty('justify-content', 'space-evenly', 'important');
-                badgesRow.style.setProperty('align-items', 'center', 'important');
-                badgesRow.style.setProperty('flex-wrap', 'wrap', 'important');
-                badgesRow.style.setProperty('gap', '30px', 'important');
-                badgesRow.style.setProperty('width', '100%', 'important');
-                badgesRow.style.setProperty('padding', '20px 0', 'important');
-                badgesRow.style.setProperty('margin', '0', 'important');
-                badgesRow.style.setProperty('min-height', '100px', 'important');
-
-                console.log('Badge container styles applied:', badgesRow.style.cssText);
-            }, 100);
 
             badgesRow.innerHTML = allBadges.map(badge => {
                 const isEarned = earnedBadgeIds.has(badge.id);
@@ -940,7 +918,7 @@ async function loadUserBadges() {
                             <i class="fas fa-lock" style="font-size: 7px; color: white;"></i>
                         </div>` : ''}
                         ${badge.icon_url ?
-                        `<img src="${badge.icon_url}" alt="${badge.name}" class="badge-icon" style="${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}" onerror="console.error('Badge icon failed to load:', '${badge.icon_url}'); this.onerror=null; this.style.display='none'; this.parentNode.innerHTML='<div class=\'badge-icon\' style=\'background: ${color}; display: flex; align-items: center; justify-content: center; ${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}\'>  <i class=\'fas fa-exclamation-triangle\' style=\'color: white; font-size: 20px;\'></i></div>';"` :
+                        `<img src="${badge.icon_url}" alt="${badge.name}" class="badge-icon" style="${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}" onerror="this.onerror=null; this.style.display='none';">` :
                         `<div class="badge-icon" style="background: ${color}; display: flex; align-items: center; justify-content: center; ${!isEarned ? 'opacity: 0.5; filter: grayscale(50%);' : ''}">
                                 <i class="fas fa-trophy" style="color: white; font-size: 20px;"></i>
                             </div>`
@@ -949,19 +927,7 @@ async function loadUserBadges() {
                 `;
             }).join('');
 
-            // Force layout recalculation and spacing
-            setTimeout(() => {
-                const badgeItems = badgesRow.querySelectorAll('.badge-item');
-                badgeItems.forEach((item, index) => {
-                    item.style.setProperty('flex', '0 0 64px', 'important');
-                    item.style.setProperty('width', '64px', 'important');
-                    item.style.setProperty('height', '64px', 'important');
-                    item.style.setProperty('margin', '0', 'important');
-                });
-
-                console.log('Badge layout enforced on', badgeItems.length, 'items');
-                console.log('Final container styles:', badgesRow.style.cssText);
-            }, 200);
+            console.log('Badges loaded:', allBadges.length, 'badges rendered');
         }
 
         // Show first earned badge in profile section
