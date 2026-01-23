@@ -458,6 +458,7 @@ function setActiveNavigation() {
             (currentPage === 'certification.html' && href.includes('certification')) ||
             (currentPage === 'learn.html' && href.includes('learn')) ||
             (currentPage === 'learning.html' && href.includes('learn')) ||
+            (currentPage === 'enroll.html' && href.includes('learn')) || 
             (currentPage === 'home.html' && href.includes('home')) ||
             (currentPage === 'practice.html' && href.includes('practice'))||
             (currentPage === 'practice-session.html' && href.includes('practice'))) {
