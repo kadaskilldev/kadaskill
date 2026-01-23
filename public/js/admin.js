@@ -37,6 +37,20 @@ let certFilters = {
 let certCurrentPage = 1;
 let certPerPage = 10;
 
+// Courses filter state
+let allCourses = [];
+let courseFilters = {
+    category: '',
+    difficulty: ''
+};
+
+// Exercises filter state
+let allExercises = [];
+let exerciseFilters = {
+    category: '',
+    difficulty: ''
+};
+
 const CERT_ICON_BUCKET = 'certification-icons';
 const CERT_ICON_PLACEHOLDER = 'images/certifications/placeholder.png';
 
@@ -747,6 +761,42 @@ function setupEventListeners() {
     const addCourseBtn = document.getElementById('add-course-btn');
     if (addCourseBtn) {
         addCourseBtn.addEventListener('click', addNewCourse);
+    }
+
+    // Course filter event listeners
+    const courseCategoryFilter = document.getElementById('course-category-filter');
+    const courseDifficultyFilter = document.getElementById('course-difficulty-filter');
+
+    if (courseCategoryFilter) {
+        courseCategoryFilter.addEventListener('change', (e) => {
+            courseFilters.category = e.target.value;
+            applyCoursesFilters();
+        });
+    }
+
+    if (courseDifficultyFilter) {
+        courseDifficultyFilter.addEventListener('change', (e) => {
+            courseFilters.difficulty = e.target.value;
+            applyCoursesFilters();
+        });
+    }
+
+    // Exercise filter event listeners
+    const exerciseCategoryFilter = document.getElementById('exercise-category-filter');
+    const exerciseDifficultyFilter = document.getElementById('exercise-difficulty-filter');
+
+    if (exerciseCategoryFilter) {
+        exerciseCategoryFilter.addEventListener('change', (e) => {
+            exerciseFilters.category = e.target.value;
+            applyExercisesFilters();
+        });
+    }
+
+    if (exerciseDifficultyFilter) {
+        exerciseDifficultyFilter.addEventListener('change', (e) => {
+            exerciseFilters.difficulty = e.target.value;
+            applyExercisesFilters();
+        });
     }
 
     // Course inline editing - Back button
@@ -1627,7 +1677,8 @@ async function loadCourses() {
         );
 
         console.log('Courses with counts:', coursesWithCounts);
-        renderCoursesTable(coursesWithCounts);
+        allCourses = coursesWithCounts;
+        applyCoursesFilters();
 
         // Debug: Check if buttons are rendered
         setTimeout(() => {
@@ -1716,6 +1767,22 @@ function renderCoursesTable(courses) {
     } else {
         tableBody.innerHTML = '<tr><td colspan="7" class="loading-cell">No courses found</td></tr>';
     }
+}
+
+function applyCoursesFilters() {
+    let filtered = [...allCourses];
+
+    // Category filter
+    if (courseFilters.category) {
+        filtered = filtered.filter(course => course.category === courseFilters.category);
+    }
+
+    // Difficulty filter
+    if (courseFilters.difficulty) {
+        filtered = filtered.filter(course => course.difficulty === courseFilters.difficulty);
+    }
+
+    renderCoursesTable(filtered);
 }
 
 // ============================================
@@ -1871,14 +1938,6 @@ function renderCertificationsTable(certifications) {
     const tableBody = document.getElementById('certifications-table-body');
     if (!tableBody) return;
 
-    // Reset selection whenever we re-render the table
-    selectedCertIds = new Set();
-    const headerCheckbox = document.getElementById('cert-select-all');
-    if (headerCheckbox) {
-        headerCheckbox.checked = false;
-    }
-    updateCertBulkActionsState();
-
     if (certifications && certifications.length > 0) {
         tableBody.innerHTML = certifications.map(cert => {
             const badgeCategory = (cert.category || 'General').toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -1887,10 +1946,6 @@ function renderCertificationsTable(certifications) {
 
             return `
                 <tr>
-                    <td>
-                        <input type="checkbox" class="cert-select-checkbox" data-cert-id="${cert.id}"
-                               onchange="handleCertRowCheckboxChange('${cert.id}', this.checked)">
-                    </td>
                     <td>
                         <div class="table-title">${cert.title}</div>
                         <div class="table-subtitle">${cert.provider || 'Unknown provider'}</div>
@@ -1923,7 +1978,7 @@ function renderCertificationsTable(certifications) {
 
         tableBody.innerHTML = `
             <tr>
-                <td colspan="6" class="loading-cell">
+                <td colspan="5" class="loading-cell">
                     <div class="empty-state">
                         <i class="fas fa-certificate"></i>
                         <p>${message}</p>
@@ -2092,7 +2147,8 @@ async function loadExercises() {
             return;
         }
 
-        renderExercisesTable(exercises);
+        allExercises = exercises || [];
+        applyExercisesFilters();
 
     } catch (error) {
         console.error('Error loading exercises:', error);
@@ -2148,6 +2204,24 @@ function renderExercisesTable(exercises) {
             </tr>
         `;
     }
+}
+
+function applyExercisesFilters() {
+    let filtered = [...allExercises];
+
+    // Category filter
+    if (exerciseFilters.category) {
+        filtered = filtered.filter(exercise => exercise.category === exerciseFilters.category);
+    }
+
+    // Difficulty filter
+    if (exerciseFilters.difficulty) {
+        filtered = filtered.filter(exercise =>
+            exercise.difficulty && exercise.difficulty.toLowerCase() === exerciseFilters.difficulty.toLowerCase()
+        );
+    }
+
+    renderExercisesTable(filtered);
 }
 
 // ============================================

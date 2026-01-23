@@ -16,7 +16,7 @@ let completedExerciseIds = new Set();
 document.addEventListener('DOMContentLoaded', async () => {
     await loadPracticeExercises();
     setupFilters();
-    setupStickyFilter();
+    // setupStickyFilter(); // Disabled: sidebar navigation no longer sticks on scroll
 });
 
 // ============================================

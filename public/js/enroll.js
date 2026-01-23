@@ -57,7 +57,7 @@ async function initializeEnrollmentPage(courseSlug) {
         await checkPrerequisites();
 
         // Render page
-        renderPage();
+        await renderPage();
 
         // Setup event listeners
         setupEventListeners();
@@ -146,6 +146,29 @@ async function checkEnrollmentStatus() {
 }
 
 // ============================================
+// Get Total Enrollment Count
+// ============================================
+
+async function getEnrollmentCount() {
+    try {
+        const { data, error, count } = await supabase
+            .from('enrollments')
+            .select('*', { count: 'exact', head: true })
+            .eq('course_id', currentCourse.id);
+
+        if (error) {
+            console.error('Error getting enrollment count:', error);
+            return 0;
+        }
+
+        return count || 0;
+    } catch (error) {
+        console.error('Error in getEnrollmentCount:', error);
+        return 0;
+    }
+}
+
+// ============================================
 // Check Prerequisites
 // ============================================
 
@@ -215,7 +238,7 @@ async function checkPrerequisites() {
 // Render Page
 // ============================================
 
-function renderPage() {
+async function renderPage() {
     // Update course info
     document.getElementById('courseCategory').textContent = currentCourse.category || 'Course';
     document.getElementById('courseTitle').textContent = currentCourse.title;
@@ -233,7 +256,11 @@ function renderPage() {
     const totalXP = calculateTotalCourseXP();
     xpEl.innerHTML = `<i class="fas fa-star"></i> ${totalXP} XP`;
 
-    // Removed student count section
+    // Update student count
+    const enrollmentCount = await getEnrollmentCount();
+    const studentsEl = document.getElementById('metaStudents');
+    const studentText = enrollmentCount === 1 ? 'learner' : 'learners';
+    studentsEl.innerHTML = `<i class="fas fa-users"></i> ${enrollmentCount} ${studentText}`;
 
     // Render learning objectives
     renderLearningObjectives();
