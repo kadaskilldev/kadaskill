@@ -303,10 +303,6 @@ function loadNavigation() {
                 </ul>
             </nav>
             <div class="header-right">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search...">
-                </div>
                 ${userProfileMarkup}
             </div>
         </div>
@@ -458,9 +454,9 @@ function setActiveNavigation() {
             (currentPage === 'certification.html' && href.includes('certification')) ||
             (currentPage === 'learn.html' && href.includes('learn')) ||
             (currentPage === 'learning.html' && href.includes('learn')) ||
-            (currentPage === 'enroll.html' && href.includes('learn')) || 
+            (currentPage === 'enroll.html' && href.includes('learn')) ||
             (currentPage === 'home.html' && href.includes('home')) ||
-            (currentPage === 'practice.html' && href.includes('practice'))||
+            (currentPage === 'practice.html' && href.includes('practice')) ||
             (currentPage === 'practice-session.html' && href.includes('practice'))) {
             link.classList.add('active');
         }

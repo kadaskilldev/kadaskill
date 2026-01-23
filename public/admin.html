@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,8 @@
     <link rel="icon" type="image/svg+xml" href="images/loading/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/admin-styles.css">
@@ -15,6 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
+
 <body>
     <div id="toast-container" class="toast-container"></div>
 
@@ -87,7 +90,8 @@
                 <h2 class="admin-header__title" id="section-title">Analytics Dashboard</h2>
                 <div class="admin-header__user">
                     <span id="admin-username">Admin User</span>
-                    <img src="images/profile/default-avatar.svg" alt="Admin" class="admin-header__avatar" id="admin-avatar">
+                    <img src="images/profile/default-avatar.svg" alt="Admin" class="admin-header__avatar"
+                        id="admin-avatar">
                 </div>
             </div>
 
@@ -190,7 +194,8 @@
 
                     <!-- Course Performance -->
                     <div class="admin-card" style="margin-top: 24px;">
-                        <div class="admin-card__header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <div class="admin-card__header"
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                             <h3 class="admin-card__title" style="margin: 0;">Course Performance</h3>
                             <div style="display: flex; gap: 12px; align-items: center;">
                                 <select id="course-performance-sort" class="filter-select" style="min-width: 200px;">
@@ -236,7 +241,8 @@
                     <div class="section-header">
                         <h3>All Users</h3>
                         <div class="section-actions">
-                            <input type="text" placeholder="Search by name or email..." class="search-input" id="user-search">
+                            <input type="text" placeholder="Search by name or email..." class="search-input"
+                                id="user-search">
                             <select class="filter-select" id="role-filter">
                                 <option value="all">All Roles</option>
                                 <option value="user">User</option>
@@ -345,16 +351,20 @@
                                 <div class="course-card-body">
                                     <div class="form-grid">
                                         <div class="form-group span-2">
-                                            <label class="form-label">Course Title <span class="required">*</span></label>
-                                            <input type="text" class="form-input form-input-lg" id="course-title-edit" placeholder="e.g., Introduction to AI & Machine Learning">
+                                            <label class="form-label">Course Title <span
+                                                    class="required">*</span></label>
+                                            <input type="text" class="form-input form-input-lg" id="course-title-edit"
+                                                placeholder="e.g., Introduction to AI & Machine Learning">
                                         </div>
                                         <div class="form-group span-2">
                                             <label class="form-label">Short Description</label>
-                                            <textarea class="form-input" id="course-short-desc-edit" rows="2" placeholder="Brief summary for course cards..."></textarea>
+                                            <textarea class="form-input" id="course-short-desc-edit" rows="2"
+                                                placeholder="Brief summary for course cards..."></textarea>
                                         </div>
                                         <div class="form-group span-2">
                                             <label class="form-label">Full Description</label>
-                                            <textarea class="form-input" id="course-description-edit" rows="4" placeholder="Detailed course description..."></textarea>
+                                            <textarea class="form-input" id="course-description-edit" rows="4"
+                                                placeholder="Detailed course description..."></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -389,23 +399,33 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">Slug</label>
-                                            <input type="text" class="form-input" id="course-slug-edit" placeholder="intro-to-ai-ml">
+                                            <input type="text" class="form-input" id="course-slug-edit"
+                                                placeholder="intro-to-ai-ml">
                                             <small class="form-hint">Auto-generated from title</small>
                                         </div>
                                         <div class="form-group span-2">
                                             <label class="form-label">Course Image</label>
-                                            <input type="file" class="form-input" id="course-thumbnail-file" accept="image/*" onchange="handleImageUpload('thumbnail', this.files[0])" style="margin-bottom: 8px;">
-                                            <input type="text" class="form-input" id="course-thumbnail-edit" placeholder="Or paste image URL..." onchange="previewCourseImage('thumbnail')" style="font-size: 12px;">
-                                            <div class="image-preview-container" id="thumbnail-preview-container" style="display: none;">
-                                                <img id="thumbnail-preview" class="image-preview" alt="Course image preview">
-                                                <button type="button" class="btn-remove-preview" onclick="removeCourseImagePreview('thumbnail')">
+                                            <input type="file" class="form-input" id="course-thumbnail-file"
+                                                accept="image/*"
+                                                onchange="handleImageUpload('thumbnail', this.files[0])"
+                                                style="margin-bottom: 8px;">
+                                            <input type="text" class="form-input" id="course-thumbnail-edit"
+                                                placeholder="Or paste image URL..."
+                                                onchange="previewCourseImage('thumbnail')" style="font-size: 12px;">
+                                            <div class="image-preview-container" id="thumbnail-preview-container"
+                                                style="display: none;">
+                                                <img id="thumbnail-preview" class="image-preview"
+                                                    alt="Course image preview">
+                                                <button type="button" class="btn-remove-preview"
+                                                    onclick="removeCourseImagePreview('thumbnail')">
                                                     <i class="fas fa-times"></i>
                                                 </button>
                                             </div>
                                         </div>
                                         <div class="form-group span-2">
                                             <label class="form-label">Learning Objectives (one per line)</label>
-                                            <textarea class="form-input" id="course-objectives-edit" rows="3" placeholder="Understand AI fundamentals&#10;Build ML models"></textarea>
+                                            <textarea class="form-input" id="course-objectives-edit" rows="3"
+                                                placeholder="Understand AI fundamentals&#10;Build ML models"></textarea>
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">Status</label>
@@ -446,126 +466,125 @@
 
                 <!-- Certifications Section -->
                 <section id="certifications-section" class="admin-section">
-                        <div class="section-header">
-                            <h3>Manage Certifications</h3>
-                            <button class="btn-primary" id="add-cert-btn">
-                                <img src="/images/cert-backend/add-cert-plus.svg" alt="Add certification" class="btn-icon-img">
-                                Add New Certification
+                    <div class="section-header">
+                        <h3>Manage Certifications</h3>
+                        <button class="btn-primary" id="add-cert-btn">
+                            <img src="/images/cert-backend/add-cert-plus.svg" alt="Add certification"
+                                class="btn-icon-img">
+                            Add New Certification
+                        </button>
+                    </div>
+                    <div class="cert-filters">
+                        <div class="filter-row">
+                            <select id="cert-category-filter" class="filter-select">
+                                <option value="">All Categories</option>
+                                <option value="AI">AI</option>
+                                <option value="Cloud">Cloud</option>
+                                <option value="Cybersecurity">Cybersecurity</option>
+                            </select>
+                            <select id="cert-status-filter" class="filter-select">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <span class="cert-count" id="cert-count">0 certifications</span>
+                    </div>
+                    <div class="section-actions" id="cert-bulk-bar">
+                        <div class="bulk-actions">
+                            <label class="bulk-select">
+                                <input type="checkbox" id="cert-select-all"
+                                    onclick="handleCertHeaderCheckboxChange(this.checked)">
+                                <span>Select all</span>
+                            </label>
+                            <span class="selection-count" id="cert-selection-count"></span>
+                            <button class="btn-secondary btn-sm" id="cert-bulk-activate" disabled>Activate</button>
+                            <button class="btn-secondary btn-sm" id="cert-bulk-deactivate" disabled>Deactivate</button>
+                            <button class="btn-danger btn-sm" id="cert-bulk-delete" disabled>
+                                <img src="/images/cert-backend/delete-icon.svg" alt="Delete" class="btn-icon-img">
+                                Delete
                             </button>
                         </div>
-                        <div class="cert-filters">
-                            <div class="filter-row">
-                                <div class="search-box">
-                                    <i class="fas fa-search"></i>
-                                    <input type="text" id="cert-search" placeholder="Search certifications..." class="filter-input">
-                                </div>
-                                <select id="cert-category-filter" class="filter-select">
-                                    <option value="">All Categories</option>
-                                    <option value="AI">AI</option>
-                                    <option value="Cloud">Cloud</option>
-                                    <option value="Cybersecurity">Cybersecurity</option>
-                                </select>
-                                <select id="cert-status-filter" class="filter-select">
-                                    <option value="">All Status</option>
-                                    <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
-                                </select>
-                            </div>
-                            <span class="cert-count" id="cert-count">0 certifications</span>
+                    </div>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px;"></th>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Level</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="certifications-table-body">
+                                <tr>
+                                    <td colspan="6" class="loading-cell">Loading certifications...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination-controls" id="cert-pagination">
+                        <div class="pagination-info">
+                            <span id="cert-page-info">Showing 0-0 of 0</span>
                         </div>
-                        <div class="section-actions" id="cert-bulk-bar">
-                            <div class="bulk-actions">
-                                <label class="bulk-select">
-                                    <input type="checkbox" id="cert-select-all" onclick="handleCertHeaderCheckboxChange(this.checked)">
-                                    <span>Select all</span>
-                                </label>
-                                <span class="selection-count" id="cert-selection-count"></span>
-                                <button class="btn-secondary btn-sm" id="cert-bulk-activate" disabled>Activate</button>
-                                <button class="btn-secondary btn-sm" id="cert-bulk-deactivate" disabled>Deactivate</button>
-                                <button class="btn-danger btn-sm" id="cert-bulk-delete" disabled>
-                                    <img src="/images/cert-backend/delete-icon.svg" alt="Delete" class="btn-icon-img">
-                                    Delete
-                                </button>
-                            </div>
+                        <div class="pagination-buttons">
+                            <button class="btn-pagination" id="cert-prev-btn" disabled>
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </button>
+                            <div class="pagination-pages" id="cert-page-numbers"></div>
+                            <button class="btn-pagination" id="cert-next-btn" disabled>
+                                Next <i class="fas fa-chevron-right"></i>
+                            </button>
                         </div>
-                        <div class="table-container">
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 40px;"></th>
-                                        <th>Title</th>
-                                        <th>Category</th>
-                                        <th>Level</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="certifications-table-body">
-                                    <tr>
-                                        <td colspan="6" class="loading-cell">Loading certifications...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="pagination-per-page">
+                            <label>Per page:</label>
+                            <select id="cert-per-page" class="filter-select">
+                                <option value="5">5</option>
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                            </select>
                         </div>
-                        <div class="pagination-controls" id="cert-pagination">
-                            <div class="pagination-info">
-                                <span id="cert-page-info">Showing 0-0 of 0</span>
-                            </div>
-                            <div class="pagination-buttons">
-                                <button class="btn-pagination" id="cert-prev-btn" disabled>
-                                    <i class="fas fa-chevron-left"></i> Previous
-                                </button>
-                                <div class="pagination-pages" id="cert-page-numbers"></div>
-                                <button class="btn-pagination" id="cert-next-btn" disabled>
-                                    Next <i class="fas fa-chevron-right"></i>
-                                </button>
-                            </div>
-                            <div class="pagination-per-page">
-                                <label>Per page:</label>
-                                <select id="cert-per-page" class="filter-select">
-                                    <option value="5">5</option>
-                                    <option value="10" selected>10</option>
-                                    <option value="25">25</option>
-                                    <option value="50">50</option>
-                                </select>
-                            </div>
-                        </div>
+                    </div>
                 </section>
 
                 <!-- Practice Exercises Section -->
                 <section id="exercises-section" class="admin-section">
-                        <div class="section-header">
-                            <h3>Manage Practice Exercises</h3>
-                            <button class="btn-primary" id="add-exercise-btn">
-                                <i class="fas fa-plus"></i> Add New Exercise
-                            </button>
-                        </div>
-                        <div class="table-container">
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>Title</th>
-                                        <th>Category</th>
-                                        <th>Difficulty</th>
-                                        <th>Questions</th>
-                                        <th>Published</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="exercises-table-body">
-                                    <tr>
-                                        <td colspan="6" class="loading-cell">Loading exercises...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="section-header">
+                        <h3>Manage Practice Exercises</h3>
+                        <button class="btn-primary" id="add-exercise-btn">
+                            <i class="fas fa-plus"></i> Add New Exercise
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Difficulty</th>
+                                    <th>Questions</th>
+                                    <th>Published</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="exercises-table-body">
+                                <tr>
+                                    <td colspan="6" class="loading-cell">Loading exercises...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </section>
 
                 <!-- Learning Paths Section -->
                 <section id="learning-paths-section" class="admin-section">
                     <div class="section-header">
                         <h3>Learning Paths</h3>
-                        <p class="section-description">Create structured learning paths with course prerequisites. Students must complete courses in sequence.</p>
+                        <p class="section-description">Create structured learning paths with course prerequisites.
+                            Students must complete courses in sequence.</p>
                     </div>
 
                     <!-- Learning Path Builder -->
@@ -573,7 +592,8 @@
                         <div class="learning-path-builder">
                             <div class="path-builder-header">
                                 <h4>Build Learning Path</h4>
-                                <p>Select courses in order to create a learning sequence. Each course will require the previous one to be completed.</p>
+                                <p>Select courses in order to create a learning sequence. Each course will require the
+                                    previous one to be completed.</p>
                             </div>
 
                             <!-- Available Courses -->
@@ -628,10 +648,12 @@
 
                     <!-- Existing Learning Paths -->
                     <div class="admin-card" style="margin-top: 24px;">
-                        <div class="admin-card__header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <div class="admin-card__header"
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                             <div>
                                 <h4 style="margin: 0 0 4px 0;">Existing Learning Paths</h4>
-                                <p class="card-description" style="margin: 0; color: #6b7280; font-size: 14px;">View and manage your existing learning paths</p>
+                                <p class="card-description" style="margin: 0; color: #6b7280; font-size: 14px;">View and
+                                    manage your existing learning paths</p>
                             </div>
                             <button id="delete-all-paths-btn" class="btn-danger btn-sm" style="display: none;">
                                 <i class="fas fa-trash-alt"></i> Delete All Paths
@@ -655,7 +677,8 @@
 
                     <!-- Badge Management -->
                     <div class="admin-card">
-                        <div class="admin-card__header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div class="admin-card__header"
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                             <h4 style="margin: 0;">Achievement Badges</h4>
                             <button id="create-badge-btn" class="btn-primary">
                                 <i class="fas fa-plus"></i> Create Badge
@@ -687,10 +710,12 @@
 
                     <!-- Rank Management -->
                     <div class="admin-card">
-                        <div class="admin-card__header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div class="admin-card__header"
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                             <div>
                                 <h4 style="margin: 0;">User Ranks</h4>
-                                <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 14px;">Manage XP-based rank progression system</p>
+                                <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 14px;">Manage XP-based rank
+                                    progression system</p>
                             </div>
                             <button id="create-rank-btn" class="btn-primary">
                                 <i class="fas fa-plus"></i> Create Rank
@@ -736,17 +761,20 @@
                             <div class="modal-body">
                                 <div class="form-group">
                                     <label class="form-label">Rank Name <span class="required">*</span></label>
-                                    <input type="text" id="rank-name" class="form-input" required placeholder="e.g., Uncommon">
+                                    <input type="text" id="rank-name" class="form-input" required
+                                        placeholder="e.g., Uncommon">
                                 </div>
 
                                 <div class="form-group">
                                     <label class="form-label">Description</label>
-                                    <textarea id="rank-description" class="form-input" rows="2" placeholder="Describe what this rank represents"></textarea>
+                                    <textarea id="rank-description" class="form-input" rows="2"
+                                        placeholder="Describe what this rank represents"></textarea>
                                 </div>
 
                                 <div class="form-group">
                                     <label class="form-label">Icon <span class="required">*</span></label>
-                                    <input type="text" id="rank-icon" class="form-input" required placeholder="e.g., fas fa-bolt" value="fas fa-star">
+                                    <input type="text" id="rank-icon" class="form-input" required
+                                        placeholder="e.g., fas fa-bolt" value="fas fa-star">
                                     <small>Use Font Awesome class names (e.g., fas fa-bolt, fas fa-crown)</small>
                                 </div>
 
@@ -758,19 +786,22 @@
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                                     <div class="form-group">
                                         <label class="form-label">Minimum XP <span class="required">*</span></label>
-                                        <input type="number" id="rank-min-xp" class="form-input" min="0" required placeholder="1000">
+                                        <input type="number" id="rank-min-xp" class="form-input" min="0" required
+                                            placeholder="1000">
                                     </div>
 
                                     <div class="form-group">
                                         <label class="form-label">Maximum XP</label>
-                                        <input type="number" id="rank-max-xp" class="form-input" min="0" placeholder="2499">
+                                        <input type="number" id="rank-max-xp" class="form-input" min="0"
+                                            placeholder="2499">
                                         <small>Leave empty for highest rank</small>
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label class="form-label">Rank Order <span class="required">*</span></label>
-                                    <input type="number" id="rank-order" class="form-input" min="1" required placeholder="4">
+                                    <input type="number" id="rank-order" class="form-input" min="1" required
+                                        placeholder="4">
                                     <small>1 = lowest rank, higher numbers = higher ranks</small>
                                 </div>
 
@@ -808,28 +839,38 @@
                             <div class="modal-body">
                                 <div class="form-group">
                                     <label class="form-label">Badge Name <span class="required">*</span></label>
-                                    <input type="text" id="badge-name" class="form-input" required placeholder="e.g., First Course">
+                                    <input type="text" id="badge-name" class="form-input" required
+                                        placeholder="e.g., First Course">
                                 </div>
 
                                 <div class="form-group">
                                     <label class="form-label">Badge Icon <span class="required">*</span></label>
                                     <div style="display: flex; gap: 12px; align-items: center;">
-                                        <img id="badge-icon-preview" src="" alt="Badge Icon" style="width: 64px; height: 64px; border-radius: 8px; object-fit: cover; border: 2px solid #e5e7eb; display: none;">
+                                        <img id="badge-icon-preview" src="" alt="Badge Icon"
+                                            style="width: 64px; height: 64px; border-radius: 8px; object-fit: cover; border: 2px solid #e5e7eb; display: none;">
                                         <div style="flex: 1;">
-                                            <input type="file" id="badge-icon-file" accept="image/*" style="display: none;">
-                                            <input type="text" id="badge-icon-url" class="form-input" placeholder="Badge icon URL (or upload below)" style="margin-bottom: 8px;">
-                                            <button type="button" id="badge-icon-upload-btn" class="btn-secondary btn-sm">
+                                            <input type="file" id="badge-icon-file" accept="image/*"
+                                                style="display: none;">
+                                            <input type="text" id="badge-icon-url" class="form-input"
+                                                placeholder="Badge icon URL (or upload below)"
+                                                style="margin-bottom: 8px;">
+                                            <button type="button" id="badge-icon-upload-btn"
+                                                class="btn-secondary btn-sm">
                                                 <i class="fas fa-upload"></i> Upload Icon
                                             </button>
-                                            <small style="display: block; color: #6b7280; margin-top: 4px;">Recommended: 256x256px PNG or JPG</small>
+                                            <small style="display: block; color: #6b7280; margin-top: 4px;">Recommended:
+                                                256x256px PNG or JPG</small>
                                         </div>
                                     </div>
-                                    <div id="badge-icon-status" style="display: none; margin-top: 8px; padding: 8px; background: #f3f4f6; border-radius: 6px; font-size: 14px;"></div>
+                                    <div id="badge-icon-status"
+                                        style="display: none; margin-top: 8px; padding: 8px; background: #f3f4f6; border-radius: 6px; font-size: 14px;">
+                                    </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label class="form-label">Description <span class="required">*</span></label>
-                                    <textarea id="badge-description" class="form-input" rows="3" required placeholder="What does this badge represent?"></textarea>
+                                    <textarea id="badge-description" class="form-input" rows="3" required
+                                        placeholder="What does this badge represent?"></textarea>
                                 </div>
 
                                 <div class="form-row form-row-3">
@@ -848,7 +889,8 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">XP Reward</label>
-                                        <input type="number" id="badge-xp" class="form-input" min="0" value="0" placeholder="0">
+                                        <input type="number" id="badge-xp" class="form-input" min="0" value="0"
+                                            placeholder="0">
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">Rarity</label>
@@ -863,7 +905,8 @@
 
                                 <div class="form-group">
                                     <label class="form-label">Unlock Criteria <span class="required">*</span></label>
-                                    <select id="badge-criteria-type" class="form-input" required onchange="updateCriteriaFields()">
+                                    <select id="badge-criteria-type" class="form-input" required
+                                        onchange="updateCriteriaFields()">
                                         <option value="">-- Select Criteria --</option>
                                         <option value="course_complete">Complete Course</option>
                                         <option value="courses_count">Complete X Courses</option>
@@ -1005,7 +1048,7 @@
                         <div class="form-group">
                             <label class="form-label">Title <span class="required">*</span></label>
                             <input type="text" class="form-input" id="exercise-title" required
-                                   placeholder="e.g., Python Basics: Variables and Data Types">
+                                placeholder="e.g., Python Basics: Variables and Data Types">
                         </div>
                     </div>
 
@@ -1013,7 +1056,7 @@
                         <div class="form-group">
                             <label class="form-label">Slug <span class="required">*</span></label>
                             <input type="text" class="form-input" id="exercise-slug" required
-                                   placeholder="e.g., python-basics-variables">
+                                placeholder="e.g., python-basics-variables">
                             <small class="form-hint">URL-friendly identifier (lowercase, hyphens)</small>
                         </div>
                     </div>
@@ -1022,7 +1065,7 @@
                         <div class="form-group">
                             <label class="form-label">Description</label>
                             <textarea class="form-input" id="exercise-description" rows="3"
-                                      placeholder="Brief description of what this exercise covers..."></textarea>
+                                placeholder="Brief description of what this exercise covers..."></textarea>
                         </div>
                     </div>
 
@@ -1062,20 +1105,19 @@
                     <div class="form-row form-row-3">
                         <div class="form-group">
                             <label class="form-label">Passing Score (%)</label>
-                            <input type="number" class="form-input" id="exercise-passing-score"
-                                   min="0" max="100" value="70" placeholder="70">
+                            <input type="number" class="form-input" id="exercise-passing-score" min="0" max="100"
+                                value="70" placeholder="70">
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">Time Limit (min)</label>
-                            <input type="number" class="form-input" id="exercise-time-limit"
-                                   min="0" placeholder="15">
+                            <input type="number" class="form-input" id="exercise-time-limit" min="0" placeholder="15">
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">XP Reward</label>
-                            <input type="number" class="form-input" id="exercise-xp-reward"
-                                   min="0" value="15" placeholder="15">
+                            <input type="number" class="form-input" id="exercise-xp-reward" min="0" value="15"
+                                placeholder="15">
                         </div>
                     </div>
 
@@ -1083,7 +1125,7 @@
                         <div class="form-group">
                             <label class="form-label">Tags (comma-separated)</label>
                             <input type="text" class="form-input" id="exercise-tags"
-                                   placeholder="python, basics, variables, data-types">
+                                placeholder="python, basics, variables, data-types">
                         </div>
                     </div>
 
@@ -1134,7 +1176,7 @@
                         <div class="form-group">
                             <label class="form-label">Title <span class="required">*</span></label>
                             <input type="text" class="form-input" id="cert-title" required
-                                   placeholder="e.g., AWS Certified Solutions Architect – Associate">
+                                placeholder="e.g., AWS Certified Solutions Architect – Associate">
                         </div>
                     </div>
 
@@ -1142,7 +1184,7 @@
                         <div class="form-group">
                             <label class="form-label">Slug <span class="required">*</span></label>
                             <input type="text" class="form-input" id="cert-slug" required
-                                   placeholder="e.g., aws-solutions-architect-associate">
+                                placeholder="e.g., aws-solutions-architect-associate">
                             <small class="form-hint">URL-friendly identifier (lowercase, hyphens)</small>
                         </div>
                     </div>
@@ -1151,7 +1193,7 @@
                         <div class="form-group">
                             <label class="form-label">Provider</label>
                             <input type="text" class="form-input" id="cert-provider"
-                                   placeholder="e.g., AWS, Microsoft, CompTIA">
+                                placeholder="e.g., AWS, Microsoft, CompTIA">
                         </div>
 
                         <div class="form-group">
@@ -1180,7 +1222,7 @@
                         <div class="form-group">
                             <label class="form-label">Short Description</label>
                             <textarea class="form-input" id="cert-description" rows="3"
-                                      placeholder="Brief description shown on the certification card..."></textarea>
+                                placeholder="Brief description shown on the certification card..."></textarea>
                         </div>
                     </div>
 
@@ -1188,7 +1230,7 @@
                         <div class="form-group">
                             <label class="form-label">Overview</label>
                             <textarea class="form-input" id="cert-overview" rows="3"
-                                      placeholder="Longer overview shown on the certification guide page..."></textarea>
+                                placeholder="Longer overview shown on the certification guide page..."></textarea>
                         </div>
                     </div>
 
@@ -1217,10 +1259,11 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Image</label>
-                            <small class="form-hint">Upload an image or paste a direct image URL. This maps to the certification icon.</small>
+                            <small class="form-hint">Upload an image or paste a direct image URL. This maps to the
+                                certification icon.</small>
                             <div class="cert-image-input-row" style="display: flex; gap: 8px; align-items: center;">
                                 <input type="text" class="form-input" id="cert-image-url"
-                                       placeholder="https://.../your-cert-image.png">
+                                    placeholder="https://.../your-cert-image.png">
                                 <button type="button" class="btn-secondary btn-sm" id="cert-image-upload-btn">
                                     <i class="fas fa-upload"></i> Upload
                                 </button>
@@ -1228,8 +1271,9 @@
                             </div>
                             <div class="form-hint" id="cert-image-status" style="margin-top: 4px; display: none;"></div>
                             <div class="cert-image-preview-wrapper" style="margin-top: 8px;">
-                                <img id="cert-image-preview" src="images/certifications/placeholder.png" alt="Certification image preview"
-                                     style="max-height: 64px; border-radius: 6px; background: #f3f4f6; padding: 4px;">
+                                <img id="cert-image-preview" src="images/certifications/placeholder.png"
+                                    alt="Certification image preview"
+                                    style="max-height: 64px; border-radius: 6px; background: #f3f4f6; padding: 4px;">
                             </div>
                         </div>
                     </div>
@@ -1238,7 +1282,7 @@
                         <div class="form-group">
                             <label class="form-label">Official URL</label>
                             <input type="text" class="form-input" id="cert-official-url"
-                                   placeholder="https://... official certification page">
+                                placeholder="https://... official certification page">
                         </div>
                     </div>
 
@@ -1246,14 +1290,15 @@
                         <div class="form-group">
                             <label class="form-label">Prerequisites</label>
                             <textarea class="form-input" id="cert-prerequisites" rows="3"
-                                      placeholder="Enter one prerequisite per line..."></textarea>
+                                placeholder="Enter one prerequisite per line..."></textarea>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Study Resources</label>
-                            <small class="form-hint">Links, docs, and practice materials shown on the certification guide.</small>
+                            <small class="form-hint">Links, docs, and practice materials shown on the certification
+                                guide.</small>
                             <div id="study-resources-container">
                                 <div class="empty-questions">
                                     <i class="fas fa-link"></i>
@@ -1319,4 +1364,5 @@
     <script src="js/script.js"></script>
     <script src="js/admin.js"></script>
 </body>
+
 </html>
